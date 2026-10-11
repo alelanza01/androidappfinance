@@ -17,6 +17,8 @@ object Demo {
             Operation(8,"Compenso precedente",110000,Kind.INCOME,Status.ACTUAL,today.minusMonths(1),4),
             Operation(9,"Spese precedenti",82000,Kind.EXPENSE,Status.ACTUAL,today.minusMonths(1).plusDays(3),1)
         )
-        return Ledger(Settings(50000,30000,today.plusDays(30),theme),cats,operations,emptyList())
+        val advances=listOf(Advance(1,5000,today.minusDays(7),"Pulizie Casa A","Proprietario Casa A","Casa A","Pulizie",today.minusDays(1)),Advance(2,8400,today.minusDays(2),"Materiali e detergenti","Studio Rossi","Progetto studio","Materiali",today.plusDays(5)),Advance(3,3500,today.minusDays(10),"Spesa condivisa","Marco",cause="Spesa"))
+        val refunds=listOf(Refund(1,1,2000,today.minusDays(3),"Primo rimborso"),Refund(2,3,3500,today.minusDays(4),"Recuperato tutto"))
+        return Ledger(Settings(50000,30000,today.plusDays(30),theme),cats,operations,emptyList(),advances,refunds)
     }
 }

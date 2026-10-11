@@ -35,7 +35,7 @@ class UiTest {
   withStore {assertEquals(3000L,it.snapshot().operations.single().cents)}
   click(a.window.decorView,"Gestisci");dialog().listView.performItemClick(null,2,2);dialog().getButton(-1).performClick();idle()
   withStore {assertEquals(0,it.snapshot().pending.size)}
-  listOf("Scadenze","Grafici","Altro","Oggi").forEach {click(a.window.decorView,it)}
+  listOf("Agenda","Grafici","Altro","Oggi").forEach {click(a.window.decorView,it)}
   controller.pause().stop().destroy()
  }
  @Test fun simulatorIsImmediateAndNeverCreatesAnOperation() {

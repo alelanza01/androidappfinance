@@ -33,7 +33,12 @@ class RenderingTest {
    click(a.window.decorView,"Grafici");screenshot(a.window.decorView,"demo-grafici-$theme.png")
    val scroll=all(a.window.decorView).filterIsInstance<ScrollView>().single();scroll.scrollTo(0,(all(a.window.decorView).filterIsInstance<Charts>()[1].parent as View).top);screenshot(a.window.decorView,"demo-proiezione-$theme.png")
    scroll.scrollTo(0,(all(a.window.decorView).filterIsInstance<Charts>()[2].parent as View).top);screenshot(a.window.decorView,"demo-mesi-$theme.png")
-   click(a.window.decorView,"Scadenze");screenshot(a.window.decorView,"demo-calendario-$theme.png")
+   click(a.window.decorView,"Agenda");screenshot(a.window.decorView,"demo-calendario-$theme.png")
+   click(a.window.decorView,"Oggi");click(a.window.decorView,"Anticipi da recuperare");screenshot(a.window.decorView,"demo-anticipi-$theme.png")
+   click(a.window.decorView,"Apri anticipo");screenshot(org.robolectric.shadows.ShadowAlertDialog.getLatestAlertDialog().window!!.decorView,"demo-dettaglio-anticipo-$theme.png")
+   org.robolectric.shadows.ShadowAlertDialog.getLatestAlertDialog().dismiss()
+   click(a.window.decorView,"Storico");screenshot(a.window.decorView,"demo-storico-$theme.png")
+   click(a.window.decorView,"Altro");screenshot(a.window.decorView,"demo-impostazioni-$theme.png")
    controller.pause().stop().destroy()
   }
  }

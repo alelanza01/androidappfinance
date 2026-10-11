@@ -1,0 +1,29 @@
+Posso spenderlo? V2.1 — Verifica 11 ottobre 2026
+
+Comando eseguito: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+Build release firmata riuscita. 57 test superati, nessun fallimento/errore/test saltato.
+it.privato.disponibile.v2.AdvanceTest: 11 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.AdvanceUiTest: 6 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.FinanceTest: 8 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.ReminderTest: 2 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.RenderingTest: 3 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.ResponsiveTest: 2 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.StoreTest: 13 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.UiTest: 12 test, 0 fallimenti, 0 errori, 0 saltati
+
+Lint debug: 0 errori; 19 avvisi: {'ViewConstructor': 1, 'SetTextI18n': 18}.
+V2 originale conservata e SHA-256 invariato. Firma dei due APK verificata con apksigner; certificati identici.
+Certificato SHA-256: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Application ID invariato: it.privato.disponibile.v2. versionCode 210 > 200, versionName 2.1.0.
+Permesso INTERNET assente; nessun servizio esterno aggiunto.
+Migrazione database schema 1 → 2: impostazioni, categorie, operazioni e serie conservate e confrontate nei test.
+Esempio 300 → 250 → 270 → 300 euro verificato; credito 50 → 30 → 0. Guadagni/spese personali non alterati.
+Rimborsi parziali/completi, limiti e cronologia, modifiche, eliminazioni, persistenza, backup formato 3 e importazione vecchio formato 2 verificati.
+UI: API 26 e 35 Robolectric. Storage API 28. Rendering grafico nativo API 35.
+Layout: larghezze 320/360/411 dp, font 150%; 320 dp anche con font 200%; entrambi i temi.
+Controlli: cinque elementi di navigazione separati, testi senza ellissi, calendario a sette colonne, area di sistema e tastiera rispettate.
+Screenshot DEMO generati dalla UI Android dei test e controllati visivamente; non fotografie di un telefono.
+Controllo visivo: dashboard, calendario, anticipi/dettaglio, storico, grafici anello/area/colonne, impostazioni, temi e schermate piccole.
+Nessun test di installazione o uso su telefono fisico viene dichiarato. Installazione finale a cura del proprietario.
+Chiave/password escluse dal repository e dagli archivi dei sorgenti. Il precedente backup privato della firma resta solo nell’ambiente.
+Avvisi giornalieri preesistenti conservati; la puntualità su dispositivo non è stata verificata.

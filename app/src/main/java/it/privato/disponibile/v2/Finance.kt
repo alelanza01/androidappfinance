@@ -29,10 +29,18 @@ data class Series(val id:Long=0,val title:String,val cents:Long,val kind:Kind,va
     fun date(index:Int):LocalDate=when(frequency) {Frequency.MONTHLY->start.plusMonths(index.toLong());Frequency.WEEKLY->start.plusWeeks(index.toLong());Frequency.YEARLY->start.plusYears(index.toLong())}
 }
 data class Settings(val opening:Long=0,val reserve:Long=0,val horizon:LocalDate=LocalDate.now().plusDays(30),val theme:String="system",val reminders:Boolean=false)
-data class Ledger(val settings:Settings,val categories:List<Category>,val operations:List<Operation>,val series:List<Series>) {
+data class Advance(val id:Long=0,val cents:Long,val date:LocalDate,val description:String,val debtor:String,val project:String="",val cause:String="",val due:LocalDate?=null,val notes:String="")
+data class Refund(val id:Long=0,val advance:Long,val cents:Long,val date:LocalDate,val note:String="")
+data class CashEvent(val date:LocalDate,val signed:Long)
+data class Ledger(val settings:Settings,val categories:List<Category>,val operations:List<Operation>,val series:List<Series>,val advances:List<Advance> = emptyList(),val refunds:List<Refund> = emptyList()) {
     val actual get()=operations.filter {it.status==Status.ACTUAL}
     val pending get()=operations.filter {it.status==Status.PLANNED}.sortedWith(compareBy({it.date},{it.id}))
-    val balance get()=settings.opening+actual.sumOf {it.signed}
+    val cashEvents get()=actual.map {CashEvent(it.date,it.signed)}+advances.map {CashEvent(it.date,-it.cents)}+refunds.map {CashEvent(it.date,it.cents)}
+    val balance get()=settings.opening+cashEvents.sumOf {it.signed}
+    fun recovered(id:Long)=refunds.filter {it.advance==id}.sumOf {it.cents}
+    fun remaining(a:Advance)=a.cents-recovered(a.id)
+    val outstanding get()=advances.sumOf {remaining(it)}
+    fun advanceStatus(a:Advance)=when {remaining(a)==0L->"Recuperato";a.due!=null && a.due<LocalDate.now()->"Scaduto";recovered(a.id)>0->"Parziale";else->"Aperto"}
     val commitments get()=pending.filter {it.kind==Kind.EXPENSE && !it.date.isAfter(settings.horizon)}.sumOf {it.cents}
     val expectedIncome get()=pending.filter {it.kind==Kind.INCOME && !it.date.isAfter(settings.horizon)}.sumOf {it.cents}
     val spendable get()=balance-settings.reserve-commitments
@@ -41,7 +49,7 @@ data class Ledger(val settings:Settings,val categories:List<Category>,val operat
     fun categoryName(id:Long)=categories.firstOrNull {it.id==id}?.name ?: "Senza categoria"
     fun history():List<Pair<LocalDate,Long>> {
         var b=settings.opening
-        val events=actual.groupBy {it.date}.toSortedMap()
+        val events=cashEvents.groupBy {it.date}.toSortedMap()
         val start=events.keys.firstOrNull() ?: LocalDate.now()
         val points=mutableListOf(start.minusDays(1) to b)
         events.forEach {(date,items)->b+=items.sumOf {it.signed};points.add(date to b)}

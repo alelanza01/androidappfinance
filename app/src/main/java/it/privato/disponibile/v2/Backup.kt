@@ -16,16 +16,18 @@ object Backup {
     const val LIMIT=5*1024*1024
     fun encode(l:Ledger):String {
         val s=l.settings
-        val root=JSONObject().put("format","posso-spenderlo").put("version",2).put("settings",JSONObject().put("opening",s.opening).put("reserve",s.reserve).put("horizon",s.horizon).put("theme",s.theme).put("reminders",s.reminders))
+        val root=JSONObject().put("format","posso-spenderlo").put("version",3).put("settings",JSONObject().put("opening",s.opening).put("reserve",s.reserve).put("horizon",s.horizon).put("theme",s.theme).put("reminders",s.reminders))
         root.put("categories",JSONArray().apply {l.categories.forEach {put(JSONObject().put("id",it.id).put("name",it.name).put("color",it.color))}})
         root.put("series",JSONArray().apply {l.series.forEach {s->put(JSONObject().put("id",s.id).put("title",s.title).put("cents",s.cents).put("kind",s.kind.name).put("category",s.category).put("start",s.start).put("frequency",s.frequency.name).put("count",s.count).put("uncertain",s.uncertain).put("active",s.active))}})
         root.put("operations",JSONArray().apply {l.operations.forEach {o->put(JSONObject().put("id",o.id).put("title",o.title).put("cents",o.cents).put("kind",o.kind.name).put("status",o.status.name).put("date",o.date).put("category",o.category).put("uncertain",o.uncertain).put("series",o.series ?: JSONObject.NULL).put("index",o.index ?: JSONObject.NULL))}})
+        root.put("advances",JSONArray().apply {l.advances.forEach {a->put(JSONObject().put("id",a.id).put("cents",a.cents).put("date",a.date).put("description",a.description).put("debtor",a.debtor).put("project",a.project).put("cause",a.cause).put("due",a.due ?: JSONObject.NULL).put("notes",a.notes))}})
+        root.put("refunds",JSONArray().apply {l.refunds.forEach {r->put(JSONObject().put("id",r.id).put("advance",r.advance).put("cents",r.cents).put("date",r.date).put("note",r.note))}})
         return root.toString(2)
     }
     fun decode(text:String):Ledger {
         require(text.toByteArray(Charsets.UTF_8).size<=LIMIT) {"Backup troppo grande (massimo 5 MB)."}
         val r=JSONObject(text)
-        require(r.getString("format")=="posso-spenderlo" && r.intStrict("version")==2) {"Formato backup non supportato."}
+        require(r.getString("format")=="posso-spenderlo" && r.intStrict("version") in 2..3) {"Formato backup non supportato."}
         val j=r.getJSONObject("settings")
         val settings=Settings(j.longStrict("opening"),j.longStrict("reserve"),LocalDate.parse(j.getString("horizon")),j.getString("theme"),j.getBoolean("reminders"))
         require(settings.opening in -Money.MAX..Money.MAX && settings.reserve in 0..Money.MAX && settings.theme in listOf("light","dark","system") && settings.horizon.year in 1900..2200 && settings.horizon<=LocalDate.now().plusYears(10))
@@ -49,6 +51,12 @@ object Backup {
         require(operations.map {it.id}.distinct().size==operations.size)
         val occurrences=operations.filter {it.series!=null}.map {it.series to it.index}
         require(occurrences.distinct().size==occurrences.size) {"Scadenze duplicate nel backup."}
-        return Ledger(settings,categories,operations,series)
+        val advances=if(r.intStrict("version")==2)emptyList() else array("advances",10000).map {a->Advance(a.longStrict("id"),a.longStrict("cents"),LocalDate.parse(a.getString("date")),a.getString("description"),a.getString("debtor"),a.getString("project"),a.getString("cause"),if(a.isNull("due"))null else LocalDate.parse(a.getString("due")),a.getString("notes"))}
+        val refunds=if(r.intStrict("version")==2)emptyList() else array("refunds",20000).map {a->Refund(a.longStrict("id"),a.longStrict("advance"),a.longStrict("cents"),LocalDate.parse(a.getString("date")),a.getString("note"))}
+        require(advances.all {it.id>0} && advances.map {it.id}.distinct().size==advances.size)
+        require(refunds.all {it.id>0} && refunds.map {it.id}.distinct().size==refunds.size)
+        advances.forEach {a->Store.validateAdvance(a);require(refunds.filter {it.advance==a.id}.sumOf {it.cents}<=a.cents) {"Rimborsi superiori all'anticipo."}}
+        refunds.forEach {refund->val a=advances.firstOrNull {it.id==refund.advance} ?: error("Rimborso senza anticipo.");Store.validateRefund(refund,a)}
+        return Ledger(settings,categories,operations,series,advances,refunds)
     }
 }

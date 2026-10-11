@@ -27,6 +27,12 @@ class MainActivity:Activity() {
     private var filter=0
     private var categoryFilter:Long?=null
     private var selectedDay:LocalDate?=null
+    private var advanceSubject=""
+    private var advanceProject=""
+    private var advanceFiltersOpen=false
+    private var advanceQuery=""
+    private var advanceFilter=0
+    private var advanceMonth=false
     private var demo=false
     private var exportPrevious=false
     private val dates=DateTimeFormatter.ofPattern("d MMM yyyy",Locale.ITALY)
@@ -55,6 +61,7 @@ class MainActivity:Activity() {
         try {l=if(demo) Demo.ledger(store.snapshot().settings.theme) else store.snapshot()} catch(e:Exception) {fail(e);return}
         ui=Design(this,Palette.of(this,l.settings.theme))
         val c=ui.colors
+        if(android.os.Build.VERSION.SDK_INT>=30)window.setDecorFitsSystemWindows(false)
         window.statusBarColor=c.background;window.navigationBarColor=c.card
         window.decorView.systemUiVisibility=if(c.dark) 0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or (if(android.os.Build.VERSION.SDK_INT>=27) View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else 0)
         val root=ui.column().apply {setBackgroundColor(c.background)}
@@ -65,16 +72,27 @@ class MainActivity:Activity() {
         }
         val header=ui.column().apply {setPadding(ui.dp(20),ui.dp(18),ui.dp(20),ui.dp(8))}
         header.addView(ui.label(if(demo) "DEMO · DATI DIMOSTRATIVI" else "POSSO SPENDERLO?",11f,c.muted,true))
-        header.addView(ui.label(listOf("Il tuo margine","Una vista più chiara","Le prossime scadenze","I tuoi movimenti","Il tuo spazio")[page],27f,c.text,true))
+        header.addView(ui.label(listOf("Il tuo margine","Analisi","Calendario","Movimenti","Il tuo spazio","Anticipi")[page],25f,c.text,true))
         root.addView(header)
         val scroll=ScrollView(this).apply {isFillViewport=true;clipToPadding=false}
         val content=ui.column().apply {setPadding(ui.dp(20),ui.dp(8),ui.dp(20),ui.dp(18))}
-        when(page) {0->dashboard(content);1->insights(content);2->calendar(content);3->history(content);4->settings(content)}
+        when(page) {0->dashboard(content);1->insights(content);2->calendar(content);3->history(content);4->settings(content);5->advancesPage(content)}
         scroll.addView(content);root.addView(scroll,LinearLayout.LayoutParams(-1,0,1f))
-        if(page!=4)root.addView(ui.button(if(demo) "Esci dalla demo" else "+ Nuova operazione",true) {if(demo){demo=false;render()}else editor(null)}.apply {layoutParams=LinearLayout.LayoutParams(-1,-2).apply {setMargins(ui.dp(20),0,ui.dp(20),ui.dp(10))}})
-        val nav=ui.row().apply {setBackgroundColor(c.card);setPadding(ui.dp(4),ui.dp(4),ui.dp(4),ui.dp(4))}
-        listOf("Oggi","Grafici","Scadenze","Storico","Altro").forEachIndexed {i,name->
-            nav.addView(ui.button(name) {page=i;render()}.apply {textSize=11f;setPadding(0,0,0,0);setTextColor(if(page==i)c.sage else c.muted);layoutParams=LinearLayout.LayoutParams(0,ui.dp(52),1f);background=ui.shape(if(page==i)c.background else c.card,12)})
+        if(page!=4)root.addView(ui.button(if(demo) "Esci dalla demo" else if(page==5) "Nuovo anticipo" else "+ Nuova operazione",true) {if(demo){demo=false;render()}else if(page==5)advanceEditor(null) else editor(null)}.apply {layoutParams=LinearLayout.LayoutParams(-1,-2).apply {setMargins(ui.dp(20),ui.dp(4),ui.dp(20),ui.dp(6))}})
+        root.addView(ui.divider().apply {layoutParams=LinearLayout.LayoutParams(-1,ui.dp(1))})
+        val nav=ui.row().apply {setBackgroundColor(c.background);setPadding(ui.dp(2),ui.dp(6),ui.dp(2),ui.dp(6));gravity=Gravity.TOP}
+        listOf("Oggi","Grafici","Agenda","Storico","Altro").forEachIndexed {i,name->
+            val item=ui.column();val active=page==i || (page==5 && i==4)
+            item.addView(View(this).apply {background=ui.shape(if(active)c.gold else Color.TRANSPARENT,2);layoutParams=LinearLayout.LayoutParams(ui.dp(20),ui.dp(3)).apply {gravity=Gravity.CENTER_HORIZONTAL;bottomMargin=ui.dp(4)}})
+            item.addView(ui.button(name) {page=i;render()}.apply {
+                textSize=10f;setPadding(ui.dp(1),ui.dp(3),ui.dp(1),ui.dp(3));setTextColor(if(active)c.text else c.muted)
+                if(active)setTypeface(null,android.graphics.Typeface.BOLD)
+                setCompoundDrawablesWithIntrinsicBounds(null,NavIcon(i,if(active)c.text else c.muted,ui.dp(21)),null,null);compoundDrawablePadding=ui.dp(5)
+                maxLines=1;ellipsize=android.text.TextUtils.TruncateAt.END
+                setAutoSizeTextTypeUniformWithConfiguration(8,10,1,android.util.TypedValue.COMPLEX_UNIT_SP)
+                layoutParams=LinearLayout.LayoutParams(-1,-2);background=ui.shape(Color.TRANSPARENT,0)
+                contentDescription="$name${if(active) ", sezione attiva" else ""}";isSelected=active
+            });nav.addView(item,LinearLayout.LayoutParams(0,-2,1f))
         }
         root.addView(nav);setContentView(root);root.requestApplyInsets()
     }
@@ -84,24 +102,27 @@ class MainActivity:Activity() {
     private fun dashboard(body:LinearLayout) {
         val c=ui.colors
         val hero=ui.card(c.navy)
-        hero.addView(ui.label("REALMENTE SPENDIBILE",11f,c.gold,true))
-        hero.addView(ui.label(Money.format(l.spendable),39f,if(l.spendable<0) Color.parseColor("#F3AAA3") else Color.WHITE,true))
+        hero.addView(ui.label("PUOI SPENDERE",11f,c.gold,true))
+        hero.addView(ui.label(Money.format(l.spendable),36f,if(l.spendable<0) Color.parseColor("#F3AAA3") else Color.WHITE,true))
         hero.addView(ui.label("Fino al ${l.settings.horizon.format(dates)}",14f,Color.parseColor("#C1CBDA")))
-        hero.addView(ui.label("Liquidità − uscite previste − riserva. Le entrate future non sono denaro già disponibile.",14f,Color.parseColor("#D5DCE8")))
+        hero.addView(ui.label("Al netto di impegni e riserva",13f,Color.parseColor("#D5DCE8")))
         body.addView(hero)
-        val cash=ui.card();metric(cash,"Liquidità attuale",Money.format(l.balance));metric(cash,"Uscite ancora da pagare",Money.format(l.commitments),c.coral);metric(cash,"Riserva personale protetta",Money.format(l.settings.reserve),c.sage)
+        val cash=ui.card();summaryLine(cash,"Liquidità",Money.format(l.balance));summaryLine(cash,"Impegni entro la previsione",Money.format(l.commitments),c.coral);summaryLine(cash,"Riserva protetta",Money.format(l.settings.reserve),c.sage)
         cash.addView(ui.button("Come viene calcolato?") {AlertDialog.Builder(this).setTitle("Un margine prudente").setMessage("Liquidità: saldo iniziale più entrate incassate meno uscite pagate, con eventuali rettifiche.\n\nSpendibile: liquidità meno tutte le uscite ancora da pagare entro ${l.settings.horizon.format(dates)}, comprese quelle arretrate, meno la riserva.\n\nEntrate previste: ${Money.format(l.expectedIncome)}. Sono mostrate solo nella proiezione, anche se le ritieni probabili.").setPositiveButton("Chiaro",null).show()})
         body.addView(cash)
+        body.addView(ui.divider())
+        val recover=ui.card();summaryLine(recover,"Da recuperare",Money.format(l.outstanding),c.sage)
+        recover.addView(ui.button("Anticipi da recuperare") {page=5;render()});recover.addView(ui.button("Nuovo anticipo") {advanceEditor(null)});body.addView(recover)
         val next=l.pending.firstOrNull {it.kind==Kind.EXPENSE}
         val warning=ui.card()
-        warning.addView(ui.label(if(l.spendable<0) "Attenzione al margine" else "La prossima cosa da ricordare",18f,if(l.spendable<0)c.coral else c.text,true))
+        warning.addView(ui.label(if(l.spendable<0) "Attenzione al margine" else "Prossima scadenza",18f,if(l.spendable<0)c.coral else c.text,true))
         if(l.spendable<0)warning.addView(ui.label("Mancano ${Money.format(-l.spendable)} per coprire impegni e riserva entro la previsione.",14f,c.coral))
         warning.addView(ui.label(next?.let {"${it.title}\n${it.date.format(dates)} · ${Money.format(it.cents)}"} ?: "Nessuna scadenza registrata. Aggiungi i prossimi pagamenti per rendere utile la previsione.",15f,c.muted))
         if(next!=null)warning.addView(ui.button("Apri scadenza") {manage(next)})
         val critical=l.projection(false).firstOrNull {it.second<l.settings.reserve}
         if(critical!=null)warning.addView(ui.label("Senza nuove entrate, sotto la riserva dal ${critical.first.format(dates)}.",13f,c.coral))
         body.addView(warning)
-        val simulation=ui.card();simulation.addView(ui.label("E se spendessi…",21f,c.text,true));simulation.addView(ui.label("Una simulazione, senza salvare un movimento.",13f,c.muted))
+        val simulation=ui.card(ui.colors.card).apply {background=ui.shape(ui.colors.card,12);setPadding(ui.dp(16),ui.dp(14),ui.dp(16),ui.dp(14))};simulation.addView(ui.label("E se spendessi…",21f,c.text,true));simulation.addView(ui.label("Una simulazione, senza salvare un movimento.",13f,c.muted))
         val field=ui.input("Importo in euro",money=true);simulation.addView(field)
         val result=ui.label("Inserisci un importo per vedere quanto resterebbe.",17f,c.muted,true);simulation.addView(result)
         field.addTextChangedListener(object:TextWatcher {
@@ -147,21 +168,41 @@ class MainActivity:Activity() {
     }
     private fun calendar(body:LinearLayout) {
         monthControls(body)
-        val calendar=ui.card();calendar.addView(ui.label("L  M  M  G  V  S  D",15f,ui.colors.muted,true).apply {gravity=android.view.Gravity.CENTER})
-        val start=month.atDay(1);val offset=start.dayOfWeek.value-1;var row=ui.row()
+        val calendar=ui.column().apply {setPadding(0,ui.dp(12),0,ui.dp(16))}
+        val week=ui.row();listOf("L","M","M","G","V","S","D").forEach {name->week.addView(ui.label(name,12f,ui.colors.muted,true).apply {gravity=Gravity.CENTER;layoutParams=LinearLayout.LayoutParams(0,ui.dp(32),1f)})};calendar.addView(week)
+        val start=month.atDay(1);val offset=start.dayOfWeek.value-1
         val count=((offset+month.lengthOfMonth()+6)/7)*7
+        var row=ui.row()
         for(i in 0 until count) {
             if(i%7==0){row=ui.row();calendar.addView(row)}
             val day=i-offset+1
-            if(day !in 1..month.lengthOfMonth()){row.addView(ui.label("").apply {layoutParams=LinearLayout.LayoutParams(0,ui.dp(46),1f)});continue}
-            val date=month.atDay(day);val has=l.pending.any {it.date==date}
-            row.addView(ui.button(day.toString()+if(has) "•" else "") {selectedDay=if(selectedDay==date)null else date;render()}.apply {textSize=12f;setPadding(0,0,0,0);minWidth=0;layoutParams=LinearLayout.LayoutParams(0,ui.dp(46),1f);background=ui.shape(if(selectedDay==date)ui.colors.line else ui.colors.card,10);setTextColor(if(has)ui.colors.sage else ui.colors.text)})
+            if(day !in 1..month.lengthOfMonth()){row.addView(View(this),LinearLayout.LayoutParams(0,ui.dp(48),1f));continue}
+            val date=month.atDay(day);val has=l.pending.any {it.date==date};val credit=l.advances.any {it.due==date && l.remaining(it)>0}
+            val selected=selectedDay==date
+            val cell=object:Button(this) {
+                private val dotPaint=android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+                override fun onDraw(canvas:android.graphics.Canvas) {
+                    super.onDraw(canvas)
+                    if(has || credit) {dotPaint.color=if(selected)ui.colors.gold else if(has)ui.colors.sage else ui.colors.gold;canvas.drawCircle(width/2f,height-ui.dp(7).toFloat(),ui.dp(2).toFloat(),dotPaint)}
+                }
+            }.apply {
+                text=day.toString();textSize=14f;includeFontPadding=false;gravity=Gravity.CENTER
+                minWidth=0;minimumWidth=0;minHeight=0;minimumHeight=0;setPadding(0,0,0,ui.dp(4));maxLines=1
+                setTextColor(if(selected)Color.WHITE else ui.colors.text)
+                background=ui.shape(if(selected)ui.colors.navy else Color.TRANSPARENT,8)
+                contentDescription="${date.format(dates)}${if(has) ", scadenze presenti" else ""}${if(credit) ", restituzione prevista non garantita" else ""}"
+                isSelected=selected
+                setOnClickListener {selectedDay=if(selectedDay==date)null else date;render()}
+            }
+            row.addView(cell,LinearLayout.LayoutParams(0,ui.dp(48),1f).apply {setMargins(ui.dp(2),ui.dp(2),ui.dp(2),ui.dp(2))})
         }
         body.addView(calendar)
         body.addView(ui.label(selectedDay?.let {"Scadenze del ${it.format(dates)}"} ?: "Scadenze del mese",20f,ui.colors.text,true))
         if(selectedDay!=null)body.addView(ui.button("Mostra tutto il mese") {selectedDay=null;render()})
         val pending=l.pending.filter {if(selectedDay!=null)it.date==selectedDay else YearMonth.from(it.date)==month}
         if(pending.isEmpty())empty(body,"Un po' di respiro","Nessuna scadenza in questo periodo.") else pending.forEach {operationCard(body,it)}
+        val credits=l.advances.filter {l.remaining(it)>0 && it.due!=null && (if(selectedDay!=null)it.due==selectedDay else YearMonth.from(it.due)==month)}
+        if(credits.isNotEmpty()) {body.addView(ui.label("Restituzioni attese · non garantite",16f,ui.colors.muted,true));credits.forEach {advanceRow(body,it)}}
         val overdue=l.pending.filter {it.kind==Kind.EXPENSE && it.date<LocalDate.now() && YearMonth.from(it.date)!=month}
         if(overdue.isNotEmpty()) {body.addView(ui.label("Arretrati fuori dal mese",18f,ui.colors.coral,true));overdue.forEach {operationCard(body,it)}}
         val series=l.series.filter {it.active}
@@ -171,33 +212,51 @@ class MainActivity:Activity() {
         }
     }
     private fun empty(body:LinearLayout,title:String,message:String) {val card=ui.card();card.addView(ui.label(title,21f,ui.colors.text,true));card.addView(ui.label(message,15f,ui.colors.muted));body.addView(card)}
+    private fun summaryLine(body:LinearLayout,title:String,value:String,color:Int=ui.colors.text,emphasis:Boolean=false) {
+        val row=ui.row().apply {gravity=Gravity.TOP;setPadding(0,ui.dp(6),0,ui.dp(6))}
+        row.addView(ui.label(title,if(emphasis)15f else 14f,if(emphasis)ui.colors.text else ui.colors.muted,emphasis).apply {layoutParams=LinearLayout.LayoutParams(0,-2,1f)})
+        row.addView(ui.label(value,17f,color,true).apply {gravity=Gravity.END;layoutParams=LinearLayout.LayoutParams(0,-2,1f)})
+        body.addView(row)
+    }
     private fun operationCard(body:LinearLayout,o:Operation) {
-        val card=ui.card();val color=if(o.kind==Kind.EXPENSE)ui.colors.coral else if(o.kind==Kind.INCOME)ui.colors.sage else ui.colors.muted
-        card.addView(ui.label(o.title,17f,ui.colors.text,true));card.addView(ui.label((if(o.kind==Kind.EXPENSE) "− " else if(o.signed>=0) "+ " else "")+Money.format(o.cents),23f,color,true))
+        val section=ui.card();val color=if(o.kind==Kind.EXPENSE)ui.colors.coral else if(o.kind==Kind.INCOME)ui.colors.sage else ui.colors.muted
+        summaryLine(section,o.title,(if(o.kind==Kind.EXPENSE) "− " else if(o.signed>=0) "+ " else "")+Money.format(o.cents),color,true)
         val status=if(o.status==Status.ACTUAL) "effettuata" else if(o.date<LocalDate.now()) "prevista · arretrata" else "prevista"
-        card.addView(ui.label("${o.date.format(dates)} · ${l.categoryName(o.category)}\n$status${if(o.uncertain) " · entrata non garantita" else ""}",13f,ui.colors.muted))
-        card.addView(ui.button("Gestisci") {manage(o)});body.addView(card)
+        section.addView(ui.label("${o.date.format(dates)} · ${l.categoryName(o.category)} · $status${if(o.uncertain) " · non garantita" else ""}",12f,ui.colors.muted))
+        section.addView(ui.button("Gestisci") {manage(o)}.apply {gravity=Gravity.START;setPadding(0,ui.dp(6),0,ui.dp(6))})
+        section.addView(ui.divider());body.addView(section)
     }
     private fun history(body:LinearLayout) {
-        val search=ui.input("Cerca descrizione o categoria",query);body.addView(search)
-        val controls=ui.card();val filters=listOf("Tutte","Effettuate","Previste","Entrate","Uscite")
+        val search=ui.input("Cerca movimenti",query);body.addView(search)
+        val controls=ui.card();val filters=listOf("Tutte","Effettuate","Previste","Entrate","Uscite","Anticipi e rimborsi")
         val status=ui.spinner(filters,filter);controls.addView(status)
         val cats=listOf("Tutte le categorie")+l.categories.map {it.name};val cat=ui.spinner(cats,if(categoryFilter==null)0 else l.categories.indexOfFirst {it.id==categoryFilter}+1);controls.addView(cat)
         body.addView(controls)
         val results=ui.column();body.addView(results)
         fun update() {
             results.removeAllViews()
-            val list=l.operations.filter {it.status!=Status.DELETED && (query.isBlank() || (it.title+" "+l.categoryName(it.category)).contains(query,true)) && (categoryFilter==null || it.category==categoryFilter) && when(filter){1->it.status==Status.ACTUAL;2->it.status==Status.PLANNED;3->it.kind==Kind.INCOME;4->it.kind==Kind.EXPENSE;else->true}}.sortedWith(compareByDescending<Operation>{it.date}.thenByDescending {it.id})
-            results.addView(ui.label("${list.size} operazioni",13f,ui.colors.muted))
-            if(list.isEmpty())empty(results,"Qui inizia la tua storia","Nessuna operazione corrisponde alla ricerca.")
-            list.take(300).forEach {operationCard(results,it)}
+            val list=l.operations.filter {it.status!=Status.DELETED && (query.isBlank() || (it.title+" "+l.categoryName(it.category)).contains(query,true)) && (categoryFilter==null || it.category==categoryFilter) && when(filter){1->it.status==Status.ACTUAL;2->it.status==Status.PLANNED;3->it.kind==Kind.INCOME;4->it.kind==Kind.EXPENSE;5->false;else->true}}.sortedWith(compareByDescending<Operation>{it.date}.thenByDescending {it.id})
+            results.addView(ui.label("${list.size} operazioni personali",13f,ui.colors.muted))
+            val moneyEvents=if(filter in listOf(0,1,5) && categoryFilter==null) l.advances.flatMap {a->
+                listOf(HistoryCredit(a.date,-a.cents,"Anticipo · ${a.description}",a.debtor,a))+l.refunds.filter {it.advance==a.id}.map {r->HistoryCredit(r.date,r.cents,"Rimborso · ${a.description}",a.debtor,a)}
+            }.filter {query.isBlank() || (it.title+" "+it.debtor+" "+it.advance.project).contains(query,true)} else emptyList()
+            if(list.isEmpty() && moneyEvents.isEmpty())empty(results,"Qui inizia la tua storia","Nessuna operazione corrisponde alla ricerca.")
+            (list.map {it.date to it}+moneyEvents.map {it.date to it}).sortedByDescending {it.first}.take(300).forEach {(_,event)->
+                if(event is Operation)operationCard(results,event) else if(event is HistoryCredit) {
+                    val section=ui.card();summaryLine(section,event.title,(if(event.cents<0)"− " else "+ ")+Money.format(kotlin.math.abs(event.cents)),if(event.cents<0)ui.colors.coral else ui.colors.sage)
+                    section.addView(ui.label("${event.date.format(dates)} · ${event.debtor} · ${if(event.cents<0) "credito da recuperare, escluso dalle spese" else "restituzione, esclusa dai guadagni"}",12f,ui.colors.muted))
+                    section.addView(ui.button("Apri anticipo") {advanceDetail(event.advance)});section.addView(ui.divider());results.addView(section)
+                }
+            }
             if(list.size>300)results.addView(ui.label("Mostrate le prime 300 operazioni: restringi ricerca o filtri.",13f,ui.colors.muted))
         }
         search.addTextChangedListener(object:TextWatcher {override fun beforeTextChanged(s:CharSequence?,a:Int,b:Int,c:Int)=Unit;override fun afterTextChanged(s:Editable?)=Unit;override fun onTextChanged(s:CharSequence?,a:Int,b:Int,c:Int){query=s.toString();update()}})
         status.onItemSelectedListener=selection {i->filter=i;update()};cat.onItemSelectedListener=selection {i->categoryFilter=if(i==0)null else l.categories[i-1].id;update()};update()
     }
     private fun selection(action:(Int)->Unit)=object:AdapterView.OnItemSelectedListener {override fun onNothingSelected(parent:AdapterView<*>?)=Unit;override fun onItemSelected(parent:AdapterView<*>?,v:View?,position:Int,id:Long){action(position)}}
+    private data class HistoryCredit(val date:LocalDate,val cents:Long,val title:String,val debtor:String,val advance:Advance)
     private fun settings(body:LinearLayout) {
+        body.addView(ui.button("Anticipi da recuperare") {page=5;render()})
         val money=ui.card();money.addView(ui.label("Le tue regole",21f,ui.colors.text,true));metric(money,"Liquidità iniziale, prima dei movimenti",Money.format(l.settings.opening));metric(money,"Riserva minima",Money.format(l.settings.reserve));money.addView(ui.button("Modifica liquidità iniziale") {moneyDialog("Liquidità iniziale",l.settings.opening,true){store.settings(l.settings.copy(opening=it))}});money.addView(ui.button("Riserva e data di previsione") {reserveDialog()});body.addView(money)
         val look=ui.card();look.addView(ui.label("Un tema per ogni momento",21f,ui.colors.text,true));listOf("system" to "Come il telefono","light" to "Chiaro","dark" to "Scuro").forEach {(theme,title)->look.addView(ui.button((if(l.settings.theme==theme)"✓ " else "")+title) {change {store.settings(l.settings.copy(theme=theme))};if(!demo)recreate()})};body.addView(look)
         val categories=ui.card();categories.addView(ui.label("Le tue categorie",21f,ui.colors.text,true));l.categories.forEach {cat->categories.addView(ui.button("● ${cat.name}") {categoryDialog(cat)}.apply {
@@ -222,7 +281,7 @@ class MainActivity:Activity() {
     private fun showForm(title:String,body:LinearLayout,save:()->Unit) {
         val scroll=ScrollView(this);scroll.addView(body)
         val d=AlertDialog.Builder(this).setTitle(title).setView(scroll).setNegativeButton("Annulla",null).setPositiveButton("Salva",null).create()
-        dialog=d;d.setOnShowListener {d.getButton(-1).setOnClickListener {
+        d.window?.setBackgroundDrawable(ui.shape(ui.colors.card,16));dialog=d;d.setOnShowListener {d.getButton(-1).setOnClickListener {
             if(demo){Toast.makeText(this,"Esci dalla demo per salvare.",Toast.LENGTH_LONG).show();return@setOnClickListener}
             try {save();d.dismiss();render()}catch(e:Exception){fail(e)}
         }};d.show()
@@ -292,6 +351,103 @@ class MainActivity:Activity() {
         if(category!=null)body.addView(ui.button("Elimina categoria") {val parentDialog=dialog;confirm("Eliminare ${category.name}?","È possibile solo se non è usata da operazioni o ricorrenze attive.") {store.deleteCategory(category.id);parentDialog?.dismiss()}})
         showForm(if(category==null) "Nuova categoria" else "Modifica categoria",body) {store.category(category?.id,name.text.toString(),colors[picker.selectedItemPosition])}
     }
+    private fun advancesPage(body:LinearLayout) {
+        val heading=ui.card();heading.addView(ui.label("ANCORA DA RECUPERARE",11f,ui.colors.muted,true));heading.addView(ui.label(Money.format(l.outstanding),34f,ui.colors.text,true))
+        heading.addView(ui.label("${l.advances.count {l.remaining(it)>0}} aperti · ${l.advances.count {l.remaining(it)==0L}} recuperati",13f,ui.colors.muted));body.addView(heading)
+        val search=ui.input("Cerca anticipi",advanceQuery);body.addView(search)
+        val filtersBody=ui.column().apply {visibility=if(advanceFiltersOpen)View.VISIBLE else View.GONE}
+        body.addView(ui.button("Filtri anticipi") {advanceFiltersOpen=!advanceFiltersOpen;filtersBody.visibility=if(advanceFiltersOpen)View.VISIBLE else View.GONE})
+        val subjects=ui.input("Filtra per soggetto",advanceSubject);filtersBody.addView(subjects)
+        val projects=ui.input("Filtra per immobile o progetto",advanceProject);filtersBody.addView(projects)
+        val state=ui.spinner(listOf("Tutti gli stati","Aperti (anche parziali)","Parzialmente recuperati","Recuperati","Scaduti"),advanceFilter);filtersBody.addView(state)
+        val periodSelector=ui.spinner(listOf("Tutto il periodo","Anticipati nel mese selezionato"),if(advanceMonth)1 else 0);filtersBody.addView(periodSelector)
+        body.addView(filtersBody)
+        if(advanceMonth)monthControls(body)
+        val results=ui.column();body.addView(results)
+        fun update() {
+            results.removeAllViews()
+            val found=l.advances.filter {a->
+                (advanceQuery.isBlank() || (a.description+" "+a.cause).contains(advanceQuery,true)) &&
+                (subjects.text.isNullOrBlank() || a.debtor.contains(subjects.text.toString(),true)) &&
+                (projects.text.isNullOrBlank() || a.project.contains(projects.text.toString(),true)) &&
+                (!advanceMonth || YearMonth.from(a.date)==month) && when(advanceFilter) {
+                    1->l.remaining(a)>0;2->l.recovered(a.id)>0 && l.remaining(a)>0;3->l.remaining(a)==0L;4->l.remaining(a)>0 && a.due!=null && a.due<LocalDate.now();else->true
+                }
+            }.sortedByDescending {it.date}
+            val filtered=advanceQuery.isNotBlank() || advanceSubject.isNotBlank() || advanceProject.isNotBlank() || advanceFilter!=0 || advanceMonth
+            results.addView(ui.label("${found.size} anticipi${if(filtered) " · residuo ${Money.format(found.sumOf {l.remaining(it)})}" else ""}",13f,ui.colors.muted))
+            if(found.isEmpty())empty(results,"Nessun anticipo","Registra ciò che hai pagato per conto di qualcuno. Resterà distinto dalle tue spese personali.")
+            found.take(300).forEach {advanceRow(results,it)}
+            if(found.size>300)results.addView(ui.label("Mostrati i primi 300: restringi i filtri.",13f,ui.colors.muted))
+        }
+        fun watch(field:EditText,action:()->Unit) {field.addTextChangedListener(object:TextWatcher {
+            override fun beforeTextChanged(s:CharSequence?,start:Int,count:Int,after:Int)=Unit
+            override fun afterTextChanged(s:Editable?)=Unit
+            override fun onTextChanged(s:CharSequence?,start:Int,before:Int,count:Int){action();update()}
+        })}
+        watch(search){advanceQuery=search.text.toString()};watch(subjects){advanceSubject=subjects.text.toString()};watch(projects){advanceProject=projects.text.toString()}
+        state.onItemSelectedListener=selection {advanceFilter=it;update()}
+        periodSelector.onItemSelectedListener=selection {i->if(advanceMonth!=(i==1)){advanceMonth=i==1;render()}}
+        update()
+    }
+    private fun advanceRow(body:LinearLayout,a:Advance) {
+        val section=ui.card();summaryLine(section,a.description,Money.format(l.remaining(a)),if(l.advanceStatus(a)=="Scaduto")ui.colors.coral else ui.colors.text,true)
+        section.addView(ui.label("${a.debtor}${if(a.project.isNotBlank()) " · ${a.project}" else ""}",14f,ui.colors.muted))
+        section.addView(ui.label("${l.advanceStatus(a)} · ${a.date.format(dates)}${a.due?.let {" · atteso ${it.format(dates)}"} ?: ""}",12f,ui.colors.muted))
+        section.addView(ui.button("Apri anticipo") {advanceDetail(a)}.apply {gravity=Gravity.START;setPadding(0,ui.dp(6),0,ui.dp(6))});section.addView(ui.divider());body.addView(section)
+    }
+    private fun advanceEditor(existing:Advance?) {
+        val body=dialogBody()
+        body.addView(ui.label("Il denaro è già uscito: sarà sottratto dalla liquidità e registrato come credito, senza creare una spesa personale.",13f,ui.colors.muted))
+        val amount=ui.input("Importo anticipato in euro",existing?.let {Money.input(it.cents)} ?: "",true);body.addView(amount)
+        val description=ui.input("Descrizione",existing?.description ?: "");body.addView(description)
+        val debtor=ui.input("Chi deve restituirti il denaro?",existing?.debtor ?: "");body.addView(debtor)
+        var date=existing?.date ?: LocalDate.now();val dateButton=ui.button("Data: ${date.format(dates)}") {};dateButton.setOnClickListener {pick(date){date=it;dateButton.text="Data: ${date.format(dates)}"}};body.addView(dateButton)
+        val extra=ui.column().apply {visibility=if(existing!=null)View.VISIBLE else View.GONE}
+        body.addView(ui.button("Dettagli facoltativi") {extra.visibility=if(extra.visibility==View.VISIBLE)View.GONE else View.VISIBLE})
+        val project=ui.input("Immobile o progetto (facoltativo)",existing?.project ?: "");extra.addView(project)
+        val cause=ui.input("Categoria o causale (facoltativa)",existing?.cause ?: "");extra.addView(cause)
+        var due=existing?.due
+        val dueButton=ui.button(due?.let {"Restituzione attesa: ${it.format(dates)}"} ?: "Aggiungi data prevista di restituzione") {}
+        dueButton.setOnClickListener {pick(due ?: LocalDate.now()){due=it;dueButton.text="Restituzione attesa: ${it.format(dates)}"}};extra.addView(dueButton)
+        extra.addView(ui.button("Rimuovi data prevista") {due=null;dueButton.text="Aggiungi data prevista di restituzione"})
+        val notes=ui.input("Note (facoltative)",existing?.notes ?: "").apply {setSingleLine(false);maxLines=5;filters=arrayOf(android.text.InputFilter.LengthFilter(500))};extra.addView(notes)
+        extra.addView(ui.label("La data attesa serve come promemoria nel calendario: il credito non aumenta saldo o spendibile.",12f,ui.colors.muted));body.addView(extra)
+        showForm(if(existing==null)"Nuovo anticipo" else "Modifica anticipo",body) {
+            store.saveAdvance(Advance(existing?.id ?: 0,Money.parse(amount.text.toString()),date,description.text.toString(),debtor.text.toString(),project.text.toString(),cause.text.toString(),due,notes.text.toString()))
+        }
+    }
+    private fun refundEditor(a:Advance,existing:Refund?=null) {
+        val body=dialogBody();body.addView(ui.label("Credito residuo: ${Money.format(l.remaining(a))}. Registra soltanto denaro già ricevuto: non verrà conteggiato come guadagno.",13f,ui.colors.muted))
+        val amount=ui.input("Importo ricevuto in euro",existing?.let {Money.input(it.cents)} ?: "",true);body.addView(amount)
+        var date=existing?.date ?: LocalDate.now();val dateButton=ui.button("Data rimborso: ${date.format(dates)}") {};dateButton.setOnClickListener {pick(date){date=it;dateButton.text="Data rimborso: ${date.format(dates)}"}};body.addView(dateButton)
+        val note=ui.input("Nota (facoltativa)",existing?.note ?: "").apply {setSingleLine(false);maxLines=5;filters=arrayOf(android.text.InputFilter.LengthFilter(500))};body.addView(note)
+        showForm(if(existing==null)"Registra rimborso" else "Modifica rimborso",body) {store.saveRefund(Refund(existing?.id ?: 0,a.id,Money.parse(amount.text.toString()),date,note.text.toString()))}
+    }
+    private fun advanceDetail(a:Advance) {
+        val body=dialogBody();summaryLine(body,"Anticipato",Money.format(a.cents));summaryLine(body,"Restituito",Money.format(l.recovered(a.id)),ui.colors.sage);summaryLine(body,"Da recuperare",Money.format(l.remaining(a)))
+        body.addView(ui.label("${a.debtor} · ${l.advanceStatus(a)}",16f,ui.colors.text,true))
+        body.addView(ui.label("Anticipato il ${a.date.format(dates)}${a.due?.let {"\nRestituzione attesa il ${it.format(dates)} · non garantita"} ?: ""}",13f,ui.colors.muted))
+        if(a.project.isNotBlank())body.addView(ui.label("Progetto: ${a.project}",14f,ui.colors.muted))
+        if(a.cause.isNotBlank())body.addView(ui.label("Causale: ${a.cause}",14f,ui.colors.muted))
+        if(a.notes.isNotBlank())body.addView(ui.label(a.notes,14f,ui.colors.text))
+        val detail=AlertDialog.Builder(this).setTitle(a.description).setView(ScrollView(this).apply {addView(body)}).setPositiveButton("Chiudi",null).create()
+        if(l.remaining(a)>0)body.addView(ui.button("Registra rimborso",true) {detail.dismiss();refundEditor(a)})
+        body.addView(ui.button("Modifica anticipo") {detail.dismiss();advanceEditor(a)})
+        body.addView(ui.label("Storico dei rimborsi",18f,ui.colors.text,true))
+        val refunds=l.refunds.filter {it.advance==a.id}.sortedByDescending {it.date}
+        if(refunds.isEmpty())body.addView(ui.label("Nessun rimborso ricevuto.",14f,ui.colors.muted))
+        refunds.forEach {r->
+            body.addView(ui.button("${r.date.format(dates)} · ${Money.format(r.cents)}${if(r.note.isNotBlank()) "\n${r.note}" else ""}") {
+                detail.dismiss();AlertDialog.Builder(this).setTitle("Rimborso ${Money.format(r.cents)}").setItems(arrayOf("Modifica rimborso","Elimina rimborso")) {_,i->
+                    if(i==0)refundEditor(a,r) else confirm("Eliminare il rimborso?","La liquidità diminuirà di ${Money.format(r.cents)} e il credito residuo aumenterà della stessa somma."){store.deleteRefund(r.id)}
+                }.show()
+            })
+        }
+        body.addView(ui.button("Elimina anticipo") {detail.dismiss();confirm("Eliminare l'anticipo?","Verranno eliminati anche tutti i suoi rimborsi. Il saldo cambierà di ${Money.format(l.remaining(a))}. Usa questa azione soltanto per correggere una registrazione errata."){store.deleteAdvance(a.id)}})
+        dialog=detail;detail.show();detail.window?.setBackgroundDrawable(ui.shape(ui.colors.card,16))
+    }
+
     private fun export(previous:Boolean) {
         if(demo){Toast.makeText(this,"Esci dalla demo per esportare i tuoi dati.",Toast.LENGTH_LONG).show();return}
         exportPrevious=previous
@@ -315,7 +471,7 @@ class MainActivity:Activity() {
                     output.toString("UTF-8")
                 }
                 val imported=Backup.decode(text)
-                confirm("Sostituire i dati attuali?","Il backup contiene ${imported.operations.count {it.status!=Status.DELETED}} operazioni. Prima di sostituire i dati verrà salvata sul dispositivo una copia dell'archivio attuale, esportabile da Altro. Il backup deve provenire da una fonte fidata.") {
+                confirm("Sostituire i dati attuali?","Il backup contiene ${imported.operations.count {it.status!=Status.DELETED}} operazioni e ${imported.advances.size} anticipi. Prima di sostituire i dati verrà salvata sul dispositivo una copia dell'archivio attuale, esportabile da Altro. Il backup deve provenire da una fonte fidata.") {
                     val previous=Backup.encode(store.snapshot());val tmp=java.io.File(filesDir,"pre-import.tmp");tmp.writeText(previous)
                     check(tmp.renameTo(java.io.File(filesDir,"pre-import.json"))) {"Impossibile conservare la copia precedente: importazione annullata."}
                     store.replace(imported)

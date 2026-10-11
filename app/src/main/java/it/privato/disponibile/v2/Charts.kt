@@ -32,9 +32,11 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
             val sweep=n.toFloat()/total*360f;p.color=cat.color;p.strokeWidth=radius*(if(selected==i).37f else .28f)
             c.drawArc(rect,angle+.5f,max(0.5f,sweep-1f),false,p);angle+=sweep
         }
-        text(c,"USCITE",cx-20*font,cy-12*font,palette.muted,11f)
-        val sum=Money.format(total);p.textSize=18*font
-        text(c,sum,cx-p.measureText(sum)/2,cy+16*font,palette.text,18f)
+        val title="USCITE";p.textSize=11*font
+        text(c,title,cx-p.measureText(title)/2,cy-12*font,palette.muted,11f)
+        val sum=Money.format(total);var size=18f;p.textSize=size*font
+        while(p.measureText(sum)>radius*1.35f && size>10f){size-=.5f;p.textSize=size*font}
+        text(c,sum,cx-p.measureText(sum)/2,cy+16*font,palette.text,size)
     }
     private fun area(c:Canvas) {
         val history=ledger.history();val guaranteed=ledger.projection(false);val expected=ledger.projection(true)
@@ -70,7 +72,9 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
                 p.color=color;p.style=Paint.Style.FILL;p.alpha=if(selected==null || selected==i)255 else 100
                 c.drawRoundRect(x+group*.14f+j*bar,y,x+group*.14f+(j+1)*bar-2,bottom,3f,3f,p);p.alpha=255
             }
-            text(c,m.format(DateTimeFormatter.ofPattern(if(months>6)"MM" else "MMM",Locale.ITALY)),x+2,height-10*font,size=10f)
+            val label=m.format(DateTimeFormatter.ofPattern(if(months>6)"MM" else "MMM",Locale.ITALY));p.textSize=10*font
+            val step=ceil((p.measureText(label)+6*font)/group).toInt().coerceAtLeast(1)
+            if(i%step==0)text(c,label,x+group/2-p.measureText(label)/2,height-10*font,size=10f)
         }
     }
     private fun compact(v:Long):String=if(abs(v)>=100000)String.format(Locale.ITALY,"%.1fk",v/100000.0) else (v/100).toString()
@@ -87,7 +91,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
                     selected=i;val (cat,n)=segments[i];selection("${cat.name} · ${Money.format(n)} · ${String.format(Locale.ITALY,"%.1f",n*100.0/total)}%")}
                 1->{val points=(ledger.history()+ledger.projection(false)+ledger.projection(true)).sortedBy {it.first};val start=points.first().first;val end=maxOf(points.last().first,start.plusDays(1));val ratio=((event.x-54*font)/(width-54*font-12f)).coerceIn(0f,1f)
                     val day=start.plusDays((ChronoUnit.DAYS.between(start,end)*ratio).toLong())
-                    val actual=ledger.settings.opening+ledger.actual.filter {it.date<=day}.sumOf {it.signed}
+                    val actual=ledger.settings.opening+ledger.cashEvents.filter {it.date<=day}.sumOf {it.signed}
                     val base=ledger.balance+ledger.pending.filter {it.kind==Kind.EXPENSE && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.horizon}.sumOf {it.signed}
                     val inc=ledger.pending.filter {it.kind==Kind.INCOME && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.horizon}.sumOf {it.cents}
                     selection(if(day<LocalDate.now()) "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · storico ${Money.format(actual)}" else "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · uscite note ${Money.format(base)} · con entrate previste ${Money.format(base+inc)}")}
