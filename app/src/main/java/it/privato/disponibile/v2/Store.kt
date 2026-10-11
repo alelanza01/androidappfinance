@@ -7,18 +7,25 @@ import android.database.sqlite.SQLiteOpenHelper
 import java.time.LocalDate
 import android.graphics.Color
 
-class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,2) {
+class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,3) {
     override fun onCreate(db:SQLiteDatabase) {
         db.execSQL("CREATE TABLE settings(id INTEGER PRIMARY KEY CHECK(id=1),opening INTEGER NOT NULL,reserve INTEGER NOT NULL,horizon TEXT NOT NULL,theme TEXT NOT NULL,reminders INTEGER NOT NULL)")
         db.execSQL("INSERT INTO settings VALUES(1,0,0,?,'system',0)",arrayOf<Any?>(LocalDate.now().plusDays(30).toString()))
         db.execSQL("CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,color INTEGER NOT NULL)")
-        db.execSQL("CREATE TABLE series(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,category INTEGER NOT NULL,start TEXT NOT NULL,frequency TEXT NOT NULL,count INTEGER NOT NULL,uncertain INTEGER NOT NULL,active INTEGER NOT NULL)")
+        db.execSQL("CREATE TABLE series(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,category INTEGER NOT NULL,start TEXT NOT NULL,frequency TEXT NOT NULL,count INTEGER NOT NULL,uncertain INTEGER NOT NULL,active INTEGER NOT NULL,endIndex INTEGER)")
         db.execSQL("CREATE TABLE operations(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,status TEXT NOT NULL,date TEXT NOT NULL,category INTEGER NOT NULL,uncertain INTEGER NOT NULL,series INTEGER,occurrence INTEGER,UNIQUE(series,occurrence))")
         db.execSQL("CREATE INDEX operation_dates ON operations(date,status)")
         createAdvances(db)
         listOf("Casa" to "#779B91","Spesa" to "#DBBF8B","Trasporti" to "#7392B7","Personale" to "#AC91BB","Entrate" to "#60977B","Altro" to "#C66B65").forEach {(name,color)->db.execSQL("INSERT INTO categories(name,color) VALUES(?,?)",arrayOf<Any?>(name,Color.parseColor(color)))}
     }
-    override fun onUpgrade(db:SQLiteDatabase,old:Int,new:Int) { if(old<2)createAdvances(db) }
+    override fun onUpgrade(db:SQLiteDatabase,old:Int,new:Int) {
+        if(old<2)createAdvances(db)
+        if(old<3) {
+            db.execSQL("ALTER TABLE series ADD COLUMN endIndex INTEGER")
+            db.delete("operations","status='DELETED' AND (series IS NULL OR series IN (SELECT id FROM series WHERE active=0))",null)
+            db.execSQL("DELETE FROM series WHERE active=0 AND NOT EXISTS (SELECT 1 FROM operations WHERE operations.series=series.id)")
+        }
+    }
     private fun createAdvances(db:SQLiteDatabase) {
         db.execSQL("CREATE TABLE advances(id INTEGER PRIMARY KEY AUTOINCREMENT,cents INTEGER NOT NULL CHECK(cents>0),date TEXT NOT NULL,description TEXT NOT NULL,debtor TEXT NOT NULL,project TEXT NOT NULL,cause TEXT NOT NULL,due TEXT,notes TEXT NOT NULL)")
         db.execSQL("CREATE TABLE refunds(id INTEGER PRIMARY KEY AUTOINCREMENT,advance INTEGER NOT NULL,cents INTEGER NOT NULL CHECK(cents>0),date TEXT NOT NULL,note TEXT NOT NULL)")
@@ -31,25 +38,30 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,2) {
     private fun read():Ledger {
         val settings=readableDatabase.rawQuery("SELECT opening,reserve,horizon,theme,reminders FROM settings WHERE id=1",null).use {it.moveToFirst();Settings(it.getLong(0),it.getLong(1),maxOf(LocalDate.parse(it.getString(2)),LocalDate.now()),it.getString(3),it.getInt(4)==1)}
         val categories=readableDatabase.rawQuery("SELECT id,name,color FROM categories ORDER BY id",null).use {c->buildList {while(c.moveToNext())add(Category(c.getLong(0),c.getString(1),c.getInt(2)))}}
-        val series=readableDatabase.rawQuery("SELECT id,title,cents,kind,category,start,frequency,count,uncertain,active FROM series",null).use {c->buildList {while(c.moveToNext())add(Series(c.getLong(0),c.getString(1),c.getLong(2),Kind.valueOf(c.getString(3)),c.getLong(4),LocalDate.parse(c.getString(5)),Frequency.valueOf(c.getString(6)),c.getInt(7),c.getInt(8)==1,c.getInt(9)==1))}}
+        val series=readableDatabase.rawQuery("SELECT id,title,cents,kind,category,start,frequency,count,uncertain,active,endIndex FROM series",null).use {c->buildList {while(c.moveToNext())add(Series(c.getLong(0),c.getString(1),c.getLong(2),Kind.valueOf(c.getString(3)),c.getLong(4),LocalDate.parse(c.getString(5)),Frequency.valueOf(c.getString(6)),c.getInt(7),c.getInt(8)==1,c.getInt(9)==1,if(c.isNull(10))null else c.getInt(10)))}}
         val operations=readableDatabase.rawQuery("SELECT id,title,cents,kind,status,date,category,uncertain,series,occurrence FROM operations ORDER BY date,id",null).use {c->buildList {while(c.moveToNext())add(Operation(c.getLong(0),c.getString(1),c.getLong(2),Kind.valueOf(c.getString(3)),Status.valueOf(c.getString(4)),LocalDate.parse(c.getString(5)),c.getLong(6),c.getInt(7)==1,if(c.isNull(8))null else c.getLong(8),if(c.isNull(9))null else c.getInt(9)))}}
         val advances=readableDatabase.rawQuery("SELECT id,cents,date,description,debtor,project,cause,due,notes FROM advances ORDER BY date,id",null).use {c->buildList {while(c.moveToNext())add(Advance(c.getLong(0),c.getLong(1),LocalDate.parse(c.getString(2)),c.getString(3),c.getString(4),c.getString(5),c.getString(6),if(c.isNull(7))null else LocalDate.parse(c.getString(7)),c.getString(8)))}}
         val refunds=readableDatabase.rawQuery("SELECT id,advance,cents,date,note FROM refunds ORDER BY date,id",null).use {c->buildList {while(c.moveToNext())add(Refund(c.getLong(0),c.getLong(1),c.getLong(2),LocalDate.parse(c.getString(3)),c.getString(4)))}}
         return Ledger(settings,categories,operations,series,advances,refunds)
     }
     fun snapshot(expand:Boolean=true):Ledger {
-        var ledger=read()
-        if(expand) {
-            val until=maxOf(ledger.settings.horizon,LocalDate.now().plusYears(1))
-            transaction {db->ledger.series.filter {it.active}.forEach {s->
-                var i=0
-                while((s.count==0 || i<s.count) && (s.count>0 || s.date(i)<=until)) {
-                    require(i<20000) {"Ricorrenza troppo lunga. Riduci l'intervallo."}
-                    val op=Operation(title=if(s.count>0) "${s.title} · ${i+1}/${s.count}" else s.title,cents=s.cents,kind=s.kind,status=Status.PLANNED,date=s.date(i),category=s.category,uncertain=s.uncertain,series=s.id,index=i)
-                    db.insertWithOnConflict("operations",null,values(op),SQLiteDatabase.CONFLICT_IGNORE);i++
-                }
-            }}
+        lateinit var ledger:Ledger
+        transaction {db->
+            // Read the definition after acquiring the transaction lock. A reminder must never
+            // regenerate a definition read before a concurrent cancellation committed.
             ledger=read()
+            if(expand) {
+                val until=maxOf(ledger.settings.horizon,LocalDate.now().plusYears(1))
+                ledger.series.filter {it.active}.forEach {s->
+                    var i=0
+                    while((s.endIndex==null || i<s.endIndex) && (s.count==0 || i<s.count) && (s.count>0 || s.date(i)<=until)) {
+                        require(i<20000) {"Ricorrenza troppo lunga. Riduci l'intervallo."}
+                        val op=Operation(title=if(s.count>0) "${s.title} · ${i+1}/${s.count}" else s.title,cents=s.cents,kind=s.kind,status=Status.PLANNED,date=s.date(i),category=s.category,uncertain=s.uncertain,series=s.id,index=i)
+                        db.insertWithOnConflict("operations",null,values(op),SQLiteDatabase.CONFLICT_IGNORE);i++
+                    }
+                }
+                ledger=read()
+            }
         }
         return ledger
     }
@@ -69,16 +81,46 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,2) {
         val v=values(op.copy(status=Status.ACTUAL,date=LocalDate.now(),uncertain=false))
         check(db.update("operations",v,"id=? AND status='PLANNED'",arrayOf(id.toString()))==1)
     }}
-    fun delete(id:Long) {check(writableDatabase.update("operations",ContentValues().apply {put("status",Status.DELETED.name)},"id=? AND status!='DELETED'",arrayOf(id.toString()))==1)}
-    fun cancelSeries(id:Long) {transaction {db->db.execSQL("UPDATE series SET active=0 WHERE id=?",arrayOf<Any?>(id));db.execSQL("UPDATE operations SET status='DELETED' WHERE series=? AND status='PLANNED'",arrayOf<Any?>(id))}}
-    fun saveSeries(s:Series) {
-        require(s.title.isNotBlank() && s.title.length<=64 && s.cents in 1..Money.MAX && s.count in 0..120 && s.kind!=Kind.ADJUSTMENT) {"Ricorrenza: titolo fino a 64 caratteri, importo positivo e massimo 120 rate."}
-        require(s.start>=LocalDate.now().minusYears(2) && s.start<=LocalDate.now().plusYears(10)) {"Scegli una data entro 2 anni fa e 10 anni futuri."}
+    fun delete(id:Long) {transaction {db->
+        val op=read().operations.firstOrNull {it.id==id && it.status!=Status.DELETED} ?: error("Movimento non disponibile.")
+        if(op.series==null)check(db.delete("operations","id=?",arrayOf(id.toString()))==1)
+        else check(db.update("operations",ContentValues().apply {put("status",Status.DELETED.name)},"id=?",arrayOf(id.toString()))==1)
+    }}
+    /** Inclusive occurrence cutoff; paid history is preserved unless separately authorized in the UI. */
+    fun removeSeries(id:Long,fromIndex:Int=0,removeActual:Boolean=false) {transaction {db->
+        require(fromIndex>=0)
+        val s=read().series.firstOrNull {it.id==id} ?: error("Serie non disponibile.")
+        val cutoff=minOf(s.endIndex ?: Int.MAX_VALUE,fromIndex)
+        db.execSQL("UPDATE series SET endIndex=?,active=? WHERE id=?",arrayOf<Any?>(cutoff,if(cutoff==0)0 else if(s.active)1 else 0,id))
+        db.delete("operations","series=? AND occurrence>=?"+(if(removeActual)"" else " AND status!='ACTUAL'"),arrayOf(id.toString(),cutoff.toString()))
+        if(cutoff==0 && read().operations.none {it.series==id})db.delete("series","id=?",arrayOf(id.toString()))
+    }}
+    fun cancelSeries(id:Long)=removeSeries(id)
+    private fun seriesValues(s:Series)=ContentValues().apply {
+        put("title",s.title.trim());put("cents",s.cents);put("kind",s.kind.name);put("category",s.category);put("start",s.start.toString());put("frequency",s.frequency.name);put("count",s.count);put("uncertain",if(s.uncertain)1 else 0);put("active",if(s.active)1 else 0);put("endIndex",s.endIndex)
+    }
+    private fun validateSeries(s:Series) {
+        require(s.title.isNotBlank() && s.title.length<=64 && s.cents in 1..Money.MAX && s.count in 0..120 && s.kind!=Kind.ADJUSTMENT) {"Ricorrenza: descrizione fino a 64 caratteri, importo positivo e massimo 120 rate."}
+        require(s.start.year in 1900..2200 && s.start<=LocalDate.now().plusYears(10)) {"Data della ricorrenza fuori intervallo."}
+        require(s.count==0 || s.date(s.count-1).year<=2200)
+        require(!s.uncertain || s.kind==Kind.INCOME)
         require(read().categories.any {it.id==s.category})
-        val v=ContentValues().apply {put("title",s.title.trim());put("cents",s.cents);put("kind",s.kind.name);put("category",s.category);put("start",s.start.toString());put("frequency",s.frequency.name);put("count",s.count);put("uncertain",if(s.uncertain)1 else 0);put("active",1)}
-        transaction {db->check(db.insertOrThrow("series",null,v)>0)}
+    }
+    fun saveSeries(s:Series) {
+        validateSeries(s)
+        require(s.start>=LocalDate.now().minusYears(2)) {"Per una nuova serie scegli una data entro due anni fa."}
+        transaction {db->check(db.insertOrThrow("series",null,seriesValues(s))>0)}
         snapshot()
     }
+    fun updateSeries(s:Series) {transaction {db->
+        validateSeries(s)
+        val old=read().series.firstOrNull {it.id==s.id && it.active} ?: error("La programmazione è già interrotta.")
+        val next=s.copy(active=old.active,endIndex=old.endIndex)
+        check(db.update("series",seriesValues(next),"id=?",arrayOf(s.id.toString()))==1)
+        db.delete("operations","series=? AND status='PLANNED'",arrayOf(s.id.toString()))
+        // Actual events and single-occurrence suppression markers retain their identities.
+        snapshot()
+    }}
     fun settings(s:Settings) {
         require(s.opening in -Money.MAX..Money.MAX && s.reserve in 0..Money.MAX)
         require(s.horizon>=LocalDate.now() && s.horizon<=LocalDate.now().plusYears(10)) {"La previsione deve essere da oggi a 10 anni."}
@@ -108,8 +150,8 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,2) {
         transaction {db->
         db.delete("refunds",null,null);db.delete("advances",null,null);db.delete("operations",null,null);db.delete("series",null,null);db.delete("categories",null,null)
         ledger.categories.forEach {c->db.execSQL("INSERT INTO categories(id,name,color) VALUES(?,?,?)",arrayOf<Any?>(c.id,c.name,c.color))}
-        ledger.series.forEach {s->db.execSQL("INSERT INTO series VALUES(?,?,?,?,?,?,?,?,?,?)",arrayOf<Any?>(s.id,s.title,s.cents,s.kind.name,s.category,s.start.toString(),s.frequency.name,s.count,if(s.uncertain)1 else 0,if(s.active)1 else 0))}
-        ledger.operations.forEach {op->val v=values(op);v.put("id",op.id);db.insertOrThrow("operations",null,v)}
+        ledger.persistedSeries.forEach {s->val v=seriesValues(s);v.put("id",s.id);db.insertOrThrow("series",null,v)}
+        ledger.persistedOperations.forEach {op->val v=values(op);v.put("id",op.id);db.insertOrThrow("operations",null,v)}
         ledger.advances.forEach {a->val v=advanceValues(a);v.put("id",a.id);db.insertOrThrow("advances",null,v)}
         ledger.refunds.forEach {r->val v=refundValues(r);v.put("id",r.id);db.insertOrThrow("refunds",null,v)}
         val s=ledger.settings

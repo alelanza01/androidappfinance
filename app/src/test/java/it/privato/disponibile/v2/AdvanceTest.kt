@@ -69,8 +69,10 @@ class AdvanceTest {
  @Test fun migrationFromRealV2SchemaRetainsSettingsOperationsCategoriesAndSeries() {
   val c=store.snapshot().categories.first().id;store.save(Operation(title="Spesa precedente",cents=700,kind=Kind.EXPENSE,status=Status.ACTUAL,date=today,category=c))
   store.saveSeries(Series(title="Rate precedenti",cents=100,kind=Kind.EXPENSE,category=c,start=today,frequency=Frequency.MONTHLY,count=2,uncertain=false))
-  val before=store.snapshot();val db=store.writableDatabase;db.execSQL("DROP TABLE refunds");db.execSQL("DROP TABLE advances");db.version=1;store.close()
-  store=Store(RuntimeEnvironment.getApplication());assertEquals(2,store.readableDatabase.version);assertEquals(before,store.snapshot());val a=advance();store.saveRefund(Refund(advance=a.id,cents=2000,date=today));assertEquals(before.balance-3000,store.snapshot().balance)
+  val before=store.snapshot();val db=store.writableDatabase;db.execSQL("DROP TABLE refunds");db.execSQL("DROP TABLE advances");db.execSQL("ALTER TABLE series RENAME TO series_new")
+  db.execSQL("CREATE TABLE series(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,category INTEGER NOT NULL,start TEXT NOT NULL,frequency TEXT NOT NULL,count INTEGER NOT NULL,uncertain INTEGER NOT NULL,active INTEGER NOT NULL)")
+  db.execSQL("INSERT INTO series SELECT id,title,cents,kind,category,start,frequency,count,uncertain,active FROM series_new");db.execSQL("DROP TABLE series_new");db.version=1;store.close()
+  store=Store(RuntimeEnvironment.getApplication());assertEquals(3,store.readableDatabase.version);assertEquals(before,store.snapshot());val a=advance();store.saveRefund(Refund(advance=a.id,cents=2000,date=today));assertEquals(before.balance-3000,store.snapshot().balance)
  }
  @Test fun duplicateAndFractionalAdvanceBackupIsRejected() {
   advance();val root=org.json.JSONObject(Backup.encode(store.snapshot()));val a=root.getJSONArray("advances");a.put(a.getJSONObject(0));assertThrows(IllegalArgumentException::class.java){Backup.decode(root.toString())}

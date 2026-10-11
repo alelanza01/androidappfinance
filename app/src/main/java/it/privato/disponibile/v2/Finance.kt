@@ -25,7 +25,7 @@ data class Category(val id:Long,val name:String,val color:Int)
 data class Operation(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val status:Status,val date:LocalDate,val category:Long,val uncertain:Boolean=false,val series:Long?=null,val index:Int?=null) {
     val signed:Long get()=if(kind==Kind.EXPENSE) -cents else cents
 }
-data class Series(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val category:Long,val start:LocalDate,val frequency:Frequency,val count:Int,val uncertain:Boolean,val active:Boolean=true) {
+data class Series(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val category:Long,val start:LocalDate,val frequency:Frequency,val count:Int,val uncertain:Boolean,val active:Boolean=true,val endIndex:Int?=null) {
     fun date(index:Int):LocalDate=when(frequency) {Frequency.MONTHLY->start.plusMonths(index.toLong());Frequency.WEEKLY->start.plusWeeks(index.toLong());Frequency.YEARLY->start.plusYears(index.toLong())}
 }
 data class Settings(val opening:Long=0,val reserve:Long=0,val horizon:LocalDate=LocalDate.now().plusDays(30),val theme:String="system",val reminders:Boolean=false)
@@ -33,11 +33,20 @@ data class Advance(val id:Long=0,val cents:Long,val date:LocalDate,val descripti
 data class Refund(val id:Long=0,val advance:Long,val cents:Long,val date:LocalDate,val note:String="")
 data class CashEvent(val date:LocalDate,val signed:Long)
 data class Ledger(val settings:Settings,val categories:List<Category>,val operations:List<Operation>,val series:List<Series>,val advances:List<Advance> = emptyList(),val refunds:List<Refund> = emptyList()) {
+    val persistedSeries get():List<Series> {
+        val historical=operations.filter {it.status==Status.ACTUAL}.mapNotNull {it.series}.toSet()
+        return series.filter {it.active || it.id in historical}
+    }
+    val persistedOperations get():List<Operation> {
+        val definitions=series.associateBy {it.id}
+        return operations.filter {o->o.status!=Status.DELETED || definitions[o.series]?.let {it.active && (it.endIndex==null || (o.index ?: Int.MAX_VALUE)<it.endIndex)}==true}
+    }
     val actual get()=operations.filter {it.status==Status.ACTUAL}
     val pending get()=operations.filter {it.status==Status.PLANNED}.sortedWith(compareBy({it.date},{it.id}))
     val cashEvents get()=actual.map {CashEvent(it.date,it.signed)}+advances.map {CashEvent(it.date,-it.cents)}+refunds.map {CashEvent(it.date,it.cents)}
     val balance get()=settings.opening+cashEvents.sumOf {it.signed}
-    fun recovered(id:Long)=refunds.filter {it.advance==id}.sumOf {it.cents}
+    private val refundTotals by lazy {refunds.groupBy {it.advance}.mapValues {(_,items)->items.sumOf {it.cents}}}
+    fun recovered(id:Long)=refundTotals[id] ?: 0L
     fun remaining(a:Advance)=a.cents-recovered(a.id)
     val outstanding get()=advances.sumOf {remaining(it)}
     fun advanceStatus(a:Advance)=when {remaining(a)==0L->"Recuperato";a.due!=null && a.due<LocalDate.now()->"Scaduto";recovered(a.id)>0->"Parziale";else->"Aperto"}

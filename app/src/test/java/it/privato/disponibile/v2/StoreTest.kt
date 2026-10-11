@@ -61,7 +61,7 @@ class StoreTest {
  @Test fun backupRoundTripAndDeletedIrregularIncome() {
   val c=store.snapshot().categories.first().id;store.save(Operation(title="Incarico",cents=1000,kind=Kind.INCOME,status=Status.PLANNED,date=today,category=c,uncertain=true));store.delete(store.snapshot().operations.single().id)
   val original=store.snapshot();val saved=Backup.encode(original);val parsed=Backup.decode(saved);store.replace(parsed)
-  assertEquals(original,store.snapshot());assertEquals(Status.DELETED,parsed.operations.single().status)
+  assertEquals(original,store.snapshot());assertTrue(parsed.operations.isEmpty())
  }
  @Test fun malformedAndDuplicateBackupDoNotChangeExistingData() {
   add();val before=store.snapshot();val json=org.json.JSONObject(Backup.encode(before));val a=json.getJSONArray("operations");a.put(a.getJSONObject(0))

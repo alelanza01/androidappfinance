@@ -26,7 +26,14 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
     private fun donut(c:Canvas) {
         val total=segments.sumOf {it.second};val radius=min(width,height)*.36f;val cx=width/2f;val cy=height/2f
         p.style=Paint.Style.STROKE;p.strokeWidth=radius*.3f;p.color=palette.line
-        if(total==0L) {c.drawCircle(cx,cy,radius,p);text(c,"Nessuna uscita",cx-53*font,cy);return}
+        if(total==0L) {
+            c.drawCircle(cx,cy,radius,p)
+            p.style=Paint.Style.FILL;p.color=palette.muted;p.textSize=13*font
+            val message="Nessuna uscita";while(p.measureText(message)>radius*1.45f && p.textSize>9*font)p.textSize-=.5f*font
+            val bounds=Rect();p.getTextBounds(message,0,message.length,bounds)
+            c.drawText(message,cx-(bounds.left+bounds.right)/2f,cy-(bounds.top+bounds.bottom)/2f,p)
+            return
+        }
         val rect=RectF(cx-radius,cy-radius,cx+radius,cy+radius);var angle=-90f
         segments.forEachIndexed {i,(cat,n)->
             val sweep=n.toFloat()/total*360f;p.color=cat.color;p.strokeWidth=radius*(if(selected==i).37f else .28f)
@@ -55,7 +62,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
             if(fill) {val fillPath=Path(path);fillPath.lineTo(x(points.last().first),y(0));fillPath.lineTo(x(points.first().first),y(0));fillPath.close();p.color=color;p.alpha=30;p.style=Paint.Style.FILL;c.drawPath(fillPath,p);p.alpha=255}
             p.color=color;p.style=Paint.Style.STROKE;p.strokeWidth=2.5f*font;p.pathEffect=if(dashed)DashPathEffect(floatArrayOf(6*font,5*font),0f) else null;c.drawPath(path,p);p.pathEffect=null
         }
-        plot(history,palette.chartSage,false,true);plot(guaranteed,palette.chartCoral,true,true);plot(expected,palette.gold,true)
+        plot(history,palette.chartSage,false,true);plot(guaranteed,palette.chartCoral,true,true);plot(expected,palette.chartGold,true)
         line(c,x(LocalDate.now()),top,x(LocalDate.now()),bottom,palette.muted)
         text(c,start.format(DateTimeFormatter.ofPattern("dd/MM")),left,height-8*font)
         text(c,end.format(DateTimeFormatter.ofPattern("dd/MM")),right-36*font,height-8*font)

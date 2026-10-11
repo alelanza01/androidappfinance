@@ -1,51 +1,36 @@
 package it.privato.disponibile.v2
-import android.app.AlertDialog
-import android.view.*
-import android.widget.*
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.robolectric.*
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowAlertDialog
+import it.privato.disponibile.v2.UiSupport.all
+import it.privato.disponibile.v2.UiSupport.click
+import it.privato.disponibile.v2.UiSupport.choose
+import it.privato.disponibile.v2.UiSupport.set
+import it.privato.disponibile.v2.UiSupport.ledger
+import it.privato.disponibile.v2.UiSupport.withStore
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk=[26,35])
 class AdvanceUiTest {
- @Before fun setup(){val c=RuntimeEnvironment.getApplication();c.deleteDatabase("finance-v2.db");val s=Store(c);s.settings(s.snapshot().settings.copy(opening=30000));s.close()}
- private fun all(v:View):List<View> = listOf(v)+if(v is ViewGroup)(0 until v.childCount).flatMap {all(v.getChildAt(it))}else emptyList()
- private fun idle(){Shadows.shadowOf(android.os.Looper.getMainLooper()).idle()}
- private fun click(v:View,text:String){all(v).filterIsInstance<Button>().first {it.text.toString()==text}.performClick();idle()}
- private fun dialog():AlertDialog {idle();return ShadowAlertDialog.getLatestAlertDialog()}
- private fun fields(d:AlertDialog)=all(d.window!!.decorView).filterIsInstance<EditText>()
- private fun snapshot():Ledger {val s=Store(RuntimeEnvironment.getApplication());return try{s.snapshot()}finally{s.close()}}
- @Test fun quickAdvancePartialAndCompleteRefundWorkThroughRealForms() {
-  val controller=Robolectric.buildActivity(MainActivity::class.java).setup();val a=controller.get();click(a.window.decorView,"Nuovo anticipo")
-  var d=dialog();var f=fields(d);f[0].setText("50");f[1].setText("Pulizie Casa A");f[2].setText("Proprietario");d.getButton(-1).performClick();idle()
-  assertEquals(25000L,snapshot().balance);click(a.window.decorView,"Anticipi da recuperare");click(a.window.decorView,"Apri anticipo")
-  click(dialog().window!!.decorView,"Registra rimborso");d=dialog();fields(d)[0].setText("20");d.getButton(-1).performClick();idle()
-  assertEquals(27000L,snapshot().balance);assertEquals(3000L,snapshot().outstanding)
-  click(a.window.decorView,"Apri anticipo");click(dialog().window!!.decorView,"Registra rimborso");d=dialog();fields(d)[0].setText("30");d.getButton(-1).performClick();idle()
-  assertEquals(30000L,snapshot().balance);assertEquals(0L,snapshot().outstanding)
-  assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString().contains("Recuperato")})
-  click(a.window.decorView,"Storico");assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString().contains("Anticipo · Pulizie")});assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString().contains("Rimborso · Pulizie")})
-  controller.pause().stop().destroy()
+ @Before fun setup(){UiSupport.reset();withStore{it.settings(it.snapshot().settings.copy(opening=30000))}}
+ @Test fun partialAndFullRefundsUseDedicatedPagesAndHistoryDistinctFromIncome() {
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Anticipo")
+  set(a.window.decorView,"Importo anticipato in euro","50");set(a.window.decorView,"Descrizione","Pulizie Casa A");set(a.window.decorView,"Da chi recuperare?","Proprietario");click(a.window.decorView,"Salva");assertEquals(25000L,ledger().balance)
+  click(a.window.decorView,"Crediti");click(a.window.decorView,"Pulizie Casa A");click(a.window.decorView,"Registra rimborso");set(a.window.decorView,"Importo ricevuto in euro","20");click(a.window.decorView,"Salva");assertEquals(27000L,ledger().balance);assertEquals(3000L,ledger().outstanding)
+  click(a.window.decorView,"Registra rimborso");set(a.window.decorView,"Importo ricevuto in euro","30");click(a.window.decorView,"Salva");assertEquals(30000L,ledger().balance);assertEquals(0L,ledger().outstanding)
+  a.onBackPressed();click(a.window.decorView,"Movimenti");assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString().startsWith("Anticipo ·")});assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString().startsWith("Rimborso ·")});c.pause().stop().destroy()
  }
- @Test fun overpaymentErrorPreservesFormAndDataAndAllowsCorrection() {
-  val s=Store(RuntimeEnvironment.getApplication());s.saveAdvance(Advance(cents=5000,date=java.time.LocalDate.now(),description="Test",debtor="Marco"));s.close()
-  val controller=Robolectric.buildActivity(MainActivity::class.java).setup();val a=controller.get();click(a.window.decorView,"Anticipi da recuperare");click(a.window.decorView,"Apri anticipo");click(dialog().window!!.decorView,"Registra rimborso")
-  val form=dialog();fields(form)[0].setText("51");form.getButton(-1).performClick();idle();assertEquals("Operazione non completata",Shadows.shadowOf(dialog()).title.toString());assertTrue(snapshot().refunds.isEmpty())
-  dialog().getButton(-1).performClick();fields(form)[0].setText("20");form.getButton(-1).performClick();idle();assertEquals(27000L,snapshot().balance)
-  controller.pause().stop().destroy()
+ @Test fun overpaymentLeavesFormRecoverableAndCannotChangeCash() {
+  withStore{it.saveAdvance(Advance(cents=5000,date=java.time.LocalDate.now(),description="Test",debtor="Marco"))};val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Crediti");click(a.window.decorView,"Test");click(a.window.decorView,"Registra rimborso")
+  set(a.window.decorView,"Importo ricevuto in euro","51");click(a.window.decorView,"Salva");assertTrue(ledger().refunds.isEmpty());choose("Ho capito");set(a.window.decorView,"Importo ricevuto in euro","20");click(a.window.decorView,"Salva");assertEquals(27000L,ledger().balance);c.pause().stop().destroy()
  }
- @Test fun subjectProjectStateAndPeriodFiltersAreIndependent() {
-  val c=RuntimeEnvironment.getApplication();val s=Store(c);val today=java.time.LocalDate.now()
-  s.saveAdvance(Advance(cents=5000,date=today,description="Pulizie",debtor="Marco",project="Casa A"));s.saveAdvance(Advance(cents=1000,date=today.minusMonths(1),description="Materiali",debtor="Anna",project="Casa B"));s.close()
-  val controller=Robolectric.buildActivity(MainActivity::class.java).setup();val a=controller.get();click(a.window.decorView,"Anticipi da recuperare")
-  click(a.window.decorView,"Filtri anticipi");val inputs=all(a.window.decorView).filterIsInstance<EditText>();inputs[1].setText("Marco");idle();assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="Pulizie"});assertFalse(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="Materiali"})
-  inputs[1].setText("");inputs[2].setText("Casa B");idle();assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="Materiali"})
-  inputs[2].setText("");val spinners=all(a.window.decorView).filterIsInstance<Spinner>();spinners[0].setSelection(3);idle();assertFalse(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="Pulizie"})
-  spinners[0].setSelection(0);spinners[1].setSelection(1);idle();assertFalse(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="Materiali"})
-  controller.pause().stop().destroy()
+ @Test fun creditFiltersWorkAndDoNotReuseMovementSearch() {
+  val today=java.time.LocalDate.now();withStore{it.saveAdvance(Advance(cents=5000,date=today,description="Pulizie",debtor="Marco",project="Casa A"));it.saveAdvance(Advance(cents=1000,date=today.minusMonths(1),description="Materiali",debtor="Anna",project="Casa B"))}
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Movimenti");all(a.window.decorView).filterIsInstance<android.widget.EditText>().single().setText("Non esiste");UiSupport.idle();click(a.window.decorView,"Crediti")
+  assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()=="Pulizie"});click(a.window.decorView,"Filtri crediti");set(a.window.decorView,"Soggetto","Marco");click(a.window.decorView,"Applica filtri")
+  assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()=="Pulizie"});assertFalse(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()=="Materiali"})
+  click(a.window.decorView,"Filtri crediti");click(a.window.decorView,"Azzera filtri");set(a.window.decorView,"Immobile / progetto","Casa B");click(a.window.decorView,"Applica filtri");assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()=="Materiali"});c.pause().stop().destroy()
  }
 }

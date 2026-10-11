@@ -1,80 +1,64 @@
-# Posso spenderlo? 2.1
+# Posso spenderlo? 3.0
 
-App Android privata, offline e gratuita per capire quanto denaro puoi spendere dopo impegni e riserva. Kotlin nativo, SQLite, Android 8.0+, nessun server, account, analytics o permesso Internet.
+App privata Android 8+, Kotlin nativo e SQLite: offline, nessun account, server, analytics, permesso Internet o costo ricorrente.
 
-**[Scarica l’aggiornamento V2.1](release/Posso-spenderlo-V2.1.apk)** — su GitHub apri il file e premi **Download raw file**. [SHA-256](release/SHA256-V2.1.txt). I sorgenti completi sono in questo repository.
+**[APK V3.0](release/Posso-spenderlo-V3.0.apk)** · [SHA-256](release/SHA256-V3.0.txt) · [Sorgenti ZIP](release/Posso-spenderlo-V3.0-progetto.zip) · [Rendering Android](release/screenshots-v3.0/) · [Verifiche](release/VERIFICA-V3.0.txt).
 
-## Aggiornamento della V2 installata
+Su GitHub apri il file APK e premi **Download raw file**. Tutti i sorgenti sono anche nelle cartelle del repository.
 
-Versione `2.1.0` (210), stesso application ID `it.privato.disponibile.v2` e **stessa firma della V2 originale**. La migrazione SQLite da schema 1 a 2 aggiunge anticipi e rimborsi senza cancellare impostazioni, movimenti, categorie o ricorrenze. La V1 resta un’app separata.
+## Aggiornare la V2.1
 
-1. Nella V2 attuale: **Altro → Esporta backup** e conserva il JSON.
-2. Scarica `Posso-spenderlo-V2.1.apk` dal collegamento sopra e trasferiscilo al telefono.
-3. Aprilo da File, autorizza questa fonte se richiesto e premi **Aggiorna/Installa**. **Non disinstallare la V2**: la disinstallazione cancellerebbe l’archivio.
+1. Nella versione installata, esporta un backup e conservalo sul dispositivo o PC.
+2. Scarica il nuovo APK e aprilo sul telefono. Autorizza questa fonte se Android lo richiede.
+3. Premi **Aggiorna/Installa**. **Non disinstallare la V2.1**, perché perderesti il suo database.
 
-Se Android rifiuta l’aggiornamento, conserva app e dati e verifica il messaggio: non risolvere disinstallando. La firma della V2.1 è stata confrontata con l’APK V2 conservato in `release/Posso-spenderlo-V2.apk`; l’installazione sul tuo telefono resta da eseguire.
+Identità invariata `it.privato.disponibile.v2`, versione `3.0.0` / codice 300. Il certificato viene confrontato con gli APK V2 e V2.1 prima della consegna. La migrazione schema SQLite 2 → 3 conserva impostazioni, categorie, movimenti effettivi/previsti, anticipi e rimborsi. Rimuove soltanto residui già eliminati e aggiunge il limite persistente delle ricorrenze.
 
-## Design e anticipi
+La V1 resta un’app separata. L’installazione fisica sul telefono del proprietario non viene dichiarata come eseguita dal cloud.
 
-Sezioni aperte con separatori discreti, importi allineati, palette blu notte/oro, barra con icone e indicatore attivo senza pulsanti sovrapposti. Calendario con sette colonne uniformi e indicatori separati dai numeri. Temi chiaro/scuro/sistema.
+## Nuova esperienza
 
-**Nuovo anticipo** è disponibile da Oggi; **Anticipi da recuperare** si apre da Oggi o Altro. Richiede importo, descrizione e soggetto; data predefinita oggi. Progetto, causale, restituzione prevista e note sono facoltativi e raccolti in Dettagli facoltativi. I filtri per soggetto, progetto, stato e mese si aprono con **Filtri anticipi**.
+- **Home:** spendibile protagonista, un prossimo pagamento e totale crediti. Dettaglio del calcolo, simulatore e analisi si aprono su richiesta.
+- **Movimenti:** storico per giorno, ricerca indipendente da quella dei crediti, filtri per tipo/stato e categoria. Anticipi e rimborsi hanno etichette distinte.
+- **Impegni:** lista o calendario mensile, arretrati, entrate attese, restituzioni non garantite e programmazioni.
+- **Crediti:** anticipi, residui, stati, filtri per soggetto/progetto/mese, dettaglio e storico dei rimborsi.
+- **Analisi:** un grafico alla volta — spese, liquidità o mesi — con controlli contestuali e selezione dei dati.
+- **Impostazioni:** accessibili dall’icona in Home; Regole del saldo, Aspetto, Avvisi, Categorie e Backup hanno pagine separate.
 
-Dalla scheda: registra rimborsi parziali o completi, modifica anticipo/rimborsi e correggi registrazioni errate tramite eliminazione. Un rimborso non può superare il residuo. Un anticipo già rimborsato non può essere ridotto sotto il totale restituito; le date rispettano la cronologia. Eliminare un anticipo elimina anche i suoi rimborsi e ne annulla l’effetto netto sul saldo, previa conferma.
+**Registra** o **+** apre un menu breve. Gli inserimenti complessi sono pagine con campi etichettati, tastiera numerica, opzioni avanzate espandibili e Salva sopra l’area della tastiera. Una spesa ordinaria richiede solo importo e descrizione: tipo, stato, data e categoria hanno valori iniziali modificabili. Le bozze sopravvivono alla ricreazione dell’attività; non vengono registrate prima del salvataggio.
 
-Esempio verificato: **300 € → anticipo 50 € → liquidità 250 €/credito 50 € → rimborso 20 € → liquidità 270 €/credito 30 € → rimborso 30 € → liquidità 300 €/credito 0 €**.
+Design condiviso: superfici neutre, blu notte, oro e salvia; liste con gerarchia tipografica, menu inferiori per decisioni brevi e feedback di pressione discreto. Le impostazioni di testo ingrandito restano attive sui contenuti; etichette dei controlli fissi rimangono compatte e leggibili.
 
-Le restituzioni attese sono segnate in oro nel calendario e restano non garantite: non entrano automaticamente nel saldo o nelle proiezioni. Anticipi e rimborsi compaiono nello Storico con etichette esplicite e nel grafico della liquidità, esclusi da guadagni e spese personali (anello e colonne).
+## Cancellazioni e ricorrenze
 
-## Cosa comprende
+Da un’occorrenza ricorrente: **Elimina…** offre singola occorrenza, questa e tutte le future, intera serie.
 
-- **Oggi:** liquidità, uscite programmate fino alla data scelta, riserva, spendibile spiegabile, prossima scadenza, criticità e simulatore immediato senza salvataggio.
-- **Grafici:** anello delle spese effettuate per categoria/mese, area con storico e due scenari futuri, colonne entrate/uscite a 3/6/12 mesi. Tocca i grafici o le categorie per i dettagli. Mese selezionabile.
-- **Agenda:** calendario mensile, arretrati, pagamenti e incassi futuri, ricorrenze settimanali/mensili/annuali e rate mensili finite (1–120, importo per rata). Conferma manuale del pagamento/incasso. Le ricorrenze continue sono preparate almeno per 12 mesi e fino alla previsione.
-- **Storico:** ricerca per descrizione/categoria, filtri per stato, entrata/uscita e categoria. Modifica ed eliminazione dei singoli movimenti, con ricalcolo del saldo.
-- **Altro:** liquidità iniziale, riserva, data di previsione, categorie con colore, tema chiaro/scuro/sistema, backup JSON e demo isolata. Avvisi locali giornalieri opzionali.
+- Singola: non viene rigenerata; se già effettuata, la conferma illustra la rettifica del saldo.
+- Da qui: salva un limite nella definizione; elimina solo le previsioni dalla relativa occorrenza. I pagamenti/incassi già effettuati restano.
+- Intera serie: interrompe tutta la programmazione. La rimozione anche dello storico richiede una conferma distinta con saldo prima/dopo.
 
-## Regole finanziarie
+La modifica della serie aggiorna le previsioni non effettuate mantenendo identità e importi storici. Le interruzioni e le esclusioni di singole occorrenze sopravvivono a riavvio, orizzonte esteso e backup. La materializzazione avviene nella stessa transazione della lettura delle definizioni, evitando copie obsolete usate dai job locali.
 
-Tutti gli importi sono centesimi interi, senza calcoli finanziari in virgola mobile. Input massimo €9.999.999,99, due decimali, senza separatori delle migliaia.
+Le eliminazioni ordinarie rimuovono la riga dal database e dai backup. Solo le esclusioni tecniche necessarie a non rigenerare singole occorrenze attive rimangono conservate: non sono movimenti economici visibili o conteggiati.
 
-**Liquidità = base iniziale + entrate effettive − uscite effettive + rettifiche − anticipi + rimborsi ricevuti.**
+## Contabilità e archivio
 
-**Spendibile = liquidità − tutte le uscite previste entro la data scelta (inclusi arretrati) − riserva.**
+Importi in centesimi interi. **Liquidità = base + incassi − pagamenti + rettifiche − anticipi + rimborsi ricevuti. Spendibile = liquidità − impegni entro la previsione − riserva.** Entrate attese e crediti aperti non aumentano lo spendibile. Anticipi/rimborsi sono inclusi nello storico del saldo, esclusi da guadagni e spese personali nei grafici anello/colonne.
 
-Le entrate future, anche probabili, non aumentano lo spendibile. La proiezione corallo considera solo le uscite note; quella oro aggiunge le entrate previste, comprese le non garantite. Sono scenari distinti dallo storico verde. I grafici mensili contano solo incassi e pagamenti effettivi; le rettifiche sono escluse.
+Esempio: 300 € → anticipo 50 € → 250 €/credito 50 € → rimborso 20 € → 270 €/credito 30 € → rimborso 30 € → 300 €/credito 0 €. Rimborso superiore al residuo, date incompatibili e importi invalidi vengono rifiutati.
 
-Confermare una scadenza la rende effettiva **oggi** una sola volta. Puoi correggere la data nello storico. Eliminare un movimento effettivo rimuove il suo effetto sul saldo. Modificare la liquidità iniziale cambia anche la base dello storico: per riconciliare il saldo di oggi usa Aggiorna liquidità.
+Backup JSON formato 4, compatibile in importazione con formati 2 e 3. Validazione prima della sostituzione transazionale e copia locale precedente all’importazione, esportabile dalla pagina Backup. JSON non cifrato: contiene dati personali. Limiti: 5 MB, 20.000 movimenti, 2.000 serie, 100 categorie, 10.000 anticipi, 20.000 rimborsi.
 
-Ogni occorrenza ricorrente ha un'identità univoca. Modifiche/eliminazioni non la rigenerano. Per cambiare una serie intera, interrompila dal calendario e creane una nuova; i movimenti già effettuati restano. Gli ancoraggi mensili mantengono il giorno originale quando possibile (31 gennaio → fine febbraio → 31 marzo).
+Avvisi giornalieri locali opzionali; Android può ritardarli. La demo è separata dall’archivio reale. Nessuna sincronizzazione o API esterna.
 
-## Backup e promemoria
+## Sviluppo e limiti delle verifiche
 
-Il backup di formato 3 include anticipi e rimborsi; l’importazione accetta anche i backup originali V2 (formato 2, senza anticipi). Il backup è JSON **non cifrato**, con dati personali. Scegli una destinazione locale; i provider cloud eventualmente presenti nel selettore Android non fanno parte dell'app. L'importazione valida formato, importi, date e riferimenti prima di sostituire i dati in una transazione. Conserva prima una copia privata dell'archivio precedente, esportabile da Altro. Limiti di importazione: 5 MB, 20.000 operazioni, 100 categorie, 2.000 serie, 10.000 anticipi e 20.000 rimborsi; non viene eseguito codice dal file.
-
-Gli avvisi richiedono consenso su Android 13+. JobScheduler controlla circa ogni 24 ore le uscite arretrate o entro domani; Android può ritardare l'esecuzione per batteria e altre restrizioni. Non sono allarmi puntuali. Il calendario resta il riferimento.
-
-## Verifiche e immagini
-
-I test coprono contabilità, importi, date, doppia conferma, ricorrenze, rate, riconciliazione, CRUD, categorie, persistenza, backup, ricerca, navigazione, simulatore, avvisi e grafici. UI verificata nei runtime Android 8 e 15 di Robolectric; rendering grafico nativo e immagini su Android 15. Nessun test su telefono fisico viene dichiarato.
-
-[Immagini della UI V2.1](release/screenshots-v2.1/) generate dai componenti Android reali durante i test, con dati dimostrativi e intestazione DEMO. Non sono mockup né fotografie di un dispositivo fisico. [Risultati finali V2.1](release/VERIFICA-V2.1.txt).
-
-## Sviluppo e firma
-
-Apri questa cartella in Android Studio e usa JDK 17+ e SDK 35. Per la build di sviluppo:
+Apri il progetto in Android Studio con JDK 17+ e SDK 35. Nel cloud riutilizza il checkout esistente e `source tools/cloud-env.sh`.
 
 ```
-./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
+./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
 ```
 
-Nel cloud: `python3 tools/cloud-setup.py`, poi `source tools/cloud-env.sh`. Usa il checkout esistente; non serve un worktree. Lo script installa toolchain ufficiali con checksum verificati e cache dedicate.
+Rendering dai componenti Android reali nei runtime Robolectric, con fixture isolate; non fotografie di un telefono. I menu sono disegnati dai loro View Android sopra il rendering della pagina. L’area della tastiera è verificata tramite insets IME simulati: non è stato avviato o fotografato un vero servizio tastiera. Non sono dichiarati test fisici di installazione, animazioni, gesti o puntualità delle notifiche.
 
-La firma release legge `V2_SIGNING_PROPERTIES` da un file privato fuori dal repository. Qui la chiave e le proprietà sono in `/workspace/private-v2-signing/`, con permessi restrittivi; **non sono pubblicate su GitHub**. La copia privata della firma è ancora soltanto nell’ambiente: il download dell’interfaccia è fallito e non è stata recuperata sul PC. Uno snapshot non sostituisce una copia esterna verificata. Conserva una copia privata della directory tramite un canale sicuro disponibile: non caricare chiavi, password o database in Git. `tools/create-private-key.py` crea una chiave solo per la prima installazione e non sostituisce chiavi esistenti.
-
-```
-source tools/cloud-env.sh
-./gradlew :app:assembleRelease :app:testDebugUnitTest :app:lintDebug
-```
-
-APK release: `app/build/outputs/apk/release/app-release.apk`. Senza la chiave originale non si può firmare un aggiornamento della V2 installata; una nuova chiave non è un recupero della precedente.
+La firma legge `V2_SIGNING_PROPERTIES` fuori da Git. La chiave originale resta privata nell’ambiente: nessun keystore o password è incluso nel repository/ZIP sorgenti. Il precedente download privato della firma non è stato completato sul PC. **Non creare una chiave sostitutiva** per gli aggiornamenti della V2/V2.1.

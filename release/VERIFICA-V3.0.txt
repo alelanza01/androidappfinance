@@ -1,0 +1,44 @@
+Posso spenderlo? 3.0 — Verifica 12 ottobre 2026
+
+Comando eseguito: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+Build release riuscita. 84 test superati: 0 fallimenti, 0 errori, 0 saltati.
+it.privato.disponibile.v2.AdvanceTest: 11 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.AdvanceUiTest: 6 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.FinanceTest: 8 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.RecurrenceTest: 12 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.RecurrenceUiTest: 6 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.ReminderTest: 2 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.RenderingTest: 5 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.ResponsiveTest: 1 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.StoreTest: 13 test; fallimenti 0; errori 0; saltati 0
+it.privato.disponibile.v2.UiTest: 20 test; fallimenti 0; errori 0; saltati 0
+
+Lint debug: 0 errori, 7 avvisi: {'ViewConstructor': 1, 'SetTextI18n': 6}.
+Identità: it.privato.disponibile.v2; versione 3.0.0; versionCode 300 > 210 > 200.
+Chiave originale verificata: accesso PKCS12 e firma/verifica di un messaggio in memoria, senza generazione o sostituzione di chiavi.
+APK V3.0 verificato con apksigner; certificato identico agli APK V2 e V2.1. Entrambi gli APK precedenti hanno hash invariato.
+Certificato SHA-256: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Compatibilità di firma/ID/versione accertata. Non è stata eseguita una vera installazione sul telefono.
+Migrazione schema 2 → 3: fixture con definizione V2.1 della tabella serie (10 colonne), impostazioni, categorie, pagamenti, previsioni, anticipi e rimborsi.
+Prima/dopo confrontati nei test; riapertura ripetuta e idempotenza verificate. Anche schema 1 → 3 coperto.
+Nessun database del telefono personale viene letto o modificato dal cloud.
+Cancellazione ordinaria: riga rimossa, saldo/storico/grafici/proiezione/backup aggiornati; assenza dopo riavvio verificata.
+Ricorrenze: esclusione singola, cutoff persistente, intera serie, conservazione dei pagamenti e rettifica storica esplicita; verifica dopo orizzonte esteso e backup.
+Definizioni lette e materializzate nella stessa transazione; test di materializzazione background contro cancellazione concorrente.
+Modifica serie: variazioni alle previsioni, conservazione di identità/importi pagati e delle esclusioni; riduzione rate e backup verificati.
+Nuova UI: creazione/modifica/eliminazione spese, aggiornamento immediato liste e saldo, entrate non garantite, rate finite, ricorrenze, rimborsi, ricerca indipendente, simulatori e bozze dopo ricreazione.
+Salvataggio da un pulsante ormai obsoleto non duplica il movimento; conferma separata del saldo prima/dopo cancellazione storica.
+Backup formato 4: importazione formati 2/3, validazione/rollback e copia precedente all’importazione verificati.
+Contabilità anticipi: esempio 300 → 250 → 270 → 300 euro; nessun guadagno personale da rimborso; residuo e liquidità corretti.
+UI: runtime Robolectric API 26/35; storage API 28; rendering Android grafico nativo API 35.
+Dimensioni: 320×640, 360×800, 411×891 dp. Font 100%, 150%, 200%; temi chiaro e scuro.
+Screenshot: tutte le pagine principali, impostazioni raggruppate, menu, form, liste/calendario, tre grafici, stati vuoti/negativi, 120 movimenti e descrizioni lunghe.
+Test anello vuoto: centro del testo verificato con bounding box dei pixel nativi, entrambi i temi e font 100/150/200%.
+Controllo visivo: gerarchia e densità della Home, allineamenti delle liste, selezione della barra, calendario, grafici, moduli e bottom sheet; importi su riga intera quando necessari.
+Le immagini sono rendering dei View Android reali nelle fixture di test, non mockup o fotografie di un dispositivo.
+Nei menu, View reali del Dialog disegnati sopra il rendering della pagina con sfondo attenuato; non catture del compositore WindowManager fisico.
+Tastiera: layout con insets IME simulati e conferma Salva fuori dall’area occupata. Nessuna immagine o verifica di un vero servizio tastiera.
+Limiti: installazione/aggiornamento fisico, gesti, animazioni e puntualità dei promemoria non verificati su telefono. Font molto grandi richiedono scorrimento.
+Permesso Internet assente; nessun costo o servizio esterno aggiunto. Firma/password escluse da sorgenti e Git.
+Il precedente backup privato della chiave rimane soltanto nell’ambiente: recupero sul PC non dichiarato come completato.
+Immagini consegnate: 126.
