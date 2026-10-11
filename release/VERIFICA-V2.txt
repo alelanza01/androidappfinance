@@ -1,0 +1,14 @@
+Posso spenderlo? V2 — Verifica 11 ottobre 2026
+
+Build release firmata riuscita; totale 38 test superati.
+it.privato.disponibile.v2.FinanceTest: 8 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.ReminderTest: 2 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.RenderingTest: 3 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.StoreTest: 13 test, 0 fallimenti, 0 errori, 0 saltati
+it.privato.disponibile.v2.UiTest: 12 test, 0 fallimenti, 0 errori, 0 saltati
+
+Runtime UI: Android 8 (API 26), Android 15 (API 35), Robolectric. Database: API 28. Rendering grafico nativo: API 35.
+Lint debug: 0 errori, 11 avvisi su traduzioni e costruttore del grafico per editor.
+Nessun test su telefono fisico. Screenshot dalla UI Android in test, con demo separata.
+Avvisi: registrazione/cancellazione del job locale verificate; puntualità su device non verificata.
+La V1 non è stata modificata; V2 ha nuova identità e firma e non ne importa i dati.
