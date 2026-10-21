@@ -17,6 +17,12 @@ object UiSupport {
  }
  fun dialog():Dialog {idle();return ShadowDialog.getLatestDialog()}
  fun choose(name:String)=click(dialog().window!!.decorView,name)
+ fun accept(){val d=dialog();if(!d.isShowing)return;val b=all(d.window!!.decorView).firstOrNull {it.tag=="confirm-action"} ?: error("Missing contextual decision");b.performClick();idle()}
+ fun legacyCategories(db:android.database.sqlite.SQLiteDatabase){
+  db.execSQL("ALTER TABLE categories RENAME TO categories_new")
+  db.execSQL("CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,color INTEGER NOT NULL)")
+  db.execSQL("INSERT INTO categories SELECT id,name,color FROM categories_new");db.execSQL("DROP TABLE categories_new")
+ }
  fun field(v:View,label:String)=all(v).filterIsInstance<EditText>().first {it.contentDescription?.toString()==label}
  fun set(v:View,label:String,value:String){field(v,label).setText(value);idle()}
  fun ledger():Ledger {val s=Store(RuntimeEnvironment.getApplication());return try{s.snapshot()}finally{s.close()}}

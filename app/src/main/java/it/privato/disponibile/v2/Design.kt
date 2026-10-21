@@ -4,22 +4,23 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.StateListDrawable
 import android.widget.*
 import android.view.View
 import android.content.res.Configuration
 
 data class Palette(val dark:Boolean) {
-    val background=Color.parseColor(if(dark) "#0C1425" else "#FAF9F6")
-    val card=Color.parseColor(if(dark) "#162237" else "#FFFFFF")
-    val text=Color.parseColor(if(dark) "#F1F3F7" else "#111B32")
-    val muted=Color.parseColor(if(dark) "#B2BCCB" else "#596579")
-    val line=Color.parseColor(if(dark) "#31415C" else "#E0E5EC")
-    val navy=Color.parseColor("#111B32")
-    val gold=Color.parseColor("#DBBF8B")
+    val background=Color.parseColor(if(dark) "#101A19" else "#F4F7F5")
+    val card=Color.parseColor(if(dark) "#192725" else "#FFFFFF")
+    val text=Color.parseColor(if(dark) "#EDF5F2" else "#182824")
+    val muted=Color.parseColor(if(dark) "#ABC0B8" else "#53685F")
+    val line=Color.parseColor(if(dark) "#30453E" else "#DCE6E1")
+    val primary=Color.parseColor(if(dark) "#B0DCC8" else "#2D6453")
+    val onPrimary=Color.parseColor(if(dark) "#102B20" else "#FFFFFF")
+    val hero=Color.parseColor(if(dark) "#20392F" else "#E5EFE8")
+    val cool=Color.parseColor(if(dark) "#92C3D3" else "#376D85")
     val sage=Color.parseColor(if(dark) "#A1C8BB" else "#356858")
     val coral=Color.parseColor(if(dark) "#F3AAA3" else "#A63E39")
-    val chartGold=Color.parseColor(if(dark) "#DBBF8B" else "#8B6B32")
+    val chartCool=cool
     val chartSage=Color.parseColor("#779B91")
     val chartCoral=Color.parseColor("#C66B65")
     companion object {
@@ -39,24 +40,47 @@ class Design(val context:Context,val colors:Palette) {
     fun divider()=View(context).apply {setBackgroundColor(colors.line);layoutParams=LinearLayout.LayoutParams(-1,dp(1))}
     fun space(size:Int=16)=View(context).apply {layoutParams=LinearLayout.LayoutParams(1,dp(size))}
     fun section(title:String)=label(title.uppercase(java.util.Locale.ITALY),11f,colors.muted,true).apply {letterSpacing=.08f;setPadding(0,dp(18),0,dp(8))}
-    fun button(value:String,primary:Boolean=false,action:()->Unit)=Button(context).apply {
+    fun button(value:String,primary:Boolean=false,action:()->Unit)=Button(context,null,0).apply {
+        flatten(this)
         text=value;isAllCaps=false;textSize=15f;includeFontPadding=false;gravity=android.view.Gravity.CENTER
         typeface=Typeface.create("sans-serif-medium",Typeface.NORMAL)
-        setTextColor(if(primary) (if(colors.dark)colors.navy else Color.WHITE) else colors.text)
+        val foreground=if(primary) colors.onPrimary else colors.text
+        setTextColor(android.content.res.ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),intArrayOf()),intArrayOf(colors.muted,foreground)))
         minWidth=0;minimumWidth=0;minHeight=dp(48);minimumHeight=dp(48)
-        val color=if(primary) (if(colors.dark)colors.gold else colors.navy) else Color.TRANSPARENT
-        background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),shape(color,12),shape(Color.WHITE,12))
+        val color=if(primary) colors.primary else Color.TRANSPARENT
+        val states=shape(color,12).apply {
+            setColor(android.content.res.ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),intArrayOf()),intArrayOf(this@Design.colors.line,color)))
+        }
+        background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(if(primary)0x33779B91 else colors.line),states,shape(Color.WHITE,12))
         setPadding(dp(12),dp(10),dp(12),dp(10));layoutParams=LinearLayout.LayoutParams(-1,-2)
-        setOnClickListener {action()}
+        setOnClickListener {action()};refreshDrawableState();background.state=drawableState
+    }
+    /** Remove the native Material shadow animator as well as its outline, not just the color. */
+    fun flatten(v:View) {v.stateListAnimator=null;v.elevation=0f;v.translationZ=0f;v.outlineProvider=null;v.backgroundTintList=null;v.clipToOutline=false}
+    fun destructive(value:String,action:()->Unit)=button(value,action=action).apply {setTextColor(android.content.res.ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),intArrayOf()),intArrayOf(colors.muted,colors.coral)));background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),shape(colors.card),shape(Color.WHITE))}
+    fun pair(body:LinearLayout,left:String,leftValue:String,right:String,rightValue:String) {
+        val r=row().apply {gravity=android.view.Gravity.TOP;setPadding(0,dp(14),0,dp(14))}
+        listOf(left to leftValue,right to rightValue).forEachIndexed {i,(title,value)->
+            val col=column();col.addView(label(title,12f,colors.muted));col.addView(amount(value,21f))
+            r.addView(col,LinearLayout.LayoutParams(0,-2,1f).apply {if(i==0)marginEnd=dp(12)})
+        };body.addView(r)
+    }
+    fun categoryTile(c:Category,selected:Boolean,action:()->Unit)=button(c.name,action=action).apply {
+        textSize=12f;maxLines=3;setPadding(dp(5),dp(10),dp(5),dp(8));minHeight=dp(96)
+        setCompoundDrawablesWithIntrinsicBounds(null,CategoryIcon(c.icon,if(selected)colors.sage else colors.text,dp(26)),null,null);compoundDrawablePadding=dp(9)
+        isSelected=selected;contentDescription="${c.name}${if(c.favorite) ", preferita" else ""}${if(selected) ", selezionata" else ""}"
+        val surface=shape(if(selected)colors.line else colors.card,12)
+        if(selected)surface.setStroke(dp(1),colors.sage)
+        background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),surface,shape(Color.WHITE,12))
     }
     fun input(hintValue:String,value:String="",money:Boolean=false)=EditText(context).apply {
-        hint=hintValue;setText(value);setTextColor(colors.text);setHintTextColor(colors.muted);setSingleLine();textSize=16f
+        flatten(this);hint=hintValue;setText(value);setTextColor(colors.text);setHintTextColor(colors.muted);setSingleLine();textSize=16f
         minHeight=dp(52);setPadding(dp(12),dp(10),dp(12),dp(10))
         background=shape(colors.card,10).apply {setStroke(dp(1),this@Design.colors.line)}
         inputType=if(money) android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL else android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         filters=arrayOf(android.text.InputFilter.LengthFilter(if(money)12 else 80));setSelectAllOnFocus(true)
     }
-    fun field(body:LinearLayout,title:String,value:String="",money:Boolean=false)=input(if(money) "0,00" else title,value,money).also {
+    fun field(body:LinearLayout,title:String,value:String="",money:Boolean=false)=input(if(money) "0,00" else "",value,money).also {
         body.addView(label(title,12f,colors.muted,true).apply {setPadding(0,dp(14),0,dp(6))});body.addView(it)
         it.contentDescription=title
     }
@@ -64,7 +88,7 @@ class Design(val context:Context,val colors:Palette) {
         background=shape(colors.line,10);setPadding(dp(3),dp(3),dp(3),dp(3))
         labels.forEachIndexed {i,label->addView(button(label){action(i)}.apply {
             setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(dp(14).toFloat(),12f*context.resources.displayMetrics.scaledDensity));setPadding(dp(4),dp(8),dp(4),dp(8));maxLines=2
-            background=shape(if(i==selected)colors.card else Color.TRANSPARENT,8)
+            background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),shape(if(i==selected)colors.card else Color.TRANSPARENT,8),shape(Color.WHITE,8))
             setTextColor(if(i==selected)colors.text else colors.muted);isSelected=i==selected
         },LinearLayout.LayoutParams(0,-2,1f))}
     }

@@ -1,0 +1,52 @@
+Posso spenderlo? V3.1 — Verifica del 21 ottobre 2026
+Base: 6b7f2e9dd45d42e90c044cb67c9e7f9206a5d8f5; modifiche V3.1 non committate conservate e completate.
+Comando effettivo: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+Build release riuscita. 109 test superati; 0 fallimenti, 0 errori, 0 saltati.
+Lint debug: 0 errori, 18 avvisi: {'DrawAllocation': 3, 'ViewConstructor': 2, 'SetTextI18n': 13}.
+Identità: it.privato.disponibile.v2; versione 3.1.0; versionCode 310 > 300.
+Firma APK verificata con apksigner (schema v2); stesso certificato degli APK V2, V2.1 e V3.0; tutti e tre gli APK precedenti hanno SHA-256 invariato.
+Certificato pubblico SHA-256: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Nessuna chiave generata o sostituita. Keystore, password e credenziali non inclusi negli artefatti pubblicati.
+Migrazioni SQLite 1/2/3 → 4: associazioni e ID delle categorie, nomi personalizzati, pagamenti, ricorrenze/cutoff, anticipi/rimborsi, liquidità e spendibile verificati in fixture.
+Backup formato 5 con icone e preferiti; importazione formati 2/3/4; catalogo completato nei vecchi backup senza riclassificare i movimenti.
+Spesa senza descrizione: salvataggio, saldo, totale mensile, nome di fallback, rinomina categoria, riapertura e backup verificati.
+Categorie: 27 scelte, griglia a gruppi, ricerca, recenti, preferiti, creazione/modifica senza perdere la bozza; identificativi precedenti preservati.
+Rate: continua o 1–120; ±, digitazione e limiti; importo per rata invariato, totale in centesimi interi anche agli estremi; nessuna divisione o nuovo arrotondamento.
+Conferme: due azioni esplicite per uscita con modifiche, annullamento senza scrittura, ricreazione attività e cancellazioni; pagina intatta non chiede conferma.
+Regressioni ricorrenti: singola occorrenza, cutoff successivo, intera serie; storico conservato salvo rettifica esplicita; riapertura, materializzazione concorrente e backup.
+Contabilità anticipi: 300 → 250 → 270 → 300 euro, rimborsi esclusi dai guadagni; credito aperto escluso dallo spendibile.
+Simulatore: impegni, riserva, anticipo/rimborso parziale ed entrata attesa verificati insieme; nessuna registrazione contabile.
+Timeline: usa Ledger.projection(false), solo uscite note; riserva come riferimento; nessuna promessa di entrate o recuperi.
+Analisi: confronto di periodi equivalenti, top categorie e quote, pagamenti ricorrenti reali; confronto non disponibile in assenza di dati. Anello vuoto ancora centrato, verificato sui pixel nativi.
+Direzione: salvia, neutri minerali e accenti freddi, tema scuro verde grafite. Home con margine dominante e spesa veloce; simulatore evidenziato; riepiloghi distinti per movimenti/impegni/crediti.
+Il concept ZIP ricevuto contiene schermate Elledue Control, in contrasto con i nomi e il suo LEGGIMI: non è stato copiato. Prevale il brief Posso spenderlo?.
+Diagnosi contorni: la V3 applicava uno sfondo personalizzato a Button con animatore Material e outline nativi ereditati (audit API 26/35); elevazione iniziale 0 non esclude traslazione Z negli stati.
+Correzione condivisa: stile Button esplicito, stateListAnimator nullo, elevation/translationZ 0, tint e outline rimossi; fill/ripple/maschera con geometria comune. Dialog decor piatto; azioni contestuali.
+Stati normali/premuti/selezionati/disabilitati: proprietà verificate API 26/35 e rendering nativo in Activity reale per entrambi i temi. Una prima fixture senza finestra produceva uno stato iniziale spurio; le immagini consegnate usano componenti collegati alla finestra Android.
+Le transizioni di pagina/bottom sheet durano 140/160 ms e rispettano ValueAnimator.areAnimatorsEnabled(). Il compositore hardware e il ripple animato del telefono non sono verificati dal rendering Canvas.
+Verifica visiva svolta: Home chiara/scura, movimenti, lista/calendario, crediti e dettaglio, analisi, simulatore, impostazioni, form, categorie, rate e popup; stati vuoti/negativi e 120 movimenti.
+Dimensioni: 320×640, 360×800, 411×891 dp; font 100/150/200%; categorie a due colonne con font grandi.
+Tastiera: insets IME simulati e Salva fuori dall’area occupata; non un vero servizio tastiera avviato.
+Screenshot: componenti Android reali nei test Robolectric Native Graphics API 35; Dialog disegnati sopra la pagina attenuata, non catture del compositore WindowManager fisico. Solo dati demo.
+Immagini della suite finale consegnate: 148.
+Limiti: installazione/aggiornamento fisico non eseguito; difetto specifico del telefono non dichiarato definitivamente risolto; font molto grandi richiedono scorrimento. Lint mantiene gli avvisi dichiarati.
+Dopo installazione: prova Registra, pressione/rilascio, apertura menu, uscita senza salvare, categoria selezionata e rate ai limiti 1/120, in chiaro/scuro. Controlla contorni senza ombre ritagliate e conservazione dei tuoi dati.
+Prima di aggiornare esporta un backup; installa sopra la V3.0, senza disinstallarla.
+Il recupero privato della chiave sul PC rimane aperto e separato. Nessun backup della firma è stato caricato su GitHub.
+Permesso Internet assente; nessun account, cloud o costo ricorrente introdotto.
+
+Suite eseguite:
+it.privato.disponibile.v2.AdvanceTest: 11 test superati
+it.privato.disponibile.v2.AdvanceUiTest: 6 test superati
+it.privato.disponibile.v2.ComponentAuditTest: 2 test superati
+it.privato.disponibile.v2.FinanceTest: 8 test superati
+it.privato.disponibile.v2.ProductExperienceTest: 6 test superati
+it.privato.disponibile.v2.RecurrenceTest: 12 test superati
+it.privato.disponibile.v2.RecurrenceUiTest: 6 test superati
+it.privato.disponibile.v2.RefinementRenderingTest: 3 test superati
+it.privato.disponibile.v2.RefinementTest: 14 test superati
+it.privato.disponibile.v2.ReminderTest: 2 test superati
+it.privato.disponibile.v2.RenderingTest: 5 test superati
+it.privato.disponibile.v2.ResponsiveTest: 1 test superati
+it.privato.disponibile.v2.StoreTest: 13 test superati
+it.privato.disponibile.v2.UiTest: 20 test superati

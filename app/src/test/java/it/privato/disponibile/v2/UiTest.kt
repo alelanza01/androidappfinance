@@ -23,7 +23,7 @@ class UiTest {
   var controller=Robolectric.buildActivity(MainActivity::class.java).setup();var a=controller.get();click(a.window.decorView,"Registra");choose("Spesa")
   set(a.window.decorView,"Importo in euro","25,50");set(a.window.decorView,"Descrizione","Bolletta demo");click(a.window.decorView,"Salva")
   assertEquals(27450L,ledger().balance);click(a.window.decorView,"Movimenti");click(a.window.decorView,"Bolletta demo");choose("Modifica");set(a.window.decorView,"Importo in euro","30");click(a.window.decorView,"Salva");assertEquals(27000L,ledger().balance)
-  click(a.window.decorView,"Bolletta demo");choose("Elimina movimento");choose("Conferma")
+  click(a.window.decorView,"Bolletta demo");choose("Elimina movimento");UiSupport.accept()
   assertTrue(ledger().operations.isEmpty());assertEquals(30000L,ledger().balance);assertFalse(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()=="Bolletta demo"})
   controller.pause().stop().destroy();controller=Robolectric.buildActivity(MainActivity::class.java).setup();a=controller.get();click(a.window.decorView,"Movimenti");assertFalse(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()=="Bolletta demo"});controller.pause().stop().destroy()
  }
@@ -46,7 +46,7 @@ class UiTest {
   withStore{it.settings(it.snapshot().settings.copy(opening=12300))};val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();val uri=android.net.Uri.parse("content://backup/export");val out=java.io.ByteArrayOutputStream();Shadows.shadowOf(a.contentResolver).registerOutputStream(uri,out)
   result(a,1,Activity.RESULT_OK,Intent().setData(uri));assertEquals(12300L,Backup.decode(out.toString("UTF-8")).settings.opening)
   val demo=Demo.ledger("light");val src=android.net.Uri.parse("content://backup/import");Shadows.shadowOf(a.contentResolver).registerInputStream(src,java.io.ByteArrayInputStream(Backup.encode(demo).toByteArray()))
-  result(a,2,Activity.RESULT_OK,Intent().setData(src));choose("Conferma");assertEquals(demo.balance,ledger().balance);assertEquals(12300L,Backup.decode(java.io.File(a.filesDir,"pre-import.json").readText()).settings.opening);c.pause().stop().destroy()
+  result(a,2,Activity.RESULT_OK,Intent().setData(src));UiSupport.accept();assertEquals(demo.balance,ledger().balance);assertEquals(12300L,Backup.decode(java.io.File(a.filesDir,"pre-import.json").readText()).settings.opening);c.pause().stop().destroy()
  }
  @Test fun cancelledAndMalformedDocumentsLeaveDataUntouched() {
   withStore{it.settings(it.snapshot().settings.copy(opening=12300))};val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();result(a,2,Activity.RESULT_CANCELED,null)
@@ -55,12 +55,12 @@ class UiTest {
  @Test fun uncertainIncomeIsOnlyCashAfterExplicitReceiptFromTheNewFlow() {
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Impegni");click(a.window.decorView,"Nuovo impegno");choose("Entrata prevista")
   set(a.window.decorView,"Importo in euro","50");set(a.window.decorView,"Descrizione","Incarico futuro");click(a.window.decorView,"Opzioni avanzate");click(a.window.decorView,"Entrata non garantita");choose("Sì, solo uno scenario");click(a.window.decorView,"Salva")
-  assertEquals(0L,ledger().balance);assertEquals(0L,ledger().spendable);assertTrue(ledger().pending.single().uncertain);click(a.window.decorView,"Incarico futuro");choose("Conferma incasso oggi");choose("Conferma");assertEquals(5000L,ledger().balance);assertTrue(ledger().pending.isEmpty());c.pause().stop().destroy()
+  assertEquals(0L,ledger().balance);assertEquals(0L,ledger().spendable);assertTrue(ledger().pending.single().uncertain);click(a.window.decorView,"Incarico futuro");choose("Conferma incasso oggi");UiSupport.accept();assertEquals(5000L,ledger().balance);assertTrue(ledger().pending.isEmpty());c.pause().stop().destroy()
  }
  @Test fun finiteInstallmentsCanBeCreatedAndEditedWithoutRecreatingPaidHistory() {
   withStore{it.settings(it.snapshot().settings.copy(opening=10000,horizon=java.time.LocalDate.now().plusMonths(3)))};val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Ricorrenza o rate")
-  set(a.window.decorView,"Importo in euro","10");set(a.window.decorView,"Descrizione","Rate test");set(a.window.decorView,"Numero rate (vuoto = continua)","3");click(a.window.decorView,"Salva");assertEquals(3,ledger().pending.size);assertEquals(7000L,ledger().spendable)
-  click(a.window.decorView,"Impegni");click(a.window.decorView,"Rate test · 1/3");choose("Conferma pagamento oggi");choose("Conferma");assertEquals(9000L,ledger().balance)
+  set(a.window.decorView,"Importo in euro","10");set(a.window.decorView,"Descrizione","Rate test");click(a.window.decorView,"Numero di rate");set(a.window.decorView,"Numero rate","3");click(a.window.decorView,"Salva");assertEquals(3,ledger().pending.size);assertEquals(7000L,ledger().spendable)
+  click(a.window.decorView,"Impegni");click(a.window.decorView,"Rate test · 1/3");choose("Conferma pagamento oggi");UiSupport.accept();assertEquals(9000L,ledger().balance)
   click(a.window.decorView,"Rate test");choose("Modifica serie");set(a.window.decorView,"Importo in euro","12");click(a.window.decorView,"Salva");assertEquals(1000L,ledger().actual.single().cents);assertTrue(ledger().pending.all{it.cents==1200L});assertEquals(6600L,ledger().spendable);c.pause().stop().destroy()
  }
  @Test fun staleSaveButtonCannotRegisterTheSameDraftTwice() {

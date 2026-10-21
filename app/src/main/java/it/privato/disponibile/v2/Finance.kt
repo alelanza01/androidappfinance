@@ -21,7 +21,7 @@ object Money {
 enum class Kind { INCOME, EXPENSE, ADJUSTMENT }
 enum class Status { PLANNED, ACTUAL, DELETED }
 enum class Frequency { MONTHLY, WEEKLY, YEARLY }
-data class Category(val id:Long,val name:String,val color:Int)
+data class Category(val id:Long,val name:String,val color:Int,val icon:String="other",val favorite:Boolean=false)
 data class Operation(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val status:Status,val date:LocalDate,val category:Long,val uncertain:Boolean=false,val series:Long?=null,val index:Int?=null) {
     val signed:Long get()=if(kind==Kind.EXPENSE) -cents else cents
 }
@@ -56,6 +56,7 @@ data class Ledger(val settings:Settings,val categories:List<Category>,val operat
     fun simulated(cents:Long)=spendable-cents
     fun month(month:YearMonth,kind:Kind)=actual.filter {YearMonth.from(it.date)==month && it.kind==kind}.sumOf {it.cents}
     fun categoryName(id:Long)=categories.firstOrNull {it.id==id}?.name ?: "Senza categoria"
+    fun operationTitle(o:Operation)=o.title.ifBlank {categoryName(o.category)}
     fun history():List<Pair<LocalDate,Long>> {
         var b=settings.opening
         val events=cashEvents.groupBy {it.date}.toSortedMap()

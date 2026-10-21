@@ -62,7 +62,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
             if(fill) {val fillPath=Path(path);fillPath.lineTo(x(points.last().first),y(0));fillPath.lineTo(x(points.first().first),y(0));fillPath.close();p.color=color;p.alpha=30;p.style=Paint.Style.FILL;c.drawPath(fillPath,p);p.alpha=255}
             p.color=color;p.style=Paint.Style.STROKE;p.strokeWidth=2.5f*font;p.pathEffect=if(dashed)DashPathEffect(floatArrayOf(6*font,5*font),0f) else null;c.drawPath(path,p);p.pathEffect=null
         }
-        plot(history,palette.chartSage,false,true);plot(guaranteed,palette.chartCoral,true,true);plot(expected,palette.chartGold,true)
+        plot(history,palette.chartSage,false,true);plot(guaranteed,palette.chartCoral,true,true);plot(expected,palette.chartCool,true)
         line(c,x(LocalDate.now()),top,x(LocalDate.now()),bottom,palette.muted)
         text(c,start.format(DateTimeFormatter.ofPattern("dd/MM")),left,height-8*font)
         text(c,end.format(DateTimeFormatter.ofPattern("dd/MM")),right-36*font,height-8*font)

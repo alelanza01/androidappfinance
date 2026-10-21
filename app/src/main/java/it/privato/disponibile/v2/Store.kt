@@ -7,24 +7,31 @@ import android.database.sqlite.SQLiteOpenHelper
 import java.time.LocalDate
 import android.graphics.Color
 
-class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,3) {
+class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,4) {
     override fun onCreate(db:SQLiteDatabase) {
         db.execSQL("CREATE TABLE settings(id INTEGER PRIMARY KEY CHECK(id=1),opening INTEGER NOT NULL,reserve INTEGER NOT NULL,horizon TEXT NOT NULL,theme TEXT NOT NULL,reminders INTEGER NOT NULL)")
         db.execSQL("INSERT INTO settings VALUES(1,0,0,?,'system',0)",arrayOf<Any?>(LocalDate.now().plusDays(30).toString()))
-        db.execSQL("CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,color INTEGER NOT NULL)")
+        db.execSQL("CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,color INTEGER NOT NULL,icon TEXT NOT NULL DEFAULT 'other',favorite INTEGER NOT NULL DEFAULT 0)")
         db.execSQL("CREATE TABLE series(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,category INTEGER NOT NULL,start TEXT NOT NULL,frequency TEXT NOT NULL,count INTEGER NOT NULL,uncertain INTEGER NOT NULL,active INTEGER NOT NULL,endIndex INTEGER)")
         db.execSQL("CREATE TABLE operations(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,status TEXT NOT NULL,date TEXT NOT NULL,category INTEGER NOT NULL,uncertain INTEGER NOT NULL,series INTEGER,occurrence INTEGER,UNIQUE(series,occurrence))")
         db.execSQL("CREATE INDEX operation_dates ON operations(date,status)")
         createAdvances(db)
         listOf("Casa" to "#779B91","Spesa" to "#DBBF8B","Trasporti" to "#7392B7","Personale" to "#AC91BB","Entrate" to "#60977B","Altro" to "#C66B65").forEach {(name,color)->db.execSQL("INSERT INTO categories(name,color) VALUES(?,?)",arrayOf<Any?>(name,Color.parseColor(color)))}
+        CategoryCatalog.ensure(db)
     }
     override fun onUpgrade(db:SQLiteDatabase,old:Int,new:Int) {
+        if(old<4)upgradeCategories(db)
         if(old<2)createAdvances(db)
         if(old<3) {
             db.execSQL("ALTER TABLE series ADD COLUMN endIndex INTEGER")
             db.delete("operations","status='DELETED' AND (series IS NULL OR series IN (SELECT id FROM series WHERE active=0))",null)
             db.execSQL("DELETE FROM series WHERE active=0 AND NOT EXISTS (SELECT 1 FROM operations WHERE operations.series=series.id)")
         }
+    }
+    private fun upgradeCategories(db:SQLiteDatabase) {
+        db.execSQL("ALTER TABLE categories ADD COLUMN icon TEXT NOT NULL DEFAULT 'other'")
+        db.execSQL("ALTER TABLE categories ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0")
+        CategoryCatalog.ensure(db)
     }
     private fun createAdvances(db:SQLiteDatabase) {
         db.execSQL("CREATE TABLE advances(id INTEGER PRIMARY KEY AUTOINCREMENT,cents INTEGER NOT NULL CHECK(cents>0),date TEXT NOT NULL,description TEXT NOT NULL,debtor TEXT NOT NULL,project TEXT NOT NULL,cause TEXT NOT NULL,due TEXT,notes TEXT NOT NULL)")
@@ -37,7 +44,7 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,3) {
     }
     private fun read():Ledger {
         val settings=readableDatabase.rawQuery("SELECT opening,reserve,horizon,theme,reminders FROM settings WHERE id=1",null).use {it.moveToFirst();Settings(it.getLong(0),it.getLong(1),maxOf(LocalDate.parse(it.getString(2)),LocalDate.now()),it.getString(3),it.getInt(4)==1)}
-        val categories=readableDatabase.rawQuery("SELECT id,name,color FROM categories ORDER BY id",null).use {c->buildList {while(c.moveToNext())add(Category(c.getLong(0),c.getString(1),c.getInt(2)))}}
+        val categories=readableDatabase.rawQuery("SELECT id,name,color,icon,favorite FROM categories ORDER BY id",null).use {c->buildList {while(c.moveToNext())add(Category(c.getLong(0),c.getString(1),c.getInt(2),c.getString(3),c.getInt(4)==1))}}
         val series=readableDatabase.rawQuery("SELECT id,title,cents,kind,category,start,frequency,count,uncertain,active,endIndex FROM series",null).use {c->buildList {while(c.moveToNext())add(Series(c.getLong(0),c.getString(1),c.getLong(2),Kind.valueOf(c.getString(3)),c.getLong(4),LocalDate.parse(c.getString(5)),Frequency.valueOf(c.getString(6)),c.getInt(7),c.getInt(8)==1,c.getInt(9)==1,if(c.isNull(10))null else c.getInt(10)))}}
         val operations=readableDatabase.rawQuery("SELECT id,title,cents,kind,status,date,category,uncertain,series,occurrence FROM operations ORDER BY date,id",null).use {c->buildList {while(c.moveToNext())add(Operation(c.getLong(0),c.getString(1),c.getLong(2),Kind.valueOf(c.getString(3)),Status.valueOf(c.getString(4)),LocalDate.parse(c.getString(5)),c.getLong(6),c.getInt(7)==1,if(c.isNull(8))null else c.getLong(8),if(c.isNull(9))null else c.getInt(9)))}}
         val advances=readableDatabase.rawQuery("SELECT id,cents,date,description,debtor,project,cause,due,notes FROM advances ORDER BY date,id",null).use {c->buildList {while(c.moveToNext())add(Advance(c.getLong(0),c.getLong(1),LocalDate.parse(c.getString(2)),c.getString(3),c.getString(4),c.getString(5),c.getString(6),if(c.isNull(7))null else LocalDate.parse(c.getString(7)),c.getString(8)))}}
@@ -134,9 +141,9 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,3) {
         require(diff in -Money.MAX..Money.MAX) {"Rettifica troppo grande."}
         save(Operation(title="Rettifica liquidità",cents=diff,kind=Kind.ADJUSTMENT,status=Status.ACTUAL,date=LocalDate.now(),category=l.categories.last().id))
     }
-    fun category(id:Long?,name:String,color:Int) {
+    fun category(id:Long?,name:String,color:Int,icon:String?=null,favorite:Boolean?=null) {
         require(name.trim().length in 1..40) {"Nome categoria: da 1 a 40 caratteri."}
-        val v=ContentValues().apply {put("name",name.trim());put("color",color)}
+        val v=ContentValues().apply {put("name",name.trim());put("color",color);if(icon!=null){require(icon in CategoryCatalog.icons);put("icon",icon)};if(favorite!=null)put("favorite",if(favorite)1 else 0)}
         if(id==null)check(writableDatabase.insertOrThrow("categories",null,v)>0) else check(writableDatabase.update("categories",v,"id=?",arrayOf(id.toString()))==1)
     }
     fun deleteCategory(id:Long) {transaction {db->
@@ -149,7 +156,7 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,3) {
         Backup.decode(Backup.encode(ledger))
         transaction {db->
         db.delete("refunds",null,null);db.delete("advances",null,null);db.delete("operations",null,null);db.delete("series",null,null);db.delete("categories",null,null)
-        ledger.categories.forEach {c->db.execSQL("INSERT INTO categories(id,name,color) VALUES(?,?,?)",arrayOf<Any?>(c.id,c.name,c.color))}
+        ledger.categories.forEach {c->db.execSQL("INSERT INTO categories(id,name,color,icon,favorite) VALUES(?,?,?,?,?)",arrayOf<Any?>(c.id,c.name,c.color,c.icon,if(c.favorite)1 else 0))}
         ledger.persistedSeries.forEach {s->val v=seriesValues(s);v.put("id",s.id);db.insertOrThrow("series",null,v)}
         ledger.persistedOperations.forEach {op->val v=values(op);v.put("id",op.id);db.insertOrThrow("operations",null,v)}
         ledger.advances.forEach {a->val v=advanceValues(a);v.put("id",a.id);db.insertOrThrow("advances",null,v)}
@@ -197,7 +204,7 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,3) {
             require(r.note.length<=500) {"Nota troppo lunga (massimo 500 caratteri)."}
         }
         fun validate(op:Operation) {
-            require(op.title.trim().length in 1..80) {"Descrizione richiesta, massimo 80 caratteri."}
+            require(op.title.trim().length<=80 && (op.kind==Kind.EXPENSE || op.title.isNotBlank())) {"Descrizione facoltativa per le spese, richiesta per le entrate (massimo 80 caratteri)."}
             require(if(op.kind==Kind.ADJUSTMENT) op.cents!=0L && op.cents in -Money.MAX..Money.MAX else op.cents in 1..Money.MAX) {"Importo non valido."}
             require(op.date.year in 1900..2200) {"Data fuori intervallo."}
             require(op.status!=Status.ACTUAL || op.date<=LocalDate.now()) {"Una data futura deve restare prevista."}
