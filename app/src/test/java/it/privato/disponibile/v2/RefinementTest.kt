@@ -45,22 +45,22 @@ class RefinementTest {
   withStore {val l=it.snapshot();it.save(Operation(title="",cents=1000,kind=Kind.EXPENSE,status=Status.ACTUAL,date=LocalDate.now(),category=l.categories.first().id))}
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get()
   click(a.window.decorView,"Registra");choose("Spesa");click(a.window.decorView,"Categoria");click(a.window.decorView,"Recenti");assertTrue(all(a.window.decorView).filterIsInstance<Button>().any {it.text.toString()=="Casa"})
-  click(a.window.decorView,"Tutte");set(a.window.decorView,"Cerca categorie","svapo");assertEquals(1,all(a.window.decorView).filterIsInstance<Button>().count {it.compoundDrawables[1] is CategoryIcon});click(a.window.decorView,"Svapo");click(a.window.decorView,"Categoria")
+  click(a.window.decorView,"Tutte");set(a.window.decorView,"Cerca categorie","svapo");assertEquals(1,all(a.window.decorView).count {it.tag=="category-choice"});click(a.window.decorView,"Svapo");click(a.window.decorView,"Categoria")
   set(a.window.decorView,"Cerca categorie","casa");val casa=all(a.window.decorView).filterIsInstance<Button>().first {it.text.toString()=="Casa"};casa.performLongClick();idle();set(a.window.decorView,"Nome categoria","Casa mia");click(a.window.decorView,"Salva");a.onBackPressed()
   val l=ledger();assertEquals("Casa mia",l.categoryName(l.actual.single().category));assertEquals(-1000L,l.balance);c.pause().stop().destroy()
  }
  @Test fun exitConfirmationHasOnlyTwoExplicitActionsAndNeverWritesDraft() {
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();var a=c.get();click(a.window.decorView,"Registra");choose("Spesa")
-  a.onBackPressed();assertTrue(all(a.window.decorView).filterIsInstance<Button>().any {it.text.toString()=="Registra"})
+  a.onBackPressed();assertTrue(all(a.window.decorView).filterIsInstance<Button>().any {it.contentDescription=="Aggiungi"})
   click(a.window.decorView,"Registra");choose("Spesa");set(a.window.decorView,"Importo in euro","20");c.recreate();a=c.get();a.onBackPressed()
   val buttons=all(dialog().window!!.decorView).filterIsInstance<Button>().map {it.text.toString()};assertEquals(listOf("Continua a modificare","Esci senza salvare"),buttons)
   choose("Continua a modificare");assertEquals("20",field(a.window.decorView,"Importo in euro").text.toString());a.onBackPressed();choose("Esci senza salvare");assertTrue(ledger().operations.isEmpty());c.pause().stop().destroy()
  }
  @Test fun numberOfInstallmentsHasBoundariesManualInputAndExactPerInstallmentAmounts() {
-  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Ricorrenza o rate");set(a.window.decorView,"Importo in euro","9999999,99");click(a.window.decorView,"Numero di rate")
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Ricorrenza o rate");set(a.window.decorView,"Importo in euro","9999999,99");click(a.window.decorView,"Rate")
   set(a.window.decorView,"Numero rate","1");assertFalse(all(a.window.decorView).first {it.contentDescription=="Riduci rate"}.isEnabled)
   click(a.window.decorView,"Aumenta rate");assertEquals("2",field(a.window.decorView,"Numero rate").text.toString());set(a.window.decorView,"Numero rate","120");assertFalse(all(a.window.decorView).first {it.contentDescription=="Aumenta rate"}.isEnabled)
-  set(a.window.decorView,"Numero rate","121");click(a.window.decorView,"Salva");assertTrue(ledger().series.isEmpty());choose("Ho capito");set(a.window.decorView,"Numero rate","3");click(a.window.decorView,"Salva")
+  set(a.window.decorView,"Numero rate","121");click(a.window.decorView,"Applica rate");assertTrue(ledger().series.isEmpty());choose("Ho capito");set(a.window.decorView,"Numero rate","3");click(a.window.decorView,"Applica rate");click(a.window.decorView,"Salva")
   val l=ledger();assertEquals(3,l.pending.size);assertTrue(l.pending.all {it.cents==Money.MAX});assertEquals(Money.MAX*3,l.pending.sumOf {it.cents});assertEquals(l,Backup.decode(Backup.encode(l)));c.pause().stop().destroy()
  }
  @Test fun migrationFromV3PreservesCustomCategoriesFinancialRecordsAndDeletionCutoffs() {

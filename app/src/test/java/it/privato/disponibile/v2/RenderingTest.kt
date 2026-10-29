@@ -17,7 +17,7 @@ object Capture {
  fun layout(v:View,w:Int,h:Int){v.measure(View.MeasureSpec.makeMeasureSpec(w,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec(h,View.MeasureSpec.EXACTLY));v.layout(0,0,w,h)}
  fun save(a:MainActivity,name:String,w:Int=1080,h:Int=2400,overlay:Boolean=false) {
   UiSupport.idle();val v=a.window.decorView;layout(v,w,h);val bmp=Bitmap.createBitmap(w,h,Bitmap.Config.ARGB_8888);val canvas=Canvas(bmp);v.draw(canvas)
-  if(overlay){val d=UiSupport.dialog();assertTrue(d.isShowing);val dv=d.window!!.decorView;dv.measure(View.MeasureSpec.makeMeasureSpec(w,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec((h*.85).toInt(),View.MeasureSpec.AT_MOST));dv.layout(0,0,w,dv.measuredHeight);canvas.drawColor(Color.argb(100,0,0,0));canvas.save();canvas.translate(0f,(h-dv.height).toFloat());dv.draw(canvas);canvas.restore()}
+  if(overlay){val d=UiSupport.dialog();assertTrue(d.isShowing);val dv=d.window!!.decorView;val attrs=d.window!!.attributes;val dw=if(attrs.width>0)minOf(w,attrs.width)else w;dv.measure(View.MeasureSpec.makeMeasureSpec(dw,View.MeasureSpec.EXACTLY),View.MeasureSpec.makeMeasureSpec((h*.85).toInt(),View.MeasureSpec.AT_MOST));dv.layout(0,0,dw,dv.measuredHeight);canvas.drawColor(Color.argb(100,0,0,0));canvas.save();canvas.translate((w-dw)/2f,if(attrs.gravity and Gravity.VERTICAL_GRAVITY_MASK==Gravity.CENTER_VERTICAL)(h-dv.height)/2f else (h-dv.height).toFloat());dv.draw(canvas);canvas.restore()}
   val dir=File(requireNotNull(System.getProperty("posso.screenshots.dir")));dir.mkdirs();File(dir,name).outputStream().use {assertTrue(bmp.compress(Bitmap.CompressFormat.PNG,100,it))};bmp.recycle()
  }
 }

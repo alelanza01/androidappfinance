@@ -1,0 +1,69 @@
+Posso spenderlo? V3.2 — Concept Fidelity — 29 ottobre 2026
+Branch dedicato: feature/v3.2-concept-fidelity; base 3e95305d000eeba666dcebfae1c85e6f9a206c9f. Non unito a main.
+Comando effettivo: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+Build release riuscita; 122 test superati; 0 fallimenti/errori/saltati.
+Lint debug: 0 errori, 29 avvisi: {'DrawAllocation': 10, 'ViewConstructor': 4, 'SetTextI18n': 15}.
+ID: it.privato.disponibile.v2. Versione: 3.2.0. versionCode: 320, superiore a 310.
+APK DI PROVA firmato con la chiave originale, verificato da apksigner (schema v2) e confrontato con V2/V2.1/V3.0/V3.1; i quattro APK precedenti hanno checksum invariato.
+Certificato pubblico SHA-256: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Nessun nuovo keystore. Password, chiavi e dati finanziari personali esclusi dagli artefatti.
+Finance.kt, Store.kt e Backup.kt invariati rispetto alla base: schema SQLite 4, backup 5 e migrazioni precedenti conservati; nessuna nuova migrazione necessaria.
+Le 109 verifiche precedenti sono conservate, adattando comandi/test UI alla nuova navigazione e alla pagina Rate. Aggiunte verifiche specifiche e catture native.
+Invarianti: centesimi interi, spendibile prudente, saldo effettivo/previsioni distinti, riserva e impegni, entrate incerte, anticipi/rimborsi distinti da consumo/guadagni, residui e nessun doppio conteggio.
+Ricorrenze: singola, da qui in avanti, intera serie; storico contabilizzato preservato salvo correzione esplicita, cutoff, backup e concorrenza ancora verificati.
+Nuove verifiche: percentuale del ring su liquidità positiva; nessuna percentuale con saldo non positivo; spesa senza descrizione; preferiti a cuore e bozza dopo ricreazione; rate applicate senza registrazioni fino a Salva piano; mesi 1/3/12 e confronto non disponibile per periodi futuri; tutte le destinazioni della nuova navigazione.
+Home: Ciao!, anello turchese con importo spendibile reale, due pannelli mensili, scadenze compatte, + centrale. Simulatore, crediti, calcolo e spesa veloce conservati.
+Nuova spesa: importo su azzurro, griglia 4×3 (3 colonne con testo grande), scelta categoria, descrizione facoltativa, data, rate, Salva spesa blu sfumato.
+Categorie: preferite orizzontali, ricerca, righe con vettore e cuore, recenti, nomi personalizzati e modifica. Nessuna riclassificazione dei record; gli adattamenti cromatici delle categorie standard sono soltanto UI.
+Analisi: selettore mobile Mese/Trimestre/Anno, anello distribuzione reale, legenda percentuale/importo e saldo registrato blu; confronti e pagamenti ricorrenti conservati. Previsioni e colonne ancora disponibili.
+Rate: radio nessuna/2/3/6/12, continua e valore manuale 1–120. Ogni rata mantiene l’importo originale; totale n×importo. Applica rate prepara il piano, non scrive il database.
+Dialoghi: centrali, illustrazione vettoriale, sfondo attenuato, azioni esplicite; fill/ripple coerenti e nessuna elevazione/outline/animatore Material ereditato.
+Mappatura sorgenti: Design.kt (token e componenti), ConceptViews.kt (anello/saldo/illustrazione/cuore/periodi), CategoryCatalog.kt (vettori e colori UI), Charts.kt (distribuzione per periodo), MainActivity.kt (sei composizioni e navigazione).
+Fedeltà verificata visivamente: gerarchia, anello, palette, griglia, cuore, legenda, CTA sfumate, radio e finestra centrale. Originali e confronti PNG/PDF disponibili in references/ e comparisons/.
+Differenze dichiarate: numeri/date sono quelli delle fixture DEMO; nessuna copia dei valori illustrativi come dati utente. Icone ricostruite, non bitmap; colori personalizzati preservati. Testo e controlli si adattano ai font Android.
+Differenze necessarie: rate per ciascuna rata anziché suddivisione del totale illustrato; controlli continua/1–120 e recenti aggiuntivi; linea del saldo a gradini anziché curva interpolata; fondo oscurato senza sfocatura hardware simulata.
+Proporzioni adattate a viewport Android: 320×640, 360×800, 411×891 dp; font 100/150/200%. Cornice fisica, notch e icone di sistema del mockup non sono disegnati dentro l’app.
+Rendering dei View Android reali con Robolectric Native Graphics API 35; test UI API 26/35 e dati API 28. Le finestre dei dialoghi sono composte dai View reali usando posizione/dimensioni dichiarate, non dal compositore hardware WindowManager.
+Catture: sei schermate in chiaro/scuro; pagine secondarie, vuoti, negativi, 120 movimenti, importi lunghi; rate e dialoghi con font grandi. Gli originali del concept mantengono la risoluzione limitata fornita, senza ricostruzione artificiale.
+Tastiera: soltanto insets IME simulati; Save/Applica rate verificati fuori dall’area coperta. Nessun vero servizio tastiera o telefono fisico utilizzato.
+Limiti: installazione sopra V3.1 non eseguita sul telefono; ripple animato, compositore hardware, eventuale difetto specifico del dispositivo, tastiera reale e notifiche temporizzate restano da verificare fisicamente. Nessuna dichiarazione di equivalenza pixel-per-pixel.
+Installazione di prova: esportare prima un backup; scaricare APK e scegliere Aggiorna. Non disinstallare V3.1. Il recupero della chiave sul PC resta aperto e separato.
+Offline e nessun permesso Internet/account/cloud/costo aggiunto. Nessuna release GitHub definitiva pubblicata.
+Screenshot della suite finale: 188. Confronti: 6 PNG e un PDF.
+
+File sorgente/test/documentazione modificati:
+README.md
+app/build.gradle.kts
+app/src/main/java/it/privato/disponibile/v2/CategoryCatalog.kt
+app/src/main/java/it/privato/disponibile/v2/Charts.kt
+app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt
+app/src/main/java/it/privato/disponibile/v2/Design.kt
+app/src/main/java/it/privato/disponibile/v2/MainActivity.kt
+app/src/main/res/drawable/ic_launcher.xml
+app/src/main/res/values/styles.xml
+app/src/test/java/it/privato/disponibile/v2/ConceptFidelityTest.kt
+app/src/test/java/it/privato/disponibile/v2/RefinementRenderingTest.kt
+app/src/test/java/it/privato/disponibile/v2/RefinementTest.kt
+app/src/test/java/it/privato/disponibile/v2/RenderingTest.kt
+app/src/test/java/it/privato/disponibile/v2/ResponsiveTest.kt
+app/src/test/java/it/privato/disponibile/v2/UiSupport.kt
+app/src/test/java/it/privato/disponibile/v2/UiTest.kt
+tools/compare_concept.py
+
+Suite eseguite:
+it.privato.disponibile.v2.AdvanceTest: 11 test superati
+it.privato.disponibile.v2.AdvanceUiTest: 6 test superati
+it.privato.disponibile.v2.ComponentAuditTest: 2 test superati
+it.privato.disponibile.v2.ConceptFidelityTest: 10 test superati
+it.privato.disponibile.v2.ConceptScreenshotsTest: 3 test superati
+it.privato.disponibile.v2.FinanceTest: 8 test superati
+it.privato.disponibile.v2.ProductExperienceTest: 6 test superati
+it.privato.disponibile.v2.RecurrenceTest: 12 test superati
+it.privato.disponibile.v2.RecurrenceUiTest: 6 test superati
+it.privato.disponibile.v2.RefinementRenderingTest: 3 test superati
+it.privato.disponibile.v2.RefinementTest: 14 test superati
+it.privato.disponibile.v2.ReminderTest: 2 test superati
+it.privato.disponibile.v2.RenderingTest: 5 test superati
+it.privato.disponibile.v2.ResponsiveTest: 1 test superati
+it.privato.disponibile.v2.StoreTest: 13 test superati
+it.privato.disponibile.v2.UiTest: 20 test superati

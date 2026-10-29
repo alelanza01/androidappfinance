@@ -36,12 +36,13 @@ object CategoryCatalog {
 }
 
 /** One 24 px vector vocabulary, consistent stroke and optical size; no font emoji. */
-class CategoryIcon(private val key:String,private val tint:Int,private val px:Int):Drawable() {
+class CategoryIcon(private val key:String,private val tint:Int,private val px:Int,private val bubble:Int?=null):Drawable() {
     private val p=Paint(Paint.ANTI_ALIAS_FLAG).apply {color=tint;style=Paint.Style.STROKE;strokeWidth=1.7f;strokeCap=Paint.Cap.ROUND;strokeJoin=Paint.Join.ROUND}
     override fun getIntrinsicWidth()=px
     override fun getIntrinsicHeight()=px
     override fun draw(c:Canvas) {
         c.save();c.translate(bounds.left.toFloat(),bounds.top.toFloat());c.scale(bounds.width()/24f,bounds.height()/24f)
+        if(bubble!=null){val bg=Paint(Paint.ANTI_ALIAS_FLAG).apply {color=bubble};c.drawRoundRect(0f,0f,24f,24f,8f,8f,bg);c.translate(3f,3f);c.scale(.75f,.75f)}
         fun line(x:Float,y:Float,a:Float,b:Float)=c.drawLine(x,y,a,b,p)
         fun rect(x:Float,y:Float,a:Float,b:Float)=c.drawRoundRect(x,y,a,b,2f,2f,p)
         fun path(vararg xy:Float){val v=Path();v.moveTo(xy[0],xy[1]);for(i in 2 until xy.size step 2)v.lineTo(xy[i],xy[i+1]);c.drawPath(v,p)}
@@ -75,4 +76,19 @@ class CategoryIcon(private val key:String,private val tint:Int,private val px:In
     override fun setAlpha(a:Int){p.alpha=a}
     override fun setColorFilter(f:ColorFilter?){p.colorFilter=f}
     @Deprecated("Deprecated in Android") override fun getOpacity()=PixelFormat.TRANSLUCENT
+}
+
+/** Presentation only: custom category names/colors and every stored identity stay untouched. */
+object CategoryVisual {
+    private val old=listOf("#779B91","#DBBF8B","#7392B7","#AC91BB","#C66B65")
+    private val original=mapOf("Casa" to "#779B91","Spesa" to "#DBBF8B","Trasporti" to "#7392B7","Personale" to "#AC91BB","Entrate" to "#60977B","Altro" to "#C66B65")
+    private fun standard(c:Category):Boolean {val i=CategoryCatalog.entries.indexOfFirst {it.name==c.name && it.icon==c.icon};return i>=0 && c.color==Color.parseColor(original[c.name] ?: old[i%old.size])}
+    fun iconColor(c:Category):Int {
+        if(!standard(c))return c.color
+        return Color.parseColor(when(c.icon){"home","sport","income"->"#79CEA2";"car","bus","fuel","holiday","screen"->"#77B4ED";"travel","bag","gift"->"#69D1CE";"basket","cup","wine"->"#F4BE7A";"smoke","vape","book"->"#AF96E9";"health","pharmacy","shirt"->"#F49BA8";else->"#A9BBCD"})
+    }
+    fun chartColor(c:Category):Int {if(!standard(c))return c.color
+        return Color.parseColor(when(c.icon){"home"->"#459AF5";"basket"->"#A6B9BD";"car"->"#AA9AE5";"travel"->"#F8B17F";"health"->"#F28D9F";"bag"->"#82CA9A";else->listOf("#7BBBE6","#B4A0E5","#F6A58F","#7DCBC0","#D5A7D7")[c.id.toInt().mod(5)]})
+    }
+    fun shortName(c:Category)=if(standard(c))when(c.icon){"basket"->"Cibo";"car"->"Auto";"holiday"->"Casa vacanza";else->c.name}else c.name
 }

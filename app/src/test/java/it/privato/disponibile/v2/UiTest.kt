@@ -59,13 +59,13 @@ class UiTest {
  }
  @Test fun finiteInstallmentsCanBeCreatedAndEditedWithoutRecreatingPaidHistory() {
   withStore{it.settings(it.snapshot().settings.copy(opening=10000,horizon=java.time.LocalDate.now().plusMonths(3)))};val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Ricorrenza o rate")
-  set(a.window.decorView,"Importo in euro","10");set(a.window.decorView,"Descrizione","Rate test");click(a.window.decorView,"Numero di rate");set(a.window.decorView,"Numero rate","3");click(a.window.decorView,"Salva");assertEquals(3,ledger().pending.size);assertEquals(7000L,ledger().spendable)
+  set(a.window.decorView,"Importo in euro","10");set(a.window.decorView,"Descrizione","Rate test");click(a.window.decorView,"Rate");set(a.window.decorView,"Numero rate","3");click(a.window.decorView,"Applica rate");click(a.window.decorView,"Salva");assertEquals(3,ledger().pending.size);assertEquals(7000L,ledger().spendable)
   click(a.window.decorView,"Impegni");click(a.window.decorView,"Rate test · 1/3");choose("Conferma pagamento oggi");UiSupport.accept();assertEquals(9000L,ledger().balance)
   click(a.window.decorView,"Rate test");choose("Modifica serie");set(a.window.decorView,"Importo in euro","12");click(a.window.decorView,"Salva");assertEquals(1000L,ledger().actual.single().cents);assertTrue(ledger().pending.all{it.cents==1200L});assertEquals(6600L,ledger().spendable);c.pause().stop().destroy()
  }
  @Test fun staleSaveButtonCannotRegisterTheSameDraftTwice() {
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Spesa");set(a.window.decorView,"Importo in euro","10");set(a.window.decorView,"Descrizione","Una volta")
-  val save=all(a.window.decorView).filterIsInstance<android.widget.Button>().first{it.text.toString()=="Salva"};save.performClick();save.performClick();UiSupport.idle();assertEquals(1,ledger().operations.size);assertEquals(-1000L,ledger().balance);c.pause().stop().destroy()
+  val save=all(a.window.decorView).filterIsInstance<android.widget.Button>().first{it.text.toString().startsWith("Salva")};save.performClick();save.performClick();UiSupport.idle();assertEquals(1,ledger().operations.size);assertEquals(-1000L,ledger().balance);c.pause().stop().destroy()
  }
  @Test fun draftSurvivesActivityRecreationWithoutWritingBeforeSave() {
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();var a=c.get();click(a.window.decorView,"Registra");choose("Spesa");set(a.window.decorView,"Importo in euro","12,50");set(a.window.decorView,"Descrizione","Bozza");c.recreate();a=c.get()

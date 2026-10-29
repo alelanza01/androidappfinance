@@ -11,6 +11,12 @@ object UiSupport {
  fun all(v:View):List<View> = listOf(v)+if(v is ViewGroup)(0 until v.childCount).flatMap {all(v.getChildAt(it))}else emptyList()
  fun idle(){Shadows.shadowOf(android.os.Looper.getMainLooper()).idleFor(Duration.ofMillis(250))}
  fun click(v:View,name:String) {
+  if(name=="Registra" && all(v).none {it is Button && it.text.toString()=="Registra"}){click(v,"Aggiungi");return}
+  if(name=="Home" && all(v).none {it is Button && it.text.toString()=="Home"}){click(v,"Indietro");return}
+  if(name=="Crediti" && all(v).none {it is Button && it.text.toString()=="Crediti"}){click(v,"Home");click(v,"Crediti");return}
+  if(name in listOf("Movimenti","Analisi","Impegni") && all(v).none {it is Button && it.text.toString()==name}){click(v,"Home");click(v,name);return}
+  if(name=="Salva" && all(v).none {it is Button && it.text.toString()=="Salva"}){val label=all(v).filterIsInstance<Button>().first {it.text.toString().startsWith("Salva ")}.text.toString();click(v,label);return}
+
   var target=all(v).firstOrNull {it is Button && it.text.toString()==name} ?: all(v).firstOrNull {it.contentDescription?.toString()==name} ?: all(v).firstOrNull {it is TextView && it.text.toString()==name} ?: error("Missing UI action: $name")
   while(!target.isClickable && target.parent is View)target=target.parent as View
   assertTrue("Not clickable: $name",target.isClickable);target.performClick();idle()

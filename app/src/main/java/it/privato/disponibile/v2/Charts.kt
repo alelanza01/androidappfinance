@@ -11,11 +11,11 @@ import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.*
 
-class Charts(context:Context,private val palette:Palette,private val ledger:Ledger,private val mode:Int,private val month:YearMonth,private val months:Int,private val selection:(String)->Unit):View(context) {
+class Charts(context:Context,private val palette:Palette,private val ledger:Ledger,private val mode:Int,private val month:YearMonth,private val months:Int,private val rangeMonths:Int=1,private val selection:(String)->Unit):View(context) {
     private val p=Paint(Paint.ANTI_ALIAS_FLAG)
     private val font=resources.displayMetrics.scaledDensity
     private var selected:Int?=null
-    private val segments=ledger.categories.map {c->c to ledger.actual.filter {it.kind==Kind.EXPENSE && YearMonth.from(it.date)==month && it.category==c.id}.sumOf {it.cents}}.filter {it.second>0}
+    private val segments=ledger.categories.map {c->c to ledger.actual.filter {it.kind==Kind.EXPENSE && it.date>=month.minusMonths(rangeMonths.toLong()-1).atDay(1) && it.date<=month.atEndOfMonth() && it.category==c.id}.sumOf {it.cents}}.filter {it.second>0}
     private val barMonths=(months-1 downTo 0).map {month.minusMonths(it.toLong())}
     private fun text(canvas:Canvas,value:String,x:Float,y:Float,color:Int=palette.muted,size:Float=11f) {p.color=color;p.style=Paint.Style.FILL;p.textSize=size*font;canvas.drawText(value,x,y,p)}
     private fun line(canvas:Canvas,x1:Float,y1:Float,x2:Float,y2:Float,color:Int=palette.line) {p.style=Paint.Style.STROKE;p.strokeWidth=1f;p.color=color;canvas.drawLine(x1,y1,x2,y2,p)}
@@ -36,10 +36,10 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
         }
         val rect=RectF(cx-radius,cy-radius,cx+radius,cy+radius);var angle=-90f
         segments.forEachIndexed {i,(cat,n)->
-            val sweep=n.toFloat()/total*360f;p.color=cat.color;p.strokeWidth=radius*(if(selected==i).37f else .28f)
+            val sweep=n.toFloat()/total*360f;p.color=CategoryVisual.chartColor(cat);p.strokeWidth=radius*(if(selected==i).37f else .28f)
             c.drawArc(rect,angle+.5f,max(0.5f,sweep-1f),false,p);angle+=sweep
         }
-        val title="USCITE";p.textSize=11*font
+        val title="Totale uscite";p.textSize=11*font
         text(c,title,cx-p.measureText(title)/2,cy-12*font,palette.muted,11f)
         val sum=Money.format(total);var size=18f;p.textSize=size*font
         while(p.measureText(sum)>radius*1.35f && size>10f){size-=.5f;p.textSize=size*font}

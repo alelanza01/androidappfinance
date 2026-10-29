@@ -1,48 +1,53 @@
-# Posso spenderlo? 3.1
+# Posso spenderlo? 3.2 — Concept Fidelity
 
 App privata Android 8+, Kotlin nativo e SQLite: offline, nessun account, server, analytics, permesso Internet o costo ricorrente.
 
-**[APK V3.1](release/Posso-spenderlo-V3.1.apk)** · [SHA-256](release/SHA256-V3.1.txt) · [Sorgenti ZIP](release/Posso-spenderlo-V3.1-progetto.zip) · [Rendering Android](release/screenshots-v3.1/) · [Verifiche](release/VERIFICA-V3.1.txt).
+**[APK di prova V3.2](release/v3.2/Posso-spenderlo-V3.2-test.apk)** · [SHA-256](release/v3.2/SHA256.txt) · [Sorgenti ZIP](release/v3.2/Posso-spenderlo-V3.2-progetto.zip) · [Rendering Android](release/v3.2/screenshots/) · [Confronti affiancati](release/v3.2/comparisons/Confronti-V3.2.pdf) · [Verifiche](release/v3.2/VERIFICA.txt).
+
+Branch `feature/v3.2-concept-fidelity`, base `3e95305`. Nessun merge su `main`: la V3.2 è una proposta da provare e revisionare.
 
 Su GitHub apri il file APK e premi **Download raw file**. Tutti i sorgenti sono anche nelle cartelle del repository.
 
-## Aggiornare la V3.0
+## Provare l’aggiornamento sopra V3.1
 
 1. Nella versione installata, esporta un backup e conservalo sul dispositivo o PC.
 2. Scarica il nuovo APK e aprilo sul telefono. Autorizza questa fonte se Android lo richiede.
-3. Premi **Aggiorna/Installa**. **Non disinstallare la V3.0**, perché perderesti il suo database.
+3. Premi **Aggiorna/Installa**. **Non disinstallare la V3.1**, perché perderesti il suo database.
 
-Identità invariata `it.privato.disponibile.v2`, versione `3.1.0` / codice 310. Il certificato viene confrontato con gli APK V2 e V2.1 prima della consegna. La migrazione SQLite 3 → 4 aggiunge icone e preferiti alle categorie e completa il catalogo, conservando ID, nomi, colori e associazioni esistenti. Nessun movimento viene riclassificato. Sono coperte anche le migrazioni da V2/V2.1 e tutte le tre modalità di eliminazione delle ricorrenze.
+Identità invariata `it.privato.disponibile.v2`, versione `3.2.0` / codice 320. Il certificato viene confrontato con gli APK V2 e V2.1 prima della consegna. Schema SQLite 4 e backup JSON 5 invariati: non è necessaria una nuova migrazione. Le migrazioni storiche da V2/V2.1/V3.0 e i cutoff delle ricorrenze restano coperti dai test. Nessun reset o riclassificazione automatica dei movimenti.
 
 La V1 resta un’app separata. L’installazione fisica sul telefono del proprietario non viene dichiarata come eseguita dal cloud.
 
-## Nuova esperienza
+## Sei composizioni dal concept
 
-- **Home:** spendibile protagonista su una superficie salvia, spiegato da liquidità/impegni/riserva, spesa veloce in un tocco, simulatore e prossimo pagamento. Dettaglio del calcolo, simulatore e analisi si aprono su richiesta.
-- **Movimenti:** storico per giorno, ricerca indipendente da quella dei crediti, filtri per tipo/stato e categoria. Anticipi e rimborsi hanno etichette distinte.
-- **Impegni:** lista o calendario mensile, arretrati, entrate attese, restituzioni non garantite e programmazioni.
-- **Crediti:** anticipi, residui, stati, filtri per soggetto/progetto/mese, dettaglio e storico dei rimborsi.
-- **Analisi:** un grafico alla volta — spese, liquidità o mesi — con controlli contestuali e selezione dei dati.
-- **Impostazioni:** accessibili dall’icona in Home; Regole del saldo, Aspetto, Avvisi, Categorie e Backup hanno pagine separate.
+| Riferimento | Implementazione Android |
+| --- | --- |
+| Home | Ciao!, anello turchese dello spendibile, pannelli mensili entrate/uscite, scadenze compatte, quattro destinazioni e + centrale. Simulatore, crediti, calcolo e spesa veloce restano accessibili. |
+| Nuova spesa | Importo su azzurro tenue, griglia 4×3 di categorie con icone vettoriali colorate, descrizione facoltativa, data, accesso alle rate, Salva spesa blu sfumato. |
+| Categorie | Ricerca, preferiti orizzontali, righe con icona e cuore, recenti e modifica tramite pressione prolungata. |
+| Analisi | Mese/Trimestre/Anno, anello, legenda con percentuali/importi e andamento blu della liquidità. Previsioni, colonne e confronti rimangono disponibili. |
+| Rate | Radio per nessuna/2/3/6/12 rate, continua e numero manuale 1–120; Applica rate prepara il piano, il salvataggio è separato. |
+| Conferma | Finestra centrale arrotondata, illustrazione vettoriale, sfondo attenuato, due azioni contestuali. |
 
-**Registra** o **+** apre un menu breve. Gli inserimenti complessi sono pagine con campi etichettati, tastiera numerica, opzioni avanzate espandibili e Salva sopra l’area della tastiera. Una spesa ordinaria richiede solo l’importo; la descrizione è facoltativa e lo storico usa il nome della categoria se assente: tipo, stato, data e categoria hanno valori iniziali modificabili. Le bozze sopravvivono alla ricreazione dell’attività; non vengono registrate prima del salvataggio.
+La palette chiara usa bianco, azzurro, blu e turchese; lo scuro usa le stesse gerarchie con contrasti adeguati. Nessuna dipendenza o API esterna aggiunta. Impostazioni, crediti, calendario, simulatori e backup usano gli stessi componenti.
 
-Design condiviso: neutri minerali, verde salvia e accenti freddi; tema scuro verde grafite; liste con gerarchia tipografica, menu inferiori per decisioni brevi e feedback di pressione discreto. Le impostazioni di testo ingrandito restano attive sui contenuti; etichette dei controlli fissi rimangono compatte e leggibili.
+L’anello rappresenta `max(0, spendibile) / liquidità positiva`, limitato a 100%; con liquidità non positiva non mostra percentuali. Il numero centrale resta sempre lo spendibile reale, anche negativo. Un tocco apre il calcolo con impegni e riserva. Non viene inventato un budget-obiettivo.
 
-## Direzione di prodotto
+Le finestre di Analisi sono mobili di 1/3/12 mesi, esplicitate in pagina. I confronti usano periodi equivalenti e lo stesso giorno finale per il periodo in corso; periodi futuri o senza spese non producono confronti. Il saldo include anticipi/rimborsi; le distribuzioni delle spese personali li escludono.
 
-Identità personale distinta da Elledue: salvia, neutri minerali, accenti freddi e scuro verde grafite. Gerarchia editoriale con un solo numero dominante in Home, riepiloghi compatti e timeline prudente negli impegni. Il simulatore è evidenziato in Home e mostra l’impatto sul margine, senza registrare spese. L’allegato concept fornito contiene effettivamente schermate Elledue, in contrasto con il suo LEGGIMI: non è stato copiato. Prevale il brief funzionale Posso spenderlo?.
+## Adattamenti dichiarati rispetto alle immagini
 
-## Novità 3.1
+- Valori, date e proporzioni economiche dipendono dai dati registrati; le immagini di confronto usano fixture DEMO isolate, mai i dati dell’utente.
+- Importo rate sempre **per ciascuna rata**, senza dividerlo. Totale = importo × numero; per interrompere una serie esistente rimane la gestione con conferma e storico preservato.
+- I colori delle categorie predefinite sono una presentazione UI; nomi/ID/associazioni/colori salvati restano invariati. Categorie e colori personalizzati sono conservati.
+- Linea del saldo a gradini, per non suggerire movimenti intermedi inesistenti. Grafici vuoti e negativi sono reali, senza dati fittizi.
+- Le schermate scorrono su telefoni piccoli/font grandi; le icone sono vettori ricostruiti, non pixel estratti dal mockup. Cornice hardware e indicatori di sistema illustrati non sono disegnati dentro l’app.
+- Oscuramento del fondo, senza simulare una sfocatura hardware non verificata. Animazioni brevi e disattivabili tramite le impostazioni Android; ombre native indesiderate rimosse.
+- I comandi aggiuntivi preservano le funzioni V3.1 non rappresentate nel concept. Recenti e inserimento manuale rimangono disponibili.
 
-- Pulsanti piatti: stile nativo implicito, animatore Material, elevazione, tint e outline rimossi; ripple e maschera condividono gli angoli. Stati disabilitati espliciti.
-- Categorie: 27 scelte comprese quelle precedenti, icone vettoriali uniformi, ricerca, griglia per gruppi, Recenti e Preferite. Tieni premuto per modificare; puoi creare una categoria senza perdere la bozza della spesa.
-- Rate: continua oppure 1–120 rate, controllo ± e numero digitabile. Il totale è importo di ciascuna rata × numero; nessuna divisione o arrotondamento.
-- Conferme: due azioni esplicite; uscita con modifiche, eliminazioni, pagamenti/incassi e importazione. Nessun «Conferma» generico o terzo «Chiudi».
-- Analisi: categorie principali con quote, confronto con gli stessi giorni del mese precedente (oppure mesi completi), pagamenti ricorrenti effettuati e variazione reale della liquidità. Confronto assente quando mancano dati.
-- Home con liquidità e riserva; riepiloghi mensili nei movimenti e impegni; stato e recuperi nei crediti. Transizioni 140–160 ms disattivate se Android disabilita le animazioni.
+Le immagini originali e i sei confronti sono in `release/v3.2/references` e `release/v3.2/comparisons`. Per riprodurli, esegui i test e `python tools/compare_concept.py` (matplotlib/Pillow, solo strumenti di sviluppo).
 
-Dopo l’aggiornamento controlla sul telefono **Registra**, una pressione prolungata, l’apertura di un menu, una conferma di uscita, la categoria selezionata e il controllo rate ai limiti 1/120: in entrambi i temi gli angoli devono restare puliti senza ombre ritagliate. Gli screenshot nel repository sono rendering Android reali del cloud; non dimostrano da soli la scomparsa dell’artefatto specifico del tuo dispositivo. L’audit ha confermato la combinazione di sfondo personalizzato e animatore/outline nativo della V3, ora rimossa.
+Dopo l’installazione verifica sul telefono: pressione/rilascio del + e Salva, apertura/chiusura del popup, scelta categoria, tastiera e scorrimento a font grandi, in entrambi i temi. Gli screenshot cloud non provano la scomparsa di un artefatto specifico del dispositivo.
 
 ## Cancellazioni e ricorrenze
 
