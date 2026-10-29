@@ -28,6 +28,7 @@ class MainActivity:Activity() {
     private var analysisSpan=1
     private var rateChoice="none"
     private var rateCount="12"
+    private var ratesAdvanced=false
     private var calendarGrid=false
     private var selectedDay:LocalDate?=null
     private var moveQuery=""
@@ -67,6 +68,7 @@ class MainActivity:Activity() {
         draftBaseline=state?.getString("baseline");parentDraft=state?.getString("parentDraft")?.let {Draft.parse(it)}
         parentBaseline=state?.getString("parentBaseline");parentPrevious=state?.getInt("parentPrevious") ?: 0
         pickingFilter=state?.getBoolean("pickingFilter") ?: false
+        ratesAdvanced=state?.getBoolean("ratesAdvanced") ?: false;categoryTab=state?.getInt("categoryTab") ?: 2;categoryQuery=state?.getString("categoryQuery") ?: ""
         analysisSpan=state?.getInt("analysisSpan") ?: 1;rateChoice=state?.getString("rateChoice") ?: "none";rateCount=state?.getString("rateCount") ?: "12"
         exportPrevious=state?.getBoolean("exportPrevious") ?: false
         if(android.os.Build.VERSION.SDK_INT>=30)window.setDecorFitsSystemWindows(false)
@@ -74,7 +76,7 @@ class MainActivity:Activity() {
         render()
     }
     override fun onSaveInstanceState(s:Bundle) {
-        super.onSaveInstanceState(s);s.putInt("analysisSpan",analysisSpan);s.putString("rateChoice",rateChoice);s.putString("rateCount",rateCount);s.putInt("page",page);s.putInt("previous",previous);s.putBoolean("demo",demo);s.putString("month",month.toString());s.putInt("chartMode",chartMode);s.putBoolean("grid",calendarGrid);s.putLong("detailId",detailId);draft?.let {s.putString("draft",it.json())};s.putBoolean("exportPrevious",exportPrevious);s.putString("baseline",draftBaseline);s.putString("parentBaseline",parentBaseline);s.putInt("parentPrevious",parentPrevious);s.putBoolean("pickingFilter",pickingFilter);parentDraft?.let {s.putString("parentDraft",it.json())}
+        super.onSaveInstanceState(s);s.putBoolean("ratesAdvanced",ratesAdvanced);s.putInt("categoryTab",categoryTab);s.putString("categoryQuery",categoryQuery);s.putInt("analysisSpan",analysisSpan);s.putString("rateChoice",rateChoice);s.putString("rateCount",rateCount);s.putInt("page",page);s.putInt("previous",previous);s.putBoolean("demo",demo);s.putString("month",month.toString());s.putInt("chartMode",chartMode);s.putBoolean("grid",calendarGrid);s.putLong("detailId",detailId);draft?.let {s.putString("draft",it.json())};s.putBoolean("exportPrevious",exportPrevious);s.putString("baseline",draftBaseline);s.putString("parentBaseline",parentBaseline);s.putInt("parentPrevious",parentPrevious);s.putBoolean("pickingFilter",pickingFilter);parentDraft?.let {s.putString("parentDraft",it.json())}
     }
     override fun onDestroy(){dialog?.dismiss();store.close();super.onDestroy()}
     @Deprecated("Android 8 compatible back navigation") override fun onBackPressed() {
@@ -108,20 +110,22 @@ class MainActivity:Activity() {
         dialog?.dismiss()
         val d=Dialog(this);val body=ui.column().apply {setPadding(ui.dp(24),ui.dp(18),ui.dp(24),ui.dp(16));background=ui.shape(ui.colors.card,20)}
         body.addView(View(this).apply {background=ui.shape(ui.colors.line,2);layoutParams=LinearLayout.LayoutParams(ui.dp(34),ui.dp(4)).apply {gravity=Gravity.CENTER_HORIZONTAL;bottomMargin=ui.dp(14)}})
-        body.addView(ui.label(title,22f,ui.colors.text,true));if(message.isNotBlank())body.addView(ui.label(message,14f,ui.colors.muted))
+        body.addView(ui.label(title,22f,ui.colors.text,true));if(message.isNotBlank())body.addView(ui.label(message,13f,ui.colors.muted))
         actions.forEach {(name,action)->body.addView(ui.listRow(name){d.dismiss();action()});body.addView(ui.divider())}
         if(actions.size!=1 || actions[0].first!="Ho capito")body.addView(ui.button("Annulla") {d.dismiss()});d.setContentView(ScrollView(this).apply {addView(body)})
         dialog=d;d.show();animateSheet(body);d.window?.apply {setBackgroundDrawableResource(android.R.color.transparent);setLayout(-1,-2);setGravity(Gravity.BOTTOM);addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);setDimAmount(.4f);setWindowAnimations(0);ui.flatten(decorView);decorView.setPadding(0,0,0,0)}
     }
     private fun decision(title:String,message:String,accept:String,cancel:String="Annulla",destructive:Boolean=false,action:()->Unit) {
         dialog?.dismiss();hideKeyboard();val d=Dialog(this)
-        val body=ui.column().apply {setPadding(ui.dp(24),ui.dp(26),ui.dp(24),ui.dp(20));background=ui.shape(ui.colors.card,20)}
-        body.addView(ui.label("",12f).apply {setCompoundDrawablesWithIntrinsicBounds(null,UnsavedIcon(ui.dp(68)),null,null);gravity=Gravity.CENTER;setPadding(0,0,0,ui.dp(20))})
-        body.addView(ui.label(title,20f,ui.colors.text,true).apply {gravity=Gravity.CENTER});body.addView(ui.space(10));body.addView(ui.label(message,14f,ui.colors.muted).apply {gravity=Gravity.CENTER});body.addView(ui.space(22))
+        val body=ui.column().apply {setPadding(ui.dp(22),ui.dp(22),ui.dp(22),ui.dp(22));background=ui.surface(ui.colors.card,24)}
+        body.addView(ui.label("",12f).apply {setCompoundDrawablesWithIntrinsicBounds(null,UnsavedIcon(ui.dp(64)),null,null);gravity=Gravity.CENTER;setPadding(0,0,0,ui.dp(12))})
+        body.addView(ui.label(title,18f,ui.colors.text,true).apply {gravity=Gravity.CENTER});body.addView(ui.space(10));body.addView(ui.label(message,14f,ui.colors.muted).apply {gravity=Gravity.CENTER});body.addView(ui.space(18))
         body.addView(ui.button(cancel,destructive){d.dismiss()}.apply {tag="cancel-action"})
-        body.addView((if(destructive)ui.button(accept){d.dismiss();action()}.apply {background=ui.shape(ui.colors.line,24)} else ui.button(accept,true){d.dismiss();action()}).apply {tag="confirm-action"})
+        body.addView(ui.space(8));body.addView((if(destructive)ui.button(accept){d.dismiss();action()}.apply {background=ui.shape(ui.colors.line,24)} else ui.button(accept,true){d.dismiss();action()}).apply {tag="confirm-action"})
+        val pageRoot=findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
+        val clearBackdrop=DialogBackdrop.attach(pageRoot,ui.colors.dark);d.setOnDismissListener {clearBackdrop()}
         d.setContentView(ScrollView(this).apply {addView(body)});dialog=d;d.show()
-        d.window?.apply {setBackgroundDrawableResource(android.R.color.transparent);setLayout(minOf(resources.displayMetrics.widthPixels-ui.dp(48),ui.dp(380)),-2);setGravity(Gravity.CENTER);setDimAmount(.48f);setWindowAnimations(0);ui.flatten(decorView);decorView.setPadding(0,0,0,0)}
+        d.window?.apply {setBackgroundDrawableResource(android.R.color.transparent);setLayout(minOf(resources.displayMetrics.widthPixels-ui.dp(48),ui.dp(380)),-2);setGravity(Gravity.CENTER);setDimAmount(.32f);setWindowAnimations(0);ui.flatten(decorView);decorView.setPadding(0,0,0,0)}
         animateSheet(body)
     }
     private fun animateSheet(body:View){if(android.animation.ValueAnimator.areAnimatorsEnabled()){body.alpha=0f;body.translationY=ui.dp(12).toFloat();body.animate().alpha(1f).translationY(0f).setDuration(160).start()}}
@@ -131,7 +135,7 @@ class MainActivity:Activity() {
         ui=Design(this,Palette.of(this,l.settings.theme));val c=ui.colors
         window.statusBarColor=c.background;window.navigationBarColor=c.background
         window.decorView.systemUiVisibility=if(c.dark)0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or (if(android.os.Build.VERSION.SDK_INT>=27)View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else 0)
-        val root=ui.column().apply {setBackgroundColor(c.background);isFocusableInTouchMode=true}
+        val root=ui.column().apply {background=ui.pageBackground();isFocusableInTouchMode=true}
         root.setOnApplyWindowInsetsListener {v,insets->
             if(android.os.Build.VERSION.SDK_INT>=30){val i=insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.ime());v.setPadding(i.left,i.top,i.right,i.bottom)}
             else v.setPadding(insets.systemWindowInsetLeft,insets.systemWindowInsetTop,insets.systemWindowInsetRight,insets.systemWindowInsetBottom)
@@ -139,8 +143,8 @@ class MainActivity:Activity() {
         }
         val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Crediti",4 to "Analisi",5 to "Simulatore",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
         if(demo)root.addView(ui.label("DEMO · DATI DIMOSTRATIVI",10f,c.muted,true).apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(12).toFloat(),10f*resources.displayMetrics.scaledDensity));setPadding(ui.dp(24),ui.dp(6),ui.dp(24),0)})
-        val header=ui.row().apply {setPadding(ui.dp(16),ui.dp(8),ui.dp(16),ui.dp(8))}
-        if(page!=0)header.addView(ui.button("‹"){onBackPressed()}.apply {contentDescription="Indietro";textSize=25f;background=ui.shape(c.hero,24);setPadding(0,0,0,0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))
+        val header=ui.row().apply {setPadding(ui.dp(18),ui.dp(if(page==0)24 else 4),ui.dp(18),ui.dp(4))}
+        if(page!=0)header.addView(ui.button("‹"){onBackPressed()}.apply {contentDescription="Indietro";textSize=25f;background=android.graphics.drawable.InsetDrawable(ui.shape(c.hero,20),ui.dp(9));setPadding(0,0,0,0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))
         val name=ui.column();name.addView(ui.label(if(page==0)"Ciao!" else titles[page] ?: "Posso spenderlo?",if(page==0)27f else 18f,c.text,true).apply {gravity=if(page==0)Gravity.START else Gravity.CENTER;maxLines=2})
         if(page==0)name.addView(ui.label("Ecco la tua situazione attuale",12f,c.muted))
         header.addView(name,LinearLayout.LayoutParams(0,-2,1f))
@@ -161,14 +165,15 @@ class MainActivity:Activity() {
         setContentView(root);root.requestApplyInsets()
     }
     private fun navigation():View {
-        val frame=FrameLayout(this);frame.layoutParams=LinearLayout.LayoutParams(-1,ui.dp(82))
+        val frame=FrameLayout(this);frame.layoutParams=LinearLayout.LayoutParams(-1,ui.dp(94))
         val nav=ui.row().apply {setPadding(ui.dp(8),ui.dp(7),ui.dp(8),ui.dp(2));background=ui.shape(ui.colors.card,22)}
         listOf(0 to "Home",1 to "Movimenti",4 to "Analisi",2 to "Impegni").forEachIndexed {index,(destination,label)->
             if(index==2)nav.addView(View(this),LinearLayout.LayoutParams(ui.dp(64),1))
-            nav.addView(ui.button(label){go(destination)}.apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(11).toFloat(),10f*resources.displayMetrics.scaledDensity));setTextColor(if(page==destination)ui.colors.primary else ui.colors.muted);isSelected=page==destination;maxLines=1;setPadding(ui.dp(1),ui.dp(3),ui.dp(1),ui.dp(3));setCompoundDrawablesWithIntrinsicBounds(null,NavIcon(when(destination){0->0;1->3;4->1;else->2},if(page==destination)ui.colors.primary else ui.colors.muted,ui.dp(21)),null,null);compoundDrawablePadding=ui.dp(3);contentDescription="$label${if(page==destination)", sezione attiva" else ""}"},LinearLayout.LayoutParams(0,ui.dp(56),1f))
+            nav.addView(ui.button(label){go(destination)}.apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(11).toFloat(),10f*resources.displayMetrics.scaledDensity));setTextColor(if(page==destination)ui.colors.primary else ui.colors.muted);isSelected=page==destination;maxLines=1;setPadding(ui.dp(1),ui.dp(3),ui.dp(1),ui.dp(3));setCompoundDrawablesWithIntrinsicBounds(null,NavIcon(when(destination){0->0;1->3;4->1;else->2},if(page==destination)ui.colors.primary else ui.colors.muted,ui.dp(21)),null,null);compoundDrawablePadding=ui.dp(3);contentDescription="$label${if(page==destination)", sezione attiva" else ""}"},LinearLayout.LayoutParams(0,ui.dp(54),1f))
         }
-        frame.addView(nav,FrameLayout.LayoutParams(-1,ui.dp(64),Gravity.BOTTOM))
+        frame.addView(nav,FrameLayout.LayoutParams(-1,ui.dp(54),Gravity.BOTTOM))
         val add=ui.button("+",true){createMenu(page==2)}.apply {textSize=30f;contentDescription="Aggiungi";setPadding(0,0,0,0);background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(ui.colors.hero),android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TL_BR,intArrayOf(ui.colors.primary,Color.parseColor("#43A6FF"))).apply {cornerRadius=ui.dp(99).toFloat()},ui.shape(Color.WHITE,99))}
+        frame.addView(View(this).apply {background=ui.shape(ui.colors.line,99)},FrameLayout.LayoutParams(ui.dp(64),ui.dp(64),Gravity.TOP or Gravity.CENTER_HORIZONTAL))
         frame.addView(add,FrameLayout.LayoutParams(ui.dp(56),ui.dp(56),Gravity.TOP or Gravity.CENTER_HORIZONTAL))
         return frame
     }
@@ -178,17 +183,21 @@ class MainActivity:Activity() {
         body.addView(ring,LinearLayout.LayoutParams(-1,ui.dp(if(resources.configuration.fontScale>=1.5f)252 else 248)))
         val totals=ui.row();listOf("Entrate" to Kind.INCOME,"Uscite" to Kind.EXPENSE).forEachIndexed {i,(name,kind)->
             val cat=Category(0,name,Color.parseColor(if(i==0)"#74CFA3" else "#F49BA8"),if(i==0)"income" else "bag")
-            val card=ui.row().apply {background=ui.shape(ui.colors.card,16);setPadding(ui.dp(10),ui.dp(12),ui.dp(10),ui.dp(12))}
+            val card=ui.row().apply {background=ui.surface(ui.colors.card,16);setPadding(ui.dp(12),ui.dp(10),ui.dp(12),ui.dp(14))}
             card.addView(ui.button(""){moveFilter=if(i==0)3 else 4;go(1)}.apply {setCompoundDrawablesWithIntrinsicBounds(CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(30),ui.categoryWash(cat)),null,null,null);setPadding(0,0,0,0);contentDescription="$name del mese"},LinearLayout.LayoutParams(ui.dp(34),ui.dp(44)))
-            val text=ui.column();text.addView(ui.label(name,11f,ui.colors.muted));text.addView(ui.amount(Money.format(l.month(YearMonth.now(),kind)),16f));card.addView(text,LinearLayout.LayoutParams(0,-2,1f))
+            val text=ui.column();text.addView(ui.label(name,11f,ui.colors.muted));text.addView(ui.amount(DisplayMoney.amount(l.month(YearMonth.now(),kind)),16f));card.addView(text,LinearLayout.LayoutParams(0,-2,1f))
             totals.addView(card,LinearLayout.LayoutParams(0,-2,1f).apply {if(i==0)marginEnd=ui.dp(10)})
         };body.addView(totals)
         body.addView(ui.label("Questo mese · spese personali, anticipi e rimborsi esclusi",10f,ui.colors.muted))
         body.addView(ui.section("Prossimi impegni"));val pending=l.pending.filter {it.kind==Kind.EXPENSE}.take(3)
         if(pending.isEmpty())body.addView(ui.label("Nessun pagamento previsto",13f,ui.colors.muted))
-        pending.forEach {o->val cat=l.categories.first {it.id==o.category};val row=ui.row();row.addView(ui.button(""){manage(o)}.apply {setCompoundDrawablesWithIntrinsicBounds(CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(30),ui.categoryWash(cat)),null,null,null);setPadding(0,0,0,0);contentDescription="Apri ${l.operationTitle(o)}"},LinearLayout.LayoutParams(ui.dp(38),ui.dp(48)));row.addView(ui.listRow(l.operationTitle(o),o.date.format(dates),Money.format(o.cents)){manage(o)},LinearLayout.LayoutParams(0,-2,1f));body.addView(row)}
-        body.addView(ui.space(8));val actions=ui.row()
-        listOf("Simula spesa" to {go(5)},"Crediti" to {go(3)},"Dettaglio" to {go(12)},"Spesa veloce" to {openForm("operation",defaults=mapOf("kind" to "EXPENSE","status" to "ACTUAL"))}).forEach {(name,action)->actions.addView(ui.button(name,action=action).apply {textSize=12f;maxLines=2;setPadding(ui.dp(3),ui.dp(6),ui.dp(3),ui.dp(6));if(name=="Dettaglio")contentDescription="Dettaglio del calcolo"},LinearLayout.LayoutParams(0,-2,1f))};body.addView(actions)
+        pending.forEach {o->
+            val cat=l.categories.first {it.id==o.category};val row=ui.row().apply {setPadding(ui.dp(8),ui.dp(7),ui.dp(8),ui.dp(7));background=ui.surface(if(ui.colors.dark)ui.colors.card else Color.parseColor("#F9FCFF"),12)}
+            row.addView(View(this).apply {background=CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(28),ui.categoryWash(cat))},LinearLayout.LayoutParams(ui.dp(28),ui.dp(28)).apply {marginEnd=ui.dp(10)})
+            val text=ui.column();text.addView(ui.label(l.operationTitle(o),12f,ui.colors.text,true));text.addView(ui.label(o.date.format(dates),10f,ui.colors.muted));row.addView(text,LinearLayout.LayoutParams(0,-2,1.5f));row.addView(ui.amount(DisplayMoney.amount(o.cents),14f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.isFocusable=true;row.contentDescription="${l.operationTitle(o)}, ${o.date.format(dates)}, ${Money.format(o.cents)}";row.setOnClickListener {manage(o)};body.addView(row);body.addView(ui.space(3))
+        }
+        body.addView(ui.space(10));val actions=ui.row().apply {gravity=Gravity.TOP}
+        listOf(Triple("Simula spesa",1,{go(5)}),Triple("Crediti",5,{go(3)}),Triple("Dettaglio",3,{go(12)}),Triple("Spesa veloce",0,{openForm("operation",defaults=mapOf("kind" to "EXPENSE","status" to "ACTUAL"))})).forEach {(name,icon,action)->actions.addView(ui.chip(name,icon,action).apply {if(name=="Dettaglio")contentDescription="Dettaglio del calcolo"},LinearLayout.LayoutParams(0,-2,1f).apply {setMargins(ui.dp(2),0,ui.dp(2),0)})};body.addView(actions)
         if(demo)body.addView(ui.button("Esci dalla demo"){demo=false;go(0)})
     }
     private fun calculation(body:LinearLayout) {
@@ -218,29 +227,30 @@ class MainActivity:Activity() {
         row.addView(ui.button("›"){month=month.plusMonths(step.toLong());selectedDay=null;render()}.apply {contentDescription="Mese successivo"},LinearLayout.LayoutParams(ui.dp(44),ui.dp(48)));body.addView(row)
     }
     private fun analysis(body:LinearLayout) {
-        body.addView(ui.segments(listOf("Mese","Trimestre","Anno"),listOf(1,3,12).indexOf(analysisSpan)){analysisSpan=listOf(1,3,12)[it];render()});monthControls(body,analysisSpan)
+        body.addView(ui.compactSegments(listOf("Mese","Trimestre","Anno"),listOf(1,3,12).indexOf(analysisSpan)){analysisSpan=listOf(1,3,12)[it];render()});monthControls(body,analysisSpan)
         val data=PeriodInsights(l,month,analysisSpan)
         if(analysisSpan>1)body.addView(ui.label("${data.start.format(dates)} – ${(if(data.start>LocalDate.now())data.end else minOf(data.end,LocalDate.now())).format(dates)} · periodo mobile",12f,ui.colors.muted))
         val detail=ui.label("Tocca una categoria per esplorarla",12f,ui.colors.muted)
         if(chartMode==0){
-            body.addView(Charts(this,ui.colors,l,0,month,period,analysisSpan){detail.text=it}.apply {contentDescription="Distribuzione delle spese personali"},LinearLayout.LayoutParams(-1,ui.dp(230)))
-            body.addView(detail)
+            body.addView(Charts(this,ui.colors,l,0,month,period,analysisSpan){detail.text=it;detail.visibility=View.VISIBLE}.apply {contentDescription="Distribuzione delle spese personali"},LinearLayout.LayoutParams(-1,ui.dp(198)))
+            detail.textSize=10f;detail.visibility=View.GONE;body.addView(detail)
             if(data.ranking.isEmpty())body.addView(ui.label("Le categorie compariranno dopo la prima spesa.",13f,ui.colors.muted))
             data.ranking.forEach {(cat,n)->
-                val row=ui.row();row.addView(View(this).apply {background=ui.shape(CategoryVisual.chartColor(cat),20)},LinearLayout.LayoutParams(ui.dp(9),ui.dp(9)).apply {marginEnd=ui.dp(9)})
-                row.addView(ui.label(cat.name,12f),LinearLayout.LayoutParams(0,-2,1.4f));row.addView(ui.label("${String.format(Locale.ITALY,"%.0f",n*100.0/data.total)}%",12f,ui.colors.muted).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,.5f));row.addView(ui.amount(Money.format(n),12f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.setPadding(0,ui.dp(3),0,ui.dp(3));row.setOnClickListener {detail.text="${cat.name} · ${Money.format(n)}"};row.isFocusable=true;body.addView(row)
+                val row=ui.row();row.addView(View(this).apply {background=ui.shape(CategoryVisual.chartColor(cat),20)},LinearLayout.LayoutParams(ui.dp(7),ui.dp(7)).apply {marginEnd=ui.dp(9)})
+                row.addView(ui.label(cat.name,11f),LinearLayout.LayoutParams(0,-2,1.4f));row.addView(ui.label("${String.format(Locale.ITALY,"%.0f",n*100.0/data.total)}%",11f,ui.colors.muted).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,.5f));row.addView(ui.amount(DisplayMoney.amount(n),12f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.setPadding(0,ui.dp(1),0,ui.dp(1));for(i in 1 until row.childCount)row.getChildAt(i).setPadding(0,0,0,0);row.setOnClickListener {detail.visibility=View.VISIBLE;detail.text="${cat.name} · ${Money.format(n)}"};row.isFocusable=true;body.addView(row)
             }
-            body.addView(ui.section("Andamento liquidità"));body.addView(RecordedCashLine(this,ui.colors,l,data.start,data.end),LinearLayout.LayoutParams(-1,ui.dp(105)))
+            body.addView(ui.label("Andamento liquidità",13f,ui.colors.text,true).apply {setPadding(0,ui.dp(8),0,ui.dp(4))});body.addView(RecordedCashLine(this,ui.colors,l,data.start,data.end),LinearLayout.LayoutParams(-1,ui.dp(92)))
             body.addView(ui.label("Saldo registrato · anticipi e rimborsi inclusi",11f,ui.colors.muted))
         }else {
             body.addView(Charts(this,ui.colors,l,chartMode,month,period){detail.text=it},LinearLayout.LayoutParams(-1,ui.dp(250)));body.addView(detail)
             if(chartMode==1){body.addView(ui.label("Blu: saldo reale · Corallo: uscite note · Turchese: entrate attese",12f,ui.colors.muted));body.addView(ui.button("Leggere la previsione"){sheet("Scenari, non disponibilità",listOf("Ho capito" to {}),"Le previsioni non aumentano lo spendibile. Anticipi e rimborsi sono inclusi nel saldo storico, non nei guadagni o nelle spese personali.")})}
             else body.addView(ui.segments(listOf("3 mesi","6 mesi","12 mesi"),listOf(3,6,12).indexOf(period)){period=listOf(3,6,12)[it];render()})
         }
-        body.addView(ui.section("Confronto del periodo"))
-        body.addView(ui.label(if(data.comparable){val delta=data.total-data.priorTotal;"${if(delta>0)"+" else ""}${Money.format(delta)} rispetto al periodo precedente equivalente"}else "Confronto non disponibile: servono spese in entrambi i periodi.",12f,ui.colors.muted))
-        ui.metric(body,"Pagamenti ricorrenti effettuati",Money.format(data.recurring));body.addView(ui.label("Le spese personali escludono anticipi, rimborsi e rettifiche.",11f,ui.colors.muted))
-        body.addView(ui.segments(listOf("Spese","Liquidità","Mesi"),chartMode){chartMode=it;render()})
+        body.addView(ui.button("Approfondimenti"){sheet("Confronti e altre viste",listOf(
+            "Confronto del periodo" to {sheet("Confronto del periodo",listOf("Ho capito" to {}),if(data.comparable){val delta=data.total-data.priorTotal;"${if(delta>0)"+" else ""}${Money.format(delta)} rispetto al periodo precedente equivalente"}else "Confronto non disponibile: servono spese in entrambi i periodi.")},
+            "Spese ricorrenti" to {sheet("Pagamenti ricorrenti effettuati",listOf("Ho capito" to {}),"${Money.format(data.recurring)} nel periodo. Anticipi e rimborsi esclusi dalle spese personali.")},
+            "Spese" to {chartMode=0;render()},"Liquidità" to {chartMode=1;render()},"Mesi" to {chartMode=2;render()}))}.apply {textSize=12f;background=ui.shape(ui.colors.hero,18)})
+
     }
     private data class HistoryItem(val date:LocalDate,val title:String,val subtitle:String,val signed:Long,val action:()->Unit)
     private fun movements(body:LinearLayout) {
@@ -375,7 +385,7 @@ class MainActivity:Activity() {
         body.addView(ui.listRow("Aspetto","Tema chiaro, scuro o di sistema"){go(8)});body.addView(ui.divider())
         body.addView(ui.listRow("Avvisi","Promemoria locali facoltativi"){go(11)})
         body.addView(ui.section("Archivio"));body.addView(ui.listRow("Categorie","Organizza le spese e le entrate"){go(9)});body.addView(ui.divider());body.addView(ui.listRow("Backup","Esporta e recupera i tuoi dati"){go(10)})
-        body.addView(ui.section("App privata"));body.addView(ui.label("3.1 · offline · nessun account o costo ricorrente",13f,ui.colors.muted));body.addView(ui.button(if(demo)"Esci dalla demo" else "Esplora la demo separata"){demo=!demo;go(0)})
+        body.addView(ui.section("App privata"));body.addView(ui.label("3.3 · offline · nessun account o costo ricorrente",13f,ui.colors.muted));body.addView(ui.button(if(demo)"Esci dalla demo" else "Esplora la demo separata"){demo=!demo;go(0)})
     }
     private fun rules(body:LinearLayout) {
         body.addView(ui.listRow("Liquidità iniziale","Prima dei movimenti registrati",Money.format(l.settings.opening)){moneyForm("opening",l.settings.opening)});body.addView(ui.divider())
@@ -397,10 +407,10 @@ class MainActivity:Activity() {
         if(choices.none {it.id==selected})l.categories.firstOrNull {it.id==selected}?.let {if(choices.size==12)choices[11]=it else choices.add(it)}
         val columns=if(resources.configuration.fontScale>=1.5f)3 else 4
         choices.chunked(columns).forEach {chunk->val row=ui.row().apply {gravity=Gravity.TOP};chunk.forEach {cat->row.addView(ui.categoryTile(cat,cat.id==selected,true){d.values["category"]=cat.id.toString();render()},LinearLayout.LayoutParams(0,-2,1f))};repeat(columns-chunk.size){row.addView(View(this),LinearLayout.LayoutParams(0,1,1f))};body.addView(row)}
-        body.addView(ui.button("Categoria"){pickingFilter=false;categoryQuery="";categoryTab=2;go(21)}.apply {text="Tutte le categorie · ${l.categoryName(selected)}";contentDescription="Categoria";textSize=12f;minHeight=ui.dp(40);minimumHeight=ui.dp(40);background=ui.shape(ui.colors.hero,12)})
+        body.addView(ui.button("Categoria"){pickingFilter=false;categoryQuery="";categoryTab=2;go(21)}.apply {text=l.categoryName(selected);contentDescription="Categoria";textSize=13f;gravity=Gravity.START;setPadding(ui.dp(12),ui.dp(6),ui.dp(12),ui.dp(6));l.categories.firstOrNull {it.id==selected}?.let {cat->setCompoundDrawablesWithIntrinsicBounds(CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(24),ui.categoryWash(cat)),null,null,null);compoundDrawablePadding=ui.dp(10)};minHeight=ui.dp(40);minimumHeight=ui.dp(40);background=ui.shape(ui.colors.hero,12)})
     }
     private fun categoryGrid(body:LinearLayout,picker:Boolean) {
-        val search=ui.input("⌕  Cerca categoria…",categoryQuery).apply {contentDescription="Cerca categorie";background=ui.shape(ui.colors.card,24).apply {setStroke(ui.dp(1),ui.colors.line)}};body.addView(search)
+        val search=ui.input("Cerca categoria…",categoryQuery).apply {contentDescription="Cerca categorie";textSize=13f;minHeight=ui.dp(44);setPadding(ui.dp(12),ui.dp(7),ui.dp(12),ui.dp(7));background=ui.shape(ui.colors.hero,20).apply {setStroke(ui.dp(1),ui.colors.line)};setCompoundDrawablesWithIntrinsicBounds(SearchIcon(ui.colors.cool,ui.dp(16)),null,null,null);compoundDrawablePadding=ui.dp(8)};body.addView(search)
         val results=ui.column();body.addView(results)
         fun choose(cat:Category){if(!picker){openForm("category",cat.id)}else if(pickingFilter){categoryFilter=cat.id;go(1)}else {draft?.values?.set("category",cat.id.toString());go(20)}}
         fun edit(cat:Category){if(picker){parentDraft=draft;parentPrevious=previous;parentBaseline=draftBaseline};openForm("category",cat.id)}
@@ -410,15 +420,14 @@ class MainActivity:Activity() {
             val favorites=l.categories.filter {it.favorite};val horizontal=HorizontalScrollView(this).apply {isHorizontalScrollBarEnabled=false};val row=ui.row()
             favorites.forEach {cat->row.addView(ui.categoryTile(cat,false,true){choose(cat)},LinearLayout.LayoutParams(ui.dp(if(resources.configuration.fontScale>=1.5f)100 else 72),-2))};horizontal.addView(row);results.addView(horizontal)
             if(favorites.isEmpty())results.addView(ui.label("Tocca un cuore per ritrovare qui le tue categorie.",12f,ui.colors.muted))
-            results.addView(ui.segments(listOf("Recenti","Preferite","Tutte"),categoryTab){categoryTab=it;update()})
-            results.addView(ui.section(if(categoryTab==2)"Tutte le categorie" else if(categoryTab==1)"Categorie preferite" else "Usate di recente"))
+            val heading=ui.row();heading.addView(ui.section(if(categoryTab==2)"Tutte le categorie" else if(categoryTab==1)"Categorie preferite" else "Usate di recente"),LinearLayout.LayoutParams(0,-2,1f));heading.addView(ui.button("Filtri"){sheet("Mostra categorie",listOf("Recenti","Preferite","Tutte").mapIndexed {i,name->name to {categoryTab=i;render()}})}.apply {contentDescription="Filtra categorie";textSize=11f;setTextColor(ui.colors.cool)},LinearLayout.LayoutParams(ui.dp(52),ui.dp(48)));results.addView(heading)
             val recent=l.operations.filter {it.status!=Status.DELETED}.sortedByDescending {it.id}.map {it.category}.distinct().take(9)
             val choices=when(categoryTab){0->recent.mapNotNull {id->l.categories.firstOrNull {it.id==id}};1->favorites;else->l.categories}
             val found=choices.filter {categoryQuery.isBlank() || it.name.contains(categoryQuery,true) || (it.icon=="basket" && "alimentari".contains(categoryQuery,true)) || (it.icon=="vape" && "sigaretta elettronica".contains(categoryQuery,true))}
             if(found.isEmpty())results.addView(ui.label("Nessuna categoria in questa selezione",13f,ui.colors.muted))
-            found.forEach {cat->val line=ui.row();val select=ui.button(cat.name){choose(cat)}.apply {tag="category-choice";gravity=Gravity.START;textSize=14f;setPadding(0,ui.dp(6),0,ui.dp(6));setCompoundDrawablesWithIntrinsicBounds(CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(32),ui.categoryWash(cat)),null,null,null);compoundDrawablePadding=ui.dp(12);contentDescription=cat.name;setOnLongClickListener {edit(cat);true}}
+            found.forEach {cat->val line=ui.row();val select=ui.button(cat.name){choose(cat)}.apply {tag="category-choice";gravity=Gravity.START;textSize=13f;typeface=android.graphics.Typeface.create("sans-serif",android.graphics.Typeface.NORMAL);setPadding(0,ui.dp(5),0,ui.dp(5));setCompoundDrawablesWithIntrinsicBounds(CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(32),ui.categoryWash(cat)),null,null,null);compoundDrawablePadding=ui.dp(12);contentDescription=cat.name;setOnLongClickListener {edit(cat);true}}
                 line.addView(select,LinearLayout.LayoutParams(0,-2,1f))
-                line.addView(ui.button(""){if(demo){Toast.makeText(this,"La demo non modifica i tuoi dati.",Toast.LENGTH_SHORT).show()}else try {store.category(cat.id,cat.name,cat.color,cat.icon,!cat.favorite);l=store.snapshot();update()}catch(e:Exception){fail(e)}}.apply {setCompoundDrawablesWithIntrinsicBounds(HeartIcon(if(cat.favorite)ui.colors.primary else ui.colors.muted,cat.favorite,ui.dp(20)),null,null,null);contentDescription="${if(cat.favorite)"Rimuovi" else "Aggiungi"} ${cat.name} ${if(cat.favorite)"dai" else "ai"} preferiti";setPadding(ui.dp(12),0,ui.dp(12),0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))
+                line.addView(ui.button(""){if(demo){Toast.makeText(this,"La demo non modifica i tuoi dati.",Toast.LENGTH_SHORT).show()}else try {store.category(cat.id,cat.name,cat.color,cat.icon,!cat.favorite);l=store.snapshot();update()}catch(e:Exception){fail(e)}}.apply {setCompoundDrawablesWithIntrinsicBounds(HeartIcon(if(cat.favorite)ui.colors.primary else ui.colors.muted,cat.favorite,ui.dp(18)),null,null,null);contentDescription="${if(cat.favorite)"Rimuovi" else "Aggiungi"} ${cat.name} ${if(cat.favorite)"dai" else "ai"} preferiti";setPadding(ui.dp(12),0,ui.dp(12),0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))
                 results.addView(line)
             }
         };watch(search){categoryQuery=it;update()};update()
@@ -428,21 +437,27 @@ class MainActivity:Activity() {
     private fun openRates(){
         val d=draft ?: return
         rateChoice=if(d.type!="series")"none" else if(d.values["rateMode"]=="continuous")"continuous" else "finite"
-        rateCount=d.values["count"]?.takeIf {it.isNotBlank()} ?: "12";go(22)
+        rateCount=d.values["count"]?.takeIf {it.isNotBlank()} ?: "12";ratesAdvanced=rateChoice=="finite" && rateCount !in listOf("2","3","6","12");go(22)
     }
     private fun rates(body:LinearLayout) {
         val d=draft ?: return
         val amount=d.values["amount"]?.let {runCatching {Money.parse(it)}.getOrNull()}
-        body.addView(ui.amount(amount?.let {Money.format(it)} ?: "—",34f).apply {gravity=Gravity.CENTER;background=ui.shape(ui.colors.hero,20);setPadding(ui.dp(10),ui.dp(18),ui.dp(10),ui.dp(18))})
+        body.addView(ui.amount(amount?.let {DisplayMoney.amount(it)} ?: "—",32f).apply {gravity=Gravity.CENTER;background=ui.shape(ui.colors.hero,20);setPadding(ui.dp(10),ui.dp(14),ui.dp(10),ui.dp(14))})
         body.addView(ui.label("Importo di ciascuna rata",12f,ui.colors.muted).apply {gravity=Gravity.CENTER});body.addView(ui.space(12))
+        val radioUpdates=mutableListOf<()->Unit>()
         fun option(name:String,subtitle:String,choice:String,n:Int?=null,enabled:Boolean=true){val selected=rateChoice==choice && (n==null || rateCount==n.toString())
-            val row=ui.row().apply {setPadding(ui.dp(14),ui.dp(10),ui.dp(12),ui.dp(10));background=ui.shape(if(selected)ui.colors.hero else ui.colors.card,18).apply {if(selected)setStroke(ui.dp(1),ui.colors.primary)};isEnabled=enabled;alpha=if(enabled)1f else .45f}
-            row.addView(ui.label(if(selected)"◉" else "○",23f,if(selected)ui.colors.primary else ui.colors.muted).apply {importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO},LinearLayout.LayoutParams(ui.dp(34),-2))
-            val text=ui.column();text.addView(ui.label(name,14f,ui.colors.text,true));text.addView(ui.label(subtitle,12f,ui.colors.muted));row.addView(text,LinearLayout.LayoutParams(0,-2,1f));row.contentDescription=name;row.isSelected=selected;row.isFocusable=true;row.minimumHeight=ui.dp(60)
+            val row=ui.row().apply {setPadding(ui.dp(14),ui.dp(9),ui.dp(12),ui.dp(9));background=ui.shape(if(selected)ui.colors.hero else ui.colors.card,16).apply {if(selected)setStroke(ui.dp(1),ui.colors.primary)};isEnabled=enabled;alpha=if(enabled)1f else .45f}
+            row.addView(View(this).apply {background=RadioIcon(selected,if(selected)ui.colors.primary else ui.colors.muted,ui.dp(22))},LinearLayout.LayoutParams(ui.dp(22),ui.dp(22)).apply {marginEnd=ui.dp(12)})
+            val text=ui.column();text.addView(ui.label(name,14f,ui.colors.text,true));text.addView(ui.label(subtitle,12f,ui.colors.muted));row.addView(text,LinearLayout.LayoutParams(0,-2,1f));row.contentDescription=name;row.isSelected=selected;row.isFocusable=true;row.minimumHeight=ui.dp(56)
+            radioUpdates.add {val checked=rateChoice==choice && (n==null || rateCount==n.toString());row.isSelected=checked;row.background=ui.shape(if(checked)ui.colors.hero else ui.colors.card,16).apply {if(checked)setStroke(ui.dp(1),ui.colors.primary)};row.getChildAt(0).background=RadioIcon(checked,if(checked)ui.colors.primary else ui.colors.muted,ui.dp(22))}
             if(enabled)row.setOnClickListener {rateChoice=choice;if(n!=null)rateCount=n.toString();render()};body.addView(row);body.addView(ui.space(7))
         }
         option("Nessuna rata","Spesa singola","none",enabled=d.id==0L)
-        listOf(2,3,6,12).forEach {n->option("$n rate",if(amount==null)"Importo per rata da inserire" else "${Money.format(amount)} per rata · totale ${Money.format(amount*n)}","finite",n)}
+        listOf(2,3,6,12).forEach {n->option("$n rate",if(amount==null)"Importo per rata da inserire" else "${DisplayMoney.amount(amount)} per rata","finite",n)}
+        val countValue=rateCount.toIntOrNull()
+        val summary=ui.label(if(rateChoice=="finite" && amount!=null && countValue in 1..120)"$rateCount rate · totale ${DisplayMoney.amount(amount*countValue!!)}" else if(rateChoice=="continuous")"Piano: ricorrenza continua" else "Nessuna suddivisione",12f,ui.colors.muted);body.addView(summary)
+        body.addView(ui.button(if(ratesAdvanced)"Meno opzioni" else "Altre opzioni"){ratesAdvanced=!ratesAdvanced;render()}.apply {textSize=12f;setTextColor(ui.colors.cool)})
+        if(ratesAdvanced){
         option("Ricorrenza continua","Senza numero finale, alla frequenza scelta","continuous")
         body.addView(ui.section("Numero personalizzato · da 1 a 120"))
         val row=ui.row();val count=ui.input("12",rateCount).apply {contentDescription="Numero rate";inputType=android.text.InputType.TYPE_CLASS_NUMBER;filters=arrayOf(InputFilter.LengthFilter(3));gravity=Gravity.CENTER}
@@ -450,8 +465,9 @@ class MainActivity:Activity() {
         val plus=ui.button("+"){val n=count.text.toString().toIntOrNull() ?: 1;count.setText(minOf(120,n+1).toString())}.apply {contentDescription="Aumenta rate"}
         row.addView(minus,LinearLayout.LayoutParams(ui.dp(48),ui.dp(52)));row.addView(count,LinearLayout.LayoutParams(0,ui.dp(52),1f));row.addView(plus,LinearLayout.LayoutParams(ui.dp(48),ui.dp(52)));body.addView(row)
         fun update(){val n=count.text.toString().toIntOrNull();minus.isEnabled=n!=null && n>1;plus.isEnabled=n!=null && n<120;count.error=if(n==null || n !in 1..120)"Da 1 a 120" else null}
-        watch(count){rateCount=it;rateChoice="finite";update()};update()
-        body.addView(ui.label("L’importo resta quello di OGNI rata, non viene diviso. Le scadenze rimangono previste finché registri il pagamento. Frequenza e prima scadenza sono modificabili nel modulo.",12f,ui.colors.muted))
+        watch(count){rateCount=it;rateChoice="finite";update();radioUpdates.forEach {refresh->refresh()};val n=it.toIntOrNull();summary.text=if(n!=null && n in 1..120 && amount!=null)"$n rate · totale ${DisplayMoney.amount(amount*n)}" else "Scegli da 1 a 120 rate"};update()
+        }
+        body.addView(ui.label("L’importo è di ogni rata. Applica prepara il piano, non registra pagamenti.",11f,ui.colors.muted))
     }
     private fun applyRates(){try {
         val d=draft ?: return
@@ -530,9 +546,14 @@ class MainActivity:Activity() {
                 if(adjustment)amount.inputType=amount.inputType or android.text.InputType.TYPE_NUMBER_FLAG_SIGNED
                 if(series)body.addView(ui.label("Importo di ciascuna rata",12f,ui.colors.muted).apply {gravity=Gravity.CENTER})
                 if(expense){body.addView(ui.section("Categorie"));inlineCategories(body,d)}else category()
-                field("description","Descrizione").apply {hint=if(expense)"Facoltativa" else "Compenso ricevuto";minHeight=ui.dp(44);background=ui.shape(ui.colors.hero,10)}
-                date("date",if(series)"Prima scadenza" else "Data")
-                if(!adjustment && (d.id==0L || series))body.addView(ui.listRow("Rate",if(series){if(value("rateMode",if(value("count").isBlank())"continuous" else "finite")=="continuous")"Ricorrenza continua" else "${value("count")} rate"}else "Nessuna rata"){openRates()})
+                field("description","Descrizione").apply {hint=if(expense)"Facoltativa" else "Compenso ricevuto";textSize=14f;minHeight=ui.dp(38);setPadding(0,ui.dp(3),0,ui.dp(3));background=null}
+                if(expense){
+                    val day=value("date",LocalDate.now().toString());val fields=ui.row().apply {orientation=if(resources.configuration.fontScale>=1.5f)LinearLayout.VERTICAL else LinearLayout.HORIZONTAL;background=ui.shape(ui.colors.hero,12)}
+                    val dateView=ui.miniField(if(series)"Prima scadenza" else "Data",LocalDate.parse(day).format(dates)){pick(LocalDate.parse(day)){d.values["date"]=it.toString();render()}}
+                    fields.addView(dateView,if(fields.orientation==LinearLayout.VERTICAL)LinearLayout.LayoutParams(-1,-2)else LinearLayout.LayoutParams(0,-2,1.2f))
+                    if(!adjustment && (d.id==0L || series))fields.addView(ui.miniField("Rate",if(series){if(value("rateMode",if(value("count").isBlank())"continuous" else "finite")=="continuous")"Continua" else "${value("count")} rate"}else "Nessuna"){openRates()},if(fields.orientation==LinearLayout.VERTICAL)LinearLayout.LayoutParams(-1,-2)else LinearLayout.LayoutParams(0,-2,1f))
+                    body.addView(ui.space(10));body.addView(fields)
+                }else{date("date",if(series)"Prima scadenza" else "Data");if(!adjustment && (d.id==0L || series))body.addView(ui.listRow("Rate",if(series)"Piano rateale" else "Nessuna rata"){openRates()})}
                 if(series)option("frequency","Ripetizione",Frequency.entries.map {it.name to frequencyName(it)},"MONTHLY")
                 advanced {
                     if(!series && !adjustment)option("status","Quando incide sul saldo?",listOf("ACTUAL" to "Già effettuato","PLANNED" to "Previsto, ancora da effettuare"),"ACTUAL")

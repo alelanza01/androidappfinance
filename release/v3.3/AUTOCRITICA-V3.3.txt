@@ -1,0 +1,19 @@
+1. Home
+Corretto: ring/gerarchie, superfici e pillole con icona, righe impegni e + sollevato. Residuo: azioni extra e ritmo verticale ancora diversi; la resa delle icone è più geometrica.
+
+2. Nuova spesa
+Corretto: importo con valuta, medaglioni selezionabili, capsula categoria, descrizione leggera e Data/Rate insieme. Residuo: nomi/icone non sono tutti quelli del disegno; font grandi richiedono scorrimento.
+
+3. Categorie
+Corretto: ricerca compatta, preferite integrate, lista più leggera, filtri discreti e cuori sottili. Residuo: ordine e categorie dipendono dall’archivio, manca il dettaglio illustrato del concept.
+
+4. Analisi
+Corretto: tabs/legenda più leggere, prezzo centrale, saldo con riempimento, margini e date del tratto visibile. Residuo: linea a gradini, non fluida; i dati reali danno una composizione diversa dal mockup.
+
+5. Rate
+Corretto: radio uniformi e riepilogo unico, continua/manuale nelle opzioni secondarie. Residuo: importo per ciascuna rata e totale del piano, non divisione del totale; pulsante Applica, poi Salva.
+
+6. Conferma di uscita
+Corretto: sfondo ammorbidito, illustrazione, angoli e spazi delle due CTA. Residuo: sfocatura approssimata da bitmap in memoria, non dal compositore hardware; icona semplificata.
+
+Non dichiariamo equivalenza pixel-per-pixel: la somiglianza va giudicata nei confronti, non dal numero di test passati. Le differenze sopra non vengono nascoste come soli limiti tecnici.

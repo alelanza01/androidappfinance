@@ -1,22 +1,28 @@
-# Posso spenderlo? 3.2 — Concept Fidelity
+# Posso spenderlo? 3.3 — Concept Match
 
 App privata Android 8+, Kotlin nativo e SQLite: offline, nessun account, server, analytics, permesso Internet o costo ricorrente.
 
-**[APK di prova V3.2](release/v3.2/Posso-spenderlo-V3.2-test.apk)** · [SHA-256](release/v3.2/SHA256.txt) · [Sorgenti ZIP](release/v3.2/Posso-spenderlo-V3.2-progetto.zip) · [Rendering Android](release/v3.2/screenshots/) · [Confronti affiancati](release/v3.2/comparisons/Confronti-V3.2.pdf) · [Verifiche](release/v3.2/VERIFICA.txt).
+**[APK di prova V3.3](release/v3.3/Posso-spenderlo-V3.3-test.apk)** · [SHA-256](release/v3.3/SHA256.txt) · [Sorgenti ZIP](release/v3.3/Posso-spenderlo-V3.3-progetto.zip) · [Rendering Android](release/v3.3/screenshots/) · [Confronti affiancati](release/v3.3/comparisons/Confronti-V3.3.pdf) · [Verifiche](release/v3.3/VERIFICA-V3.3.txt).
 
-Branch `feature/v3.2-concept-fidelity`, base `3e95305`. Nessun merge su `main`: la V3.2 è una proposta da provare e revisionare.
+Branch `feature/v3.3-concept-match`, base V3.2 `b5e296a`. Nessun merge su `main`: la V3.3 è una proposta da provare e revisionare.
 
 Su GitHub apri il file APK e premi **Download raw file**. Tutti i sorgenti sono anche nelle cartelle del repository.
 
-## Provare l’aggiornamento sopra V3.1
+## Provare l’aggiornamento sopra la versione installata
 
 1. Nella versione installata, esporta un backup e conservalo sul dispositivo o PC.
 2. Scarica il nuovo APK e aprilo sul telefono. Autorizza questa fonte se Android lo richiede.
-3. Premi **Aggiorna/Installa**. **Non disinstallare la V3.1**, perché perderesti il suo database.
+3. Premi **Aggiorna/Installa**. **Non disinstallare la versione precedente**, perché perderesti il suo database.
 
-Identità invariata `it.privato.disponibile.v2`, versione `3.2.0` / codice 320. Il certificato viene confrontato con gli APK V2 e V2.1 prima della consegna. Schema SQLite 4 e backup JSON 5 invariati: non è necessaria una nuova migrazione. Le migrazioni storiche da V2/V2.1/V3.0 e i cutoff delle ricorrenze restano coperti dai test. Nessun reset o riclassificazione automatica dei movimenti.
+Identità invariata `it.privato.disponibile.v2`, versione `3.3.0` / codice 330. Il certificato viene confrontato con gli APK V2 e V2.1 prima della consegna. Schema SQLite 4 e backup JSON 5 invariati: non è necessaria una nuova migrazione. Le migrazioni storiche da V2/V2.1/V3.0 e i cutoff delle ricorrenze restano coperti dai test. Nessun reset o riclassificazione automatica dei movimenti.
 
 La V1 resta un’app separata. L’installazione fisica sul telefono del proprietario non viene dichiarata come eseguita dal cloud.
+
+## Rifiniture V3.3
+
+Anello e ombre più morbidi, quick actions con icona, importo con valuta separata dal testo editabile, categorie circolari e Data/Rate in una capsula. Filtri, approfondimenti e rate avanzate sono secondari. Il grafico mantiene il saldo reale e mostra le date del tratto visibile.
+
+131 test superati; build release riuscita; lint: 0 errori e 30 avvisi. [Autocritica per le sei schermate](release/v3.3/AUTOCRITICA-V3.3.txt): restano differenze compositive e iconografiche, non viene dichiarata equivalenza al concept.
 
 ## Sei composizioni dal concept
 
@@ -24,9 +30,9 @@ La V1 resta un’app separata. L’installazione fisica sul telefono del proprie
 | --- | --- |
 | Home | Ciao!, anello turchese dello spendibile, pannelli mensili entrate/uscite, scadenze compatte, quattro destinazioni e + centrale. Simulatore, crediti, calcolo e spesa veloce restano accessibili. |
 | Nuova spesa | Importo su azzurro tenue, griglia 4×3 di categorie con icone vettoriali colorate, descrizione facoltativa, data, accesso alle rate, Salva spesa blu sfumato. |
-| Categorie | Ricerca, preferiti orizzontali, righe con icona e cuore, recenti e modifica tramite pressione prolungata. |
-| Analisi | Mese/Trimestre/Anno, anello, legenda con percentuali/importi e andamento blu della liquidità. Previsioni, colonne e confronti rimangono disponibili. |
-| Rate | Radio per nessuna/2/3/6/12 rate, continua e numero manuale 1–120; Applica rate prepara il piano, il salvataggio è separato. |
+| Categorie | Ricerca, preferiti orizzontali, righe con icona e cuore sottile, filtri discreti, recenti e modifica tramite pressione prolungata. |
+| Analisi | Mese/Trimestre/Anno, anello, legenda con percentuali/importi e andamento blu della liquidità. Previsioni, colonne e confronti rimangono in Approfondimenti. |
+| Rate | Radio per nessuna/2/3/6/12 rate; continua e numero manuale 1–120 in Altre opzioni; Applica rate prepara il piano, il salvataggio è separato. |
 | Conferma | Finestra centrale arrotondata, illustrazione vettoriale, sfondo attenuato, due azioni contestuali. |
 
 La palette chiara usa bianco, azzurro, blu e turchese; lo scuro usa le stesse gerarchie con contrasti adeguati. Nessuna dipendenza o API esterna aggiunta. Impostazioni, crediti, calendario, simulatori e backup usano gli stessi componenti.
@@ -42,10 +48,10 @@ Le finestre di Analisi sono mobili di 1/3/12 mesi, esplicitate in pagina. I conf
 - I colori delle categorie predefinite sono una presentazione UI; nomi/ID/associazioni/colori salvati restano invariati. Categorie e colori personalizzati sono conservati.
 - Linea del saldo a gradini, per non suggerire movimenti intermedi inesistenti. Grafici vuoti e negativi sono reali, senza dati fittizi.
 - Le schermate scorrono su telefoni piccoli/font grandi; le icone sono vettori ricostruiti, non pixel estratti dal mockup. Cornice hardware e indicatori di sistema illustrati non sono disegnati dentro l’app.
-- Oscuramento del fondo, senza simulare una sfocatura hardware non verificata. Animazioni brevi e disattivabili tramite le impostazioni Android; ombre native indesiderate rimosse.
+- Fondo dei dialoghi ammorbidito con una copia ridotta temporanea della UI in memoria e oscuramento. Non è una sfocatura del compositore hardware; nessuna immagine viene salvata o trasmessa. Animazioni brevi e disattivabili tramite le impostazioni Android; ombre native indesiderate rimosse.
 - I comandi aggiuntivi preservano le funzioni V3.1 non rappresentate nel concept. Recenti e inserimento manuale rimangono disponibili.
 
-Le immagini originali e i sei confronti sono in `release/v3.2/references` e `release/v3.2/comparisons`. Per riprodurli, esegui i test e `python tools/compare_concept.py` (matplotlib/Pillow, solo strumenti di sviluppo).
+Le immagini originali restano in `release/v3.2/references`; i sei confronti e l’evoluzione V3.2/V3.3 sono in `release/v3.3/comparisons`. Per riprodurli, esegui i test e `python tools/compare_concept.py` (matplotlib/Pillow, solo strumenti di sviluppo).
 
 Dopo l’installazione verifica sul telefono: pressione/rilascio del + e Salva, apertura/chiusura del popup, scelta categoria, tastiera e scorrimento a font grandi, in entrambi i temi. Gli screenshot cloud non provano la scomparsa di un artefatto specifico del dispositivo.
 

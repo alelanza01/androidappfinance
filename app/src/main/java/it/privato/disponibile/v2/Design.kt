@@ -32,6 +32,20 @@ class Design(val context:Context,val colors:Palette) {
     fun column()=LinearLayout(context).apply {orientation=LinearLayout.VERTICAL}
     fun row()=LinearLayout(context).apply {orientation=LinearLayout.HORIZONTAL;gravity=android.view.Gravity.CENTER_VERTICAL}
     fun shape(color:Int,radius:Int=12)=GradientDrawable().apply {setColor(color);cornerRadius=dp(radius).toFloat()}
+    fun surface(color:Int=colors.card,radius:Int=16)=SoftSurface(color,dp(radius).toFloat(),context.resources.displayMetrics.density,colors.dark)
+    fun pageBackground()=GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,intArrayOf(if(colors.dark)colors.background else Color.WHITE,colors.background,if(colors.dark)colors.background else Color.parseColor("#EFFAFF")))
+    fun chip(value:String,icon:Int,action:()->Unit)=button(value,action=action).apply {
+        textSize=11f;maxLines=2;background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),shape(colors.card,18),shape(Color.WHITE,18));setPadding(dp(5),dp(8),dp(5),dp(8))
+        setCompoundDrawablesWithIntrinsicBounds(null,NavIcon(icon,colors.primary,dp(18)),null,null);compoundDrawablePadding=dp(5)
+    }
+    fun miniField(title:String,value:String,action:()->Unit)=column().apply {
+        setPadding(dp(12),dp(8),dp(10),dp(8));addView(label(title,10f,colors.muted));addView(label(value,13f,colors.text,true));isClickable=true;isFocusable=true;contentDescription=title;setOnClickListener {action()}
+        background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),null,shape(Color.WHITE,12))
+    }
+    fun compactSegments(labels:List<String>,selected:Int,action:(Int)->Unit)=row().apply {
+        background=android.graphics.drawable.InsetDrawable(shape(colors.hero,18),0,dp(6),0,dp(6))
+        labels.forEachIndexed {i,label->addView(button(label){action(i)}.apply {textSize=12f;maxLines=1;setPadding(dp(3),0,dp(3),0);background=android.graphics.drawable.InsetDrawable(shape(if(i==selected)colors.primary else Color.TRANSPARENT,18),dp(2),dp(6),dp(2),dp(6));setTextColor(if(i==selected)colors.onPrimary else colors.text);isSelected=i==selected},LinearLayout.LayoutParams(0,dp(48),1f))}
+    }
     fun label(value:String,size:Float=15f,color:Int=colors.text,bold:Boolean=false)=TextView(context).apply {
         text=value;textSize=size;setTextColor(color);includeFontPadding=false
         typeface=Typeface.create(if(bold) "sans-serif-medium" else "sans-serif",Typeface.NORMAL)
@@ -70,10 +84,10 @@ class Design(val context:Context,val colors:Palette) {
     fun categoryTile(c:Category,selected:Boolean,compact:Boolean=false,action:()->Unit)=button(if(compact)CategoryVisual.shortName(c) else c.name,action=action).apply {
         textSize=if(compact)10f else 12f;maxLines=if(compact)2 else 3;setPadding(dp(3),dp(5),dp(3),dp(4));minHeight=dp(if(compact)70 else 88)
         val tint=categoryTint(c)
-        setCompoundDrawablesWithIntrinsicBounds(null,CategoryIcon(c.icon,tint,dp(if(compact)36 else 40),categoryWash(c)),null,null);compoundDrawablePadding=dp(4)
+        setCompoundDrawablesWithIntrinsicBounds(null,CategoryIcon(c.icon,tint,dp(if(compact)36 else 40),categoryWash(c),true,if(selected)colors.primary else null),null,null);compoundDrawablePadding=dp(4)
         isSelected=selected;contentDescription="${c.name}${if(c.favorite) ", preferita" else ""}${if(selected) ", selezionata" else ""}"
-        val surface=shape(if(selected)colors.hero else Color.TRANSPARENT,14)
-        if(selected)surface.setStroke(dp(1),colors.primary)
+        val surface=shape(Color.TRANSPARENT,14)
+        setTextColor(if(selected)colors.primary else colors.text)
         background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),surface,shape(Color.WHITE,14))
 
     }
@@ -84,9 +98,12 @@ class Design(val context:Context,val colors:Palette) {
     }
     fun categoryWash(c:Category)=if(colors.dark)colors.hero else Color.rgb((Color.red(CategoryVisual.iconColor(c))+255*3)/4,(Color.green(CategoryVisual.iconColor(c))+255*3)/4,(Color.blue(CategoryVisual.iconColor(c))+255*3)/4)
     fun moneyEntry(body:LinearLayout,title:String,value:String):EditText {
-        val e=input("0,00",value,true).apply {contentDescription=title;textSize=32f;gravity=android.view.Gravity.CENTER;background=shape(colors.hero,22);setPadding(dp(12),dp(12),dp(12),dp(12));minHeight=dp(76)}
-        body.addView(e);body.addView(label("Importo in euro",10f,colors.muted).apply {gravity=android.view.Gravity.CENTER});return e
+        val holder=MoneyInput(context,colors.text)
+        val e=holder.editor.apply {flatten(this);contentDescription=title;setText(value);hint="0,00";setTextColor(colors.text);setHintTextColor(colors.muted);includeFontPadding=false;textSize=32f;typeface=Typeface.create("sans-serif-medium",Typeface.NORMAL);gravity=android.view.Gravity.CENTER;setSingleLine();inputType=android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL;filters=arrayOf(android.text.InputFilter.LengthFilter(12));setSelectAllOnFocus(true);background=null;setPadding(dp(36),dp(12),dp(12),dp(12));minHeight=dp(72)}
+        holder.background=GradientDrawable(GradientDrawable.Orientation.TL_BR,intArrayOf(colors.hero,if(colors.dark)colors.card else Color.parseColor("#F5FBFF"))).apply {cornerRadius=dp(18).toFloat()};holder.minimumHeight=dp(72)
+        body.addView(holder,LinearLayout.LayoutParams(-1,-2));return e
     }
+
     fun input(hintValue:String,value:String="",money:Boolean=false)=EditText(context).apply {
         flatten(this);hint=hintValue;setText(value);setTextColor(colors.text);setHintTextColor(colors.muted);setSingleLine();textSize=16f
         minHeight=dp(52);setPadding(dp(12),dp(10),dp(12),dp(10))

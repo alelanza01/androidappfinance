@@ -45,7 +45,7 @@ class ConceptFidelityTest {
    s.save(Operation(title="DEMO futura",cents=8000,kind=Kind.EXPENSE,status=Status.PLANNED,date=today.plusDays(3),category=cat));s.saveAdvance(Advance(cents=5000,date=today,description="DEMO anticipo",debtor="DEMO"));s.saveRefund(Refund(advance=s.snapshot().advances.single().id,cents=2000,date=today))
   }
   val before=ledger();assertEquals(1000L,PeriodInsights(before,m,1).total);assertEquals(3000L,PeriodInsights(before,m,3).total);assertEquals(7000L,PeriodInsights(before,m,12).total);assertFalse(PeriodInsights(before,m.plusMonths(1),3).comparable)
-  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Analisi");click(a.window.decorView,"Trimestre");assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()==Money.format(3000)});click(a.window.decorView,"Anno");assertEquals(before,ledger());c.pause().stop().destroy()
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Analisi");click(a.window.decorView,"Trimestre");assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()==DisplayMoney.amount(3000)});click(a.window.decorView,"Anno");assertEquals(before,ledger());c.pause().stop().destroy()
  }
  @Test fun newNavigationExposesFourDestinationsAndCreationWhileCreditsRemainReachable() {
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();listOf("Home","Movimenti","Analisi","Impegni").forEach {page->click(a.window.decorView,page);val nav=all(a.window.decorView).filterIsInstance<Button>().filter {it.text.toString() in listOf("Home","Movimenti","Analisi","Impegni")};assertEquals(4,nav.size);assertEquals(page,nav.single {it.isSelected}.text.toString());assertTrue(all(a.window.decorView).any {it.contentDescription=="Aggiungi"})}
@@ -57,6 +57,12 @@ class ConceptFidelityTest {
 @Config(sdk=[35],qualifiers="w360dp-h800dp-xxhdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ConceptScreenshotsTest {
+ private fun capture(a:MainActivity,name:String,overlay:Boolean=false){
+  val root=a.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0);val d=a.resources.displayMetrics.density
+  root.dispatchApplyWindowInsets(WindowInsets.Builder().setInsets(WindowInsets.Type.systemBars(),android.graphics.Insets.of(0,(24*d).toInt(),0,(24*d).toInt())).build())
+  Capture.save(a,name,overlay=overlay)
+ }
+
  @Test fun ratesAndCenteredDialogStayUsableWithLargeFontsAndSimulatedKeyboard() {
   listOf(Triple(320,640,2f),Triple(360,800,1f),Triple(411,891,1.5f)).forEach {(w,h,font)->listOf("light","dark").forEach {theme->
    RuntimeEnvironment.setQualifiers("w${w}dp-h${h}dp-mdpi");RuntimeEnvironment.setFontScale(font);UiSupport.reset();withStore {it.settings(it.snapshot().settings.copy(theme=theme))}
@@ -81,10 +87,10 @@ class ConceptScreenshotsTest {
    keys.forEachIndexed {i,key->val cat=l.categories.first {it.icon==key};s.save(Operation(title="DEMO · ${cat.name}",cents=2100L+i*1400,kind=Kind.EXPENSE,status=Status.ACTUAL,date=LocalDate.now().minusDays((i+1).toLong()),category=cat.id));if(i<4)s.category(cat.id,cat.name,cat.color,cat.icon,true)}
    s.save(Operation(title="DEMO · Compenso",cents=65000,kind=Kind.INCOME,status=Status.ACTUAL,date=LocalDate.now().minusDays(8),category=l.categories.first {it.icon=="income"}.id));s.save(Operation(title="DEMO · Affitto",cents=52000,kind=Kind.EXPENSE,status=Status.PLANNED,date=LocalDate.now().plusDays(3),category=l.categories.first {it.icon=="home"}.id));s.save(Operation(title="DEMO · Connessione",cents=2900,kind=Kind.EXPENSE,status=Status.PLANNED,date=LocalDate.now().plusDays(7),category=l.categories.first {it.icon=="home"}.id))
   }
-  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();Capture.save(a,"concept-01-home-$theme.png")
-  click(a.window.decorView,"Spesa veloce");set(a.window.decorView,"Importo in euro","37,80");Capture.save(a,"concept-02-spesa-$theme.png");click(a.window.decorView,"Categoria");Capture.save(a,"concept-03-categorie-$theme.png");a.onBackPressed()
-  click(a.window.decorView,"Rate");click(a.window.decorView,"3 rate");Capture.save(a,"concept-05-rate-$theme.png");a.onBackPressed();a.onBackPressed();Capture.save(a,"concept-06-conferma-$theme.png",overlay=true);choose("Esci senza salvare")
-  click(a.window.decorView,"Analisi");Capture.save(a,"concept-04-analisi-$theme.png");c.pause().stop().destroy()
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();capture(a,"concept-01-home-$theme.png")
+  click(a.window.decorView,"Spesa veloce");set(a.window.decorView,"Importo in euro","37,80");capture(a,"concept-02-spesa-$theme.png");click(a.window.decorView,"Categoria");capture(a,"concept-03-categorie-$theme.png");a.onBackPressed()
+  click(a.window.decorView,"Rate");click(a.window.decorView,"3 rate");capture(a,"concept-05-rate-$theme.png");a.onBackPressed();Capture.layout(a.window.decorView,1080,2400);a.onBackPressed();capture(a,"concept-06-conferma-$theme.png",overlay=true);choose("Esci senza salvare")
+  click(a.window.decorView,"Analisi");capture(a,"concept-04-analisi-$theme.png");c.pause().stop().destroy()
   }
  }
 }

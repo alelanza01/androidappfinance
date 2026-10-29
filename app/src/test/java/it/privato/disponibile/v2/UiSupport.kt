@@ -11,6 +11,9 @@ object UiSupport {
  fun all(v:View):List<View> = listOf(v)+if(v is ViewGroup)(0 until v.childCount).flatMap {all(v.getChildAt(it))}else emptyList()
  fun idle(){Shadows.shadowOf(android.os.Looper.getMainLooper()).idleFor(Duration.ofMillis(250))}
  fun click(v:View,name:String) {
+  if(name in listOf("Recenti","Preferite","Tutte") && all(v).none {it is Button && it.text.toString()==name} && all(v).any {it.contentDescription=="Filtra categorie"}){click(v,"Filtra categorie");choose(name);return}
+  if(name in listOf("Spese","Liquidità","Mesi") && all(v).none {it is Button && it.text.toString()==name} && all(v).any {it is Button && it.text.toString()=="Approfondimenti"}){click(v,"Approfondimenti");choose(name);return}
+
   if(name=="Registra" && all(v).none {it is Button && it.text.toString()=="Registra"}){click(v,"Aggiungi");return}
   if(name=="Home" && all(v).none {it is Button && it.text.toString()=="Home"}){click(v,"Indietro");return}
   if(name=="Crediti" && all(v).none {it is Button && it.text.toString()=="Crediti"}){click(v,"Home");click(v,"Crediti");return}
@@ -30,7 +33,7 @@ object UiSupport {
   db.execSQL("INSERT INTO categories SELECT id,name,color FROM categories_new");db.execSQL("DROP TABLE categories_new")
  }
  fun field(v:View,label:String)=all(v).filterIsInstance<EditText>().first {it.contentDescription?.toString()==label}
- fun set(v:View,label:String,value:String){field(v,label).setText(value);idle()}
+ fun set(v:View,label:String,value:String){if(label=="Numero rate" && all(v).filterIsInstance<EditText>().none {it.contentDescription?.toString()==label})click(v,"Altre opzioni");field(v,label).setText(value);idle()}
  fun ledger():Ledger {val s=Store(RuntimeEnvironment.getApplication());return try{s.snapshot()}finally{s.close()}}
  fun reset(){RuntimeEnvironment.getApplication().deleteDatabase("finance-v2.db")}
  fun withStore(block:(Store)->Unit){val s=Store(RuntimeEnvironment.getApplication());try{block(s)}finally{s.close()}}

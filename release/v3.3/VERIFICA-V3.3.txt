@@ -1,0 +1,82 @@
+Posso spenderlo? V3.3 — Concept Match
+Branch: feature/v3.3-concept-match; base V3.2 b5e296adc6b0b8d2bcd77c9cf01a63c391c1009d. Nessun merge in main.
+Comando eseguito: ./gradlew --no-daemon :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+BUILD SUCCESSFUL in 1m 58s; 131 test superati; 0 fallimenti/errori/saltati.
+Lint: 0 errori, 30 avvisi: {'DrawAllocation': 12, 'ViewConstructor': 5, 'SetTextI18n': 13}.
+ID invariato: it.privato.disponibile.v2; versione 3.3.0, codice 330 > 320.
+APK di prova firmato con chiave originale V2 e verificato da apksigner (schema v2). Certificato identico agli APK V2/V2.1/V3.0/V3.1/V3.2; tutti i checksum precedenti invariati.
+Certificato pubblico SHA-256: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Nessuna nuova chiave, credenziale o chiave privata nel repository o nello ZIP sorgenti.
+Finance.kt, Store.kt, Backup.kt invariati rispetto a b5e296a. SQLite schema 4, backup JSON 5: nessuna nuova migrazione, reset o riclassificazione dei dati.
+Conservati i 122 test precedenti, adattando i percorsi UI alle funzioni secondarie; 9 verifiche aggiuntive.
+Invarianti conservate: centesimi interi, spendibile prudente, liquidità effettiva distinta dalle previsioni, riserva/impegni, anticipi e rimborsi, storico e backup, ricorrenze con cutoff, simulatore senza scritture.
+Rate: importo di ciascuna rata, totale n×importo. Applica prepara il piano; il salvataggio successivo registra. Continua e manuale 1–120 ancora disponibili in Altre opzioni.
+Nuovi test API 26/35: filtri discreti senza perdita della bozza; approfondimenti raggiungibili senza modifiche al ledger; rate avanzate/totali/radio aggiornati senza scritture premature; saldo con apertura precedente, anticipo/rimborso e programmati esclusi; formattazione valuta. Native API 35: overlay applicato/rimosso senza alterare i pixel originali.
+Home: anello più grande, luce menta e ombre interne ai limiti, importi compatti, metriche, impegni rifiniti e quick actions con icona; + meglio integrato.
+Nuova spesa: valuta separata dal testo numerico editabile, medaglioni categoria, capsula selezione, descrizione leggera e Data/Rate insieme (verticali a font grandi).
+Categorie: ricerca vettoriale, preferite integrate, righe leggere/cuori sottili; Recenti/Preferite/Tutte conservate sotto Filtri.
+Analisi: selettore compatto, donut/legenda più leggeri; saldo a gradini con fill, margini, punto finale e date visibili. Zoom inizia il giorno precedente al primo movimento effettivo, mantenendo il saldo di apertura e tutti i movimenti precedenti. Approfondimenti conserva confronto, ricorrenze, previsioni, colonne e mesi.
+Rate: cinque scelte principali uniformi, riepilogo unico, impostazioni avanzate secondarie; selezione e totale manuale aggiornati durante la digitazione.
+Popup: proporzioni, spazi CTA e sfondo ammorbidito. Copia ridotta della UI solo in memoria, rimossa alla chiusura; nessuna immagine salvata o inviata.
+Verifica visiva: visionati i sei affiancamenti concept/app, confronto Home V3.2/V3.3 e rendering chiaro/scuro. Dettagli autocritici per ogni schermata in AUTOCRITICA-V3.3.txt e nei confronti.
+Differenze residue reali: ritmo verticale/azioni accessorie Home, icone geometriche anziché illustrate, proporzioni del popup e area importo ancora diverse. Analisi usa saldi reali a gradini, non una curva di fantasia. Il risultato è più rifinito, ma non equivalente al concept: le differenze non sono soltanto tecniche.
+Rendering: View Android reali, Robolectric Native Graphics API 35; test UI API 26/35, dati API 28. Sei schermate light/dark, viewport 320×640/360×800/411×891 dp e font 100/150/200%; casi vuoti/negativi/molti movimenti/importi lunghi e componenti critici.
+Limiti: non è stato usato un telefono fisico. Le finestre sono composte dai View reali, non dal compositore hardware; blur approssimato in memoria. IME verificato con insets simulati, non una tastiera reale. Installazione sopra la versione precedente, animazioni/ripple e notifiche richiedono prova sul dispositivo.
+Offline, nessun permesso Internet/account/backend/costo aggiunto. Nessuna release definitiva pubblicata.
+Installazione: esportare prima un backup; scaricare APK e scegliere Aggiorna senza disinstallare la versione esistente. Il recupero privato della firma sul PC resta aperto e separato.
+Artefatti: 188 screenshot freschi della suite finale, sei confronti PNG/PDF, sei evoluzioni concept/V3.2/V3.3 PNG/PDF, APK e sorgenti ZIP.
+
+Autocritica per schermata:
+1. Home
+Corretto: ring/gerarchie, superfici e pillole con icona, righe impegni e + sollevato. Residuo: azioni extra e ritmo verticale ancora diversi; la resa delle icone è più geometrica.
+
+2. Nuova spesa
+Corretto: importo con valuta, medaglioni selezionabili, capsula categoria, descrizione leggera e Data/Rate insieme. Residuo: nomi/icone non sono tutti quelli del disegno; font grandi richiedono scorrimento.
+
+3. Categorie
+Corretto: ricerca compatta, preferite integrate, lista più leggera, filtri discreti e cuori sottili. Residuo: ordine e categorie dipendono dall’archivio, manca il dettaglio illustrato del concept.
+
+4. Analisi
+Corretto: tabs/legenda più leggere, prezzo centrale, saldo con riempimento, margini e date del tratto visibile. Residuo: linea a gradini, non fluida; i dati reali danno una composizione diversa dal mockup.
+
+5. Rate
+Corretto: radio uniformi e riepilogo unico, continua/manuale nelle opzioni secondarie. Residuo: importo per ciascuna rata e totale del piano, non divisione del totale; pulsante Applica, poi Salva.
+
+6. Conferma di uscita
+Corretto: sfondo ammorbidito, illustrazione, angoli e spazi delle due CTA. Residuo: sfocatura approssimata da bitmap in memoria, non dal compositore hardware; icona semplificata.
+
+Non dichiariamo equivalenza pixel-per-pixel: la somiglianza va giudicata nei confronti, non dal numero di test passati. Le differenze sopra non vengono nascoste come soli limiti tecnici.
+
+File sorgente/test/documentazione modificati:
+README.md
+app/build.gradle.kts
+app/src/main/java/it/privato/disponibile/v2/CategoryCatalog.kt
+app/src/main/java/it/privato/disponibile/v2/Charts.kt
+app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt
+app/src/main/java/it/privato/disponibile/v2/Design.kt
+app/src/main/java/it/privato/disponibile/v2/MainActivity.kt
+app/src/main/java/it/privato/disponibile/v2/RefinedViews.kt
+app/src/test/java/it/privato/disponibile/v2/ConceptFidelityTest.kt
+app/src/test/java/it/privato/disponibile/v2/Refinement33Test.kt
+app/src/test/java/it/privato/disponibile/v2/UiSupport.kt
+tools/compare_concept.py
+
+Suite eseguite:
+it.privato.disponibile.v2.AdvanceTest: 11 test superati
+it.privato.disponibile.v2.AdvanceUiTest: 6 test superati
+it.privato.disponibile.v2.Backdrop33Test: 1 test superati
+it.privato.disponibile.v2.ComponentAuditTest: 2 test superati
+it.privato.disponibile.v2.ConceptFidelityTest: 10 test superati
+it.privato.disponibile.v2.ConceptScreenshotsTest: 3 test superati
+it.privato.disponibile.v2.FinanceTest: 8 test superati
+it.privato.disponibile.v2.ProductExperienceTest: 6 test superati
+it.privato.disponibile.v2.RecurrenceTest: 12 test superati
+it.privato.disponibile.v2.RecurrenceUiTest: 6 test superati
+it.privato.disponibile.v2.Refinement33Test: 8 test superati
+it.privato.disponibile.v2.RefinementRenderingTest: 3 test superati
+it.privato.disponibile.v2.RefinementTest: 14 test superati
+it.privato.disponibile.v2.ReminderTest: 2 test superati
+it.privato.disponibile.v2.RenderingTest: 5 test superati
+it.privato.disponibile.v2.ResponsiveTest: 1 test superati
+it.privato.disponibile.v2.StoreTest: 13 test superati
+it.privato.disponibile.v2.UiTest: 20 test superati

@@ -36,13 +36,14 @@ object CategoryCatalog {
 }
 
 /** One 24 px vector vocabulary, consistent stroke and optical size; no font emoji. */
-class CategoryIcon(private val key:String,private val tint:Int,private val px:Int,private val bubble:Int?=null):Drawable() {
+class CategoryIcon(private val key:String,private val tint:Int,private val px:Int,private val bubble:Int?=null,private val round:Boolean=false,private val outline:Int?=null):Drawable() {
     private val p=Paint(Paint.ANTI_ALIAS_FLAG).apply {color=tint;style=Paint.Style.STROKE;strokeWidth=1.7f;strokeCap=Paint.Cap.ROUND;strokeJoin=Paint.Join.ROUND}
     override fun getIntrinsicWidth()=px
     override fun getIntrinsicHeight()=px
     override fun draw(c:Canvas) {
         c.save();c.translate(bounds.left.toFloat(),bounds.top.toFloat());c.scale(bounds.width()/24f,bounds.height()/24f)
-        if(bubble!=null){val bg=Paint(Paint.ANTI_ALIAS_FLAG).apply {color=bubble};c.drawRoundRect(0f,0f,24f,24f,8f,8f,bg);c.translate(3f,3f);c.scale(.75f,.75f)}
+        if(bubble!=null){val bg=Paint(Paint.ANTI_ALIAS_FLAG).apply {color=bubble};if(round){bg.shader=RadialGradient(7f,5f,24f,intArrayOf(Color.rgb((Color.red(bubble)+255)/2,(Color.green(bubble)+255)/2,(Color.blue(bubble)+255)/2),bubble),null,Shader.TileMode.CLAMP);c.drawCircle(12f,12f,11.5f,bg)}else c.drawRoundRect(0f,0f,24f,24f,8f,8f,bg)
+            if(outline!=null){bg.shader=null;bg.style=Paint.Style.STROKE;bg.strokeWidth=1f;bg.color=outline;c.drawCircle(12f,12f,11.5f,bg)};c.translate(3f,3f);c.scale(.75f,.75f)}
         fun line(x:Float,y:Float,a:Float,b:Float)=c.drawLine(x,y,a,b,p)
         fun rect(x:Float,y:Float,a:Float,b:Float)=c.drawRoundRect(x,y,a,b,2f,2f,p)
         fun path(vararg xy:Float){val v=Path();v.moveTo(xy[0],xy[1]);for(i in 2 until xy.size step 2)v.lineTo(xy[i],xy[i+1]);c.drawPath(v,p)}

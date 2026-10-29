@@ -24,7 +24,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
         if(mode==0)donut(c) else if(mode==1)area(c) else bars(c)
     }
     private fun donut(c:Canvas) {
-        val total=segments.sumOf {it.second};val radius=min(width,height)*.36f;val cx=width/2f;val cy=height/2f
+        val total=segments.sumOf {it.second};val radius=min(width,height)*.42f;val cx=width/2f;val cy=height/2f
         p.style=Paint.Style.STROKE;p.strokeWidth=radius*.3f;p.color=palette.line
         if(total==0L) {
             c.drawCircle(cx,cy,radius,p)
@@ -36,12 +36,12 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
         }
         val rect=RectF(cx-radius,cy-radius,cx+radius,cy+radius);var angle=-90f
         segments.forEachIndexed {i,(cat,n)->
-            val sweep=n.toFloat()/total*360f;p.color=CategoryVisual.chartColor(cat);p.strokeWidth=radius*(if(selected==i).37f else .28f)
+            val sweep=n.toFloat()/total*360f;p.color=CategoryVisual.chartColor(cat);p.strokeWidth=radius*(if(selected==i).36f else .32f)
             c.drawArc(rect,angle+.5f,max(0.5f,sweep-1f),false,p);angle+=sweep
         }
         val title="Totale uscite";p.textSize=11*font
         text(c,title,cx-p.measureText(title)/2,cy-12*font,palette.muted,11f)
-        val sum=Money.format(total);var size=18f;p.textSize=size*font
+        val sum=DisplayMoney.amount(total);var size=20f;p.textSize=size*font
         while(p.measureText(sum)>radius*1.35f && size>10f){size-=.5f;p.textSize=size*font}
         text(c,sum,cx-p.measureText(sum)/2,cy+16*font,palette.text,size)
     }
@@ -90,7 +90,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
             performClick()
             when(mode) {
                 0->{if(segments.isEmpty())return true
-                    val dx=event.x-width/2f;val dy=event.y-height/2f;val radius=min(width,height)*.36f
+                    val dx=event.x-width/2f;val dy=event.y-height/2f;val radius=min(width,height)*.42f
                     if(sqrt(dx*dx+dy*dy) !in radius*.7f..radius*1.3f)return true
                     val angle=(Math.toDegrees(atan2(dy,dx).toDouble()).toFloat()+450f)%360f
                     val total=segments.sumOf {it.second};var sum=0f
