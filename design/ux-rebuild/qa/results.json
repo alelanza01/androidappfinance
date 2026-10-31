@@ -1,0 +1,32 @@
+{
+  "checks": 22,
+  "passed": [
+    "Home: margine immediato e calcolo leggibile",
+    "Spesa ordinaria con solo importo, nessun doppio salvataggio",
+    "Categoria, preferita, ricerca e ritorno senza perdere la bozza",
+    "Rate: importo per rata, applicazione senza scrittura e frequenza",
+    "Rate personalizzate e continua, errore 121 conservativo",
+    "Uscita: continua mantiene bozza, esci la elimina; Escape chiude",
+    "Entrata effettiva e pagamento programmato distinti",
+    "Impegni, calendario e conferma pagamento senza doppio conteggio",
+    "Filtri movimenti applicabili e rimovibili",
+    "Anticipo obbligatorio 300→250→270→300, storico e residuo",
+    "Rimborso eccedente e data precedente non alterano i dati",
+    "Simulatore live non scrive, segnala superamento",
+    "Analisi mostra solo spese personali, periodo e drill-down",
+    "Riserva demo modifica immediatamente lo spendibile",
+    "Gestione categoria personale e protezione categoria usata",
+    "Correzioni movimento e rimborso ricalcolano liquidità",
+    "Modifica piano mantiene pagamenti già effettuati, stop conserva storico",
+    "Notifiche chiaramente simulate, attivabili e disattivabili",
+    "Backup demo esporta, importa con conferma, invalido conserva dati",
+    "Primo avvio e tutti i percorsi base raggiungibili",
+    "Gestione categorie dal form: ritorno senza perdere importo e descrizione",
+    "Accessibilità menu: focus contenuto, chiusura e bozza non modificata"
+  ],
+  "consoleErrors": [],
+  "externalRequests": [],
+  "screenshots": 89,
+  "environment": "Chromium headless, HTML/CSS/JS; no Android or real-user test; localhost QA only",
+  "fileProtocol": "Managed cloud browser blocks file://. Standalone file has no fetch/modules/external resources; opening by double-click requires owner verification."
+}

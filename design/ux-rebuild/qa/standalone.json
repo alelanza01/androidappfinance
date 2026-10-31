@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "sha256": "ae6749953f9b2392665766655e706c59dd214664ba966af7fc9c6658610b7d21",
+  "requests": 1,
+  "externalAssets": 0,
+  "consoleErrors": 0,
+  "expenseFlow": "1200→1190 euro; only demo state",
+  "scope": "Actual standalone HTML served locally; owner Windows file double-click not verified in managed cloud."
+}
