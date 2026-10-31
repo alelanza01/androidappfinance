@@ -1,0 +1,80 @@
+{
+  "01_Home.png": {
+    "source": [
+      216,
+      404
+    ],
+    "crop": [
+      9,
+      24,
+      207,
+      394
+    ],
+    "reason": "Esclusi cornice laterale, riga di stato illustrata e bordo inferiore; nessun ritaglio dei contenuti per favorire il risultato."
+  },
+  "02_Nuova_Spesa.png": {
+    "source": [
+      205,
+      404
+    ],
+    "crop": [
+      8,
+      18,
+      197,
+      394
+    ],
+    "reason": "Esclusi cornice laterale, riga di stato illustrata e bordo inferiore; nessun ritaglio dei contenuti per favorire il risultato."
+  },
+  "03_Categorie.png": {
+    "source": [
+      200,
+      404
+    ],
+    "crop": [
+      8,
+      18,
+      192,
+      394
+    ],
+    "reason": "Esclusi cornice laterale, riga di stato illustrata e bordo inferiore; nessun ritaglio dei contenuti per favorire il risultato."
+  },
+  "04_Analisi.png": {
+    "source": [
+      202,
+      404
+    ],
+    "crop": [
+      8,
+      18,
+      194,
+      394
+    ],
+    "reason": "Esclusi cornice laterale, riga di stato illustrata e bordo inferiore; nessun ritaglio dei contenuti per favorire il risultato."
+  },
+  "05_Rate.png": {
+    "source": [
+      221,
+      404
+    ],
+    "crop": [
+      9,
+      18,
+      212,
+      394
+    ],
+    "reason": "Esclusi cornice laterale, riga di stato illustrata e bordo inferiore; nessun ritaglio dei contenuti per favorire il risultato."
+  },
+  "06_Conferma_Uscita.png": {
+    "source": [
+      183,
+      404
+    ],
+    "crop": [
+      7,
+      18,
+      176,
+      394
+    ],
+    "reason": "Esclusi cornice laterale, riga di stato illustrata e bordo inferiore; nessun ritaglio dei contenuti per favorire il risultato."
+  }
+}

@@ -16,12 +16,12 @@ class SpendableRing(context:Context,private val palette:Palette,private val ledg
     private val density=resources.displayMetrics.density
     init {contentDescription="Puoi spendere ${Money.format(ledger.spendable)}. ${if(fraction==null)"Percentuale non applicabile: liquidità non positiva." else "Quota della liquidità positiva dopo impegni e riserva."}";importantForAccessibility=IMPORTANT_FOR_ACCESSIBILITY_YES}
     override fun onDraw(c:Canvas) {
-        super.onDraw(c);val radius=min(width,height)*.425f;val x=width/2f;val y=height/2f
+        super.onDraw(c);val radius=min(width,height)*.435f;val x=width/2f;val y=height/2f
         p.style=Paint.Style.FILL
-        p.shader=RadialGradient(x,y+radius*.25f,radius*1.2f,intArrayOf(if(palette.dark)0x353CB8B7 else 0x344BC7C5,Color.TRANSPARENT),null,Shader.TileMode.CLAMP);c.drawCircle(x,y,radius*1.2f,p);p.shader=null
+        p.shader=RadialGradient(x,y+radius*.25f,radius*1.2f,intArrayOf(if(palette.dark)0x353CB8B7 else 0x124BC7C5,Color.TRANSPARENT),null,Shader.TileMode.CLAMP);c.drawCircle(x,y,radius*1.2f,p);p.shader=null
         p.color=palette.card;c.drawCircle(x,y,radius,p)
-        p.style=Paint.Style.STROKE;p.strokeWidth=radius*.15f;p.color=palette.line;p.strokeCap=Paint.Cap.ROUND;c.drawCircle(x,y,radius,p)
-        if(fraction!=null && fraction>0){p.shader=SweepGradient(x,y,intArrayOf(Color.parseColor("#A2E5E6"),Color.parseColor("#38C6BD"),Color.parseColor("#A2E5E6")),null);c.save();c.rotate(-90f,x,y);c.drawArc(x-radius,y-radius,x+radius,y+radius,0f,(fraction*360).toFloat(),false,p);c.restore();p.shader=null}
+        p.style=Paint.Style.STROKE;p.strokeWidth=radius*22f/116f;p.color=palette.line;p.strokeCap=Paint.Cap.ROUND;c.drawCircle(x,y,radius,p)
+        if(fraction!=null && fraction>0){p.shader=SweepGradient(x,y,intArrayOf(Color.parseColor("#A7E7E2"),Color.parseColor("#31BFAF"),Color.parseColor("#A7E7E2")),null);c.save();c.rotate(-90f,x,y);c.drawArc(x-radius,y-radius,x+radius,y+radius,0f,(fraction*360).toFloat(),false,p);c.restore();p.shader=null}
         fun text(value:String,position:Float,size:Float,color:Int,bold:Boolean=false){p.style=Paint.Style.FILL;p.color=color;p.typeface=Typeface.create(if(bold)"sans-serif-medium" else "sans-serif",Typeface.NORMAL);p.textSize=size*resources.displayMetrics.scaledDensity
             while(p.measureText(value)>radius*1.65f && p.textSize>10*resources.displayMetrics.scaledDensity)p.textSize-=density
             if(p.measureText(value)>radius*1.65f)p.textSize*=radius*1.65f/p.measureText(value)

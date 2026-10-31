@@ -141,7 +141,7 @@ class MainActivity:Activity() {
             else v.setPadding(insets.systemWindowInsetLeft,insets.systemWindowInsetTop,insets.systemWindowInsetRight,insets.systemWindowInsetBottom)
             insets
         }
-        val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Crediti",4 to "Analisi",5 to "Simulatore",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
+        val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Anticipi da recuperare",4 to "Analisi",5 to "Simulatore",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
         if(demo)root.addView(ui.label("DEMO · DATI DIMOSTRATIVI",10f,c.muted,true).apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(12).toFloat(),10f*resources.displayMetrics.scaledDensity));setPadding(ui.dp(24),ui.dp(6),ui.dp(24),0)})
         val header=ui.row().apply {setPadding(ui.dp(18),ui.dp(if(page==0)24 else 4),ui.dp(18),ui.dp(4))}
         if(page!=0)header.addView(ui.button("‹"){onBackPressed()}.apply {contentDescription="Indietro";textSize=25f;background=android.graphics.drawable.InsetDrawable(ui.shape(c.hero,20),ui.dp(9));setPadding(0,0,0,0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))
@@ -164,40 +164,10 @@ class MainActivity:Activity() {
         if(page in listOf(0,1,2,4))root.addView(navigation())
         setContentView(root);root.requestApplyInsets()
     }
-    private fun navigation():View {
-        val frame=FrameLayout(this);frame.layoutParams=LinearLayout.LayoutParams(-1,ui.dp(94))
-        val nav=ui.row().apply {setPadding(ui.dp(8),ui.dp(7),ui.dp(8),ui.dp(2));background=ui.shape(ui.colors.card,22)}
-        listOf(0 to "Home",1 to "Movimenti",4 to "Analisi",2 to "Impegni").forEachIndexed {index,(destination,label)->
-            if(index==2)nav.addView(View(this),LinearLayout.LayoutParams(ui.dp(64),1))
-            nav.addView(ui.button(label){go(destination)}.apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(11).toFloat(),10f*resources.displayMetrics.scaledDensity));setTextColor(if(page==destination)ui.colors.primary else ui.colors.muted);isSelected=page==destination;maxLines=1;setPadding(ui.dp(1),ui.dp(3),ui.dp(1),ui.dp(3));setCompoundDrawablesWithIntrinsicBounds(null,NavIcon(when(destination){0->0;1->3;4->1;else->2},if(page==destination)ui.colors.primary else ui.colors.muted,ui.dp(21)),null,null);compoundDrawablePadding=ui.dp(3);contentDescription="$label${if(page==destination)", sezione attiva" else ""}"},LinearLayout.LayoutParams(0,ui.dp(54),1f))
-        }
-        frame.addView(nav,FrameLayout.LayoutParams(-1,ui.dp(54),Gravity.BOTTOM))
-        val add=ui.button("+",true){createMenu(page==2)}.apply {textSize=30f;contentDescription="Aggiungi";setPadding(0,0,0,0);background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(ui.colors.hero),android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TL_BR,intArrayOf(ui.colors.primary,Color.parseColor("#43A6FF"))).apply {cornerRadius=ui.dp(99).toFloat()},ui.shape(Color.WHITE,99))}
-        frame.addView(View(this).apply {background=ui.shape(ui.colors.line,99)},FrameLayout.LayoutParams(ui.dp(64),ui.dp(64),Gravity.TOP or Gravity.CENTER_HORIZONTAL))
-        frame.addView(add,FrameLayout.LayoutParams(ui.dp(56),ui.dp(56),Gravity.TOP or Gravity.CENTER_HORIZONTAL))
-        return frame
-    }
+    private fun navigation():View=NativeHome(this,ui,l).navigation(page,{go(it)}){createMenu(page==2)}
     private fun saveLabel()=when(draft?.type){"creditFilter"->"Applica filtri";"series"->"Salva piano";"operation"->if(draft?.values?.get("kind")=="EXPENSE")"Salva spesa" else "Salva entrata";else->"Salva"}
     private fun home(body:LinearLayout) {
-        val ring=SpendableRing(this,ui.colors,l).apply {setOnClickListener {go(12)};isFocusable=true}
-        body.addView(ring,LinearLayout.LayoutParams(-1,ui.dp(if(resources.configuration.fontScale>=1.5f)252 else 248)))
-        val totals=ui.row();listOf("Entrate" to Kind.INCOME,"Uscite" to Kind.EXPENSE).forEachIndexed {i,(name,kind)->
-            val cat=Category(0,name,Color.parseColor(if(i==0)"#74CFA3" else "#F49BA8"),if(i==0)"income" else "bag")
-            val card=ui.row().apply {background=ui.surface(ui.colors.card,16);setPadding(ui.dp(12),ui.dp(10),ui.dp(12),ui.dp(14))}
-            card.addView(ui.button(""){moveFilter=if(i==0)3 else 4;go(1)}.apply {setCompoundDrawablesWithIntrinsicBounds(CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(30),ui.categoryWash(cat)),null,null,null);setPadding(0,0,0,0);contentDescription="$name del mese"},LinearLayout.LayoutParams(ui.dp(34),ui.dp(44)))
-            val text=ui.column();text.addView(ui.label(name,11f,ui.colors.muted));text.addView(ui.amount(DisplayMoney.amount(l.month(YearMonth.now(),kind)),16f));card.addView(text,LinearLayout.LayoutParams(0,-2,1f))
-            totals.addView(card,LinearLayout.LayoutParams(0,-2,1f).apply {if(i==0)marginEnd=ui.dp(10)})
-        };body.addView(totals)
-        body.addView(ui.label("Questo mese · spese personali, anticipi e rimborsi esclusi",10f,ui.colors.muted))
-        body.addView(ui.section("Prossimi impegni"));val pending=l.pending.filter {it.kind==Kind.EXPENSE}.take(3)
-        if(pending.isEmpty())body.addView(ui.label("Nessun pagamento previsto",13f,ui.colors.muted))
-        pending.forEach {o->
-            val cat=l.categories.first {it.id==o.category};val row=ui.row().apply {setPadding(ui.dp(8),ui.dp(7),ui.dp(8),ui.dp(7));background=ui.surface(if(ui.colors.dark)ui.colors.card else Color.parseColor("#F9FCFF"),12)}
-            row.addView(View(this).apply {background=CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(28),ui.categoryWash(cat))},LinearLayout.LayoutParams(ui.dp(28),ui.dp(28)).apply {marginEnd=ui.dp(10)})
-            val text=ui.column();text.addView(ui.label(l.operationTitle(o),12f,ui.colors.text,true));text.addView(ui.label(o.date.format(dates),10f,ui.colors.muted));row.addView(text,LinearLayout.LayoutParams(0,-2,1.5f));row.addView(ui.amount(DisplayMoney.amount(o.cents),14f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.isFocusable=true;row.contentDescription="${l.operationTitle(o)}, ${o.date.format(dates)}, ${Money.format(o.cents)}";row.setOnClickListener {manage(o)};body.addView(row);body.addView(ui.space(3))
-        }
-        body.addView(ui.space(10));val actions=ui.row().apply {gravity=Gravity.TOP}
-        listOf(Triple("Simula spesa",1,{go(5)}),Triple("Crediti",5,{go(3)}),Triple("Dettaglio",3,{go(12)}),Triple("Spesa veloce",0,{openForm("operation",defaults=mapOf("kind" to "EXPENSE","status" to "ACTUAL"))})).forEach {(name,icon,action)->actions.addView(ui.chip(name,icon,action).apply {if(name=="Dettaglio")contentDescription="Dettaglio del calcolo"},LinearLayout.LayoutParams(0,-2,1f).apply {setMargins(ui.dp(2),0,ui.dp(2),0)})};body.addView(actions)
+        NativeHome(this,ui,l).content(body,{go(it)},{manage(it)})
         if(demo)body.addView(ui.button("Esci dalla demo"){demo=false;go(0)})
     }
     private fun calculation(body:LinearLayout) {
@@ -347,12 +317,10 @@ class MainActivity:Activity() {
     }
     private fun createMenu(planned:Boolean=false,advance:Boolean=false) {
         if(advance){openForm("advance");return}
-        sheet(if(planned)"Programma un impegno" else "Registra",listOf(
-            (if(planned)"Spesa prevista" else "Spesa") to {openForm("operation",defaults=mapOf("kind" to "EXPENSE","status" to if(planned)"PLANNED" else "ACTUAL"))},
-            (if(planned)"Entrata prevista" else "Entrata") to {openForm("operation",defaults=mapOf("kind" to "INCOME","status" to if(planned)"PLANNED" else "ACTUAL"))},
-            "Anticipo" to {openForm("advance")},"Ricorrenza o rate" to {openForm("series")}
-        ))
+        dialog?.dismiss()
+        dialog=RegisterSheet(this,ui).show(planned){type,defaults->openForm(type,defaults=defaults)}
     }
+
     private fun manage(o:Operation) {
         val actions=mutableListOf<Pair<String,()->Unit>>()
         if(o.status==Status.PLANNED)actions.add((if(o.kind==Kind.INCOME)"Conferma incasso oggi" else "Conferma pagamento oggi") to {confirm("Registrare ${Money.format(o.cents)}?","Il movimento diventerà effettivo oggi e cambierà la liquidità una sola volta.",if(o.kind==Kind.INCOME)"Registra incasso" else "Registra pagamento",false){store.settle(o.id)}})

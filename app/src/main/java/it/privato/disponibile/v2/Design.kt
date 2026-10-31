@@ -9,14 +9,14 @@ import android.view.View
 import android.content.res.Configuration
 
 data class Palette(val dark:Boolean) {
-    val background=Color.parseColor(if(dark) "#111D32" else "#F6FCFF")
-    val card=Color.parseColor(if(dark) "#1C2B44" else "#FFFFFF")
-    val text=Color.parseColor(if(dark) "#EDF6FF" else "#102654")
-    val muted=Color.parseColor(if(dark) "#A8BFDB" else "#506D94")
-    val line=Color.parseColor(if(dark) "#334B6C" else "#E0EFF7")
-    val primary=Color.parseColor(if(dark) "#80BEFF" else "#2788FA")
-    val onPrimary=Color.parseColor(if(dark) "#102654" else "#FFFFFF")
-    val hero=Color.parseColor(if(dark) "#182F4B" else "#ECF9FC")
+    val background=Color.parseColor(if(dark) "#102236" else "#F6FBFD")
+    val card=Color.parseColor(if(dark) "#172C43" else "#FFFFFF")
+    val text=Color.parseColor(if(dark) "#E8F2FF" else "#142B51")
+    val muted=Color.parseColor(if(dark) "#A9BFD7" else "#526B87")
+    val line=Color.parseColor(if(dark) "#2E485F" else "#E1EDF3")
+    val primary=Color.parseColor(if(dark) "#80BEFF" else "#2688F5")
+    val onPrimary=Color.parseColor(if(dark) "#142B51" else "#FFFFFF")
+    val hero=Color.parseColor(if(dark) "#203950" else "#EDF7FB")
     val cool=Color.parseColor(if(dark) "#65D5DC" else "#2486F6")
     val sage=Color.parseColor(if(dark) "#67D6CB" else "#167B8C")
     val coral=Color.parseColor(if(dark) "#FFABB7" else "#A94359")
@@ -33,7 +33,7 @@ class Design(val context:Context,val colors:Palette) {
     fun row()=LinearLayout(context).apply {orientation=LinearLayout.HORIZONTAL;gravity=android.view.Gravity.CENTER_VERTICAL}
     fun shape(color:Int,radius:Int=12)=GradientDrawable().apply {setColor(color);cornerRadius=dp(radius).toFloat()}
     fun surface(color:Int=colors.card,radius:Int=16)=SoftSurface(color,dp(radius).toFloat(),context.resources.displayMetrics.density,colors.dark)
-    fun pageBackground()=GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,intArrayOf(if(colors.dark)colors.background else Color.WHITE,colors.background,if(colors.dark)colors.background else Color.parseColor("#EFFAFF")))
+    fun pageBackground()=GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,intArrayOf(colors.background,colors.background,colors.background))
     fun chip(value:String,icon:Int,action:()->Unit)=button(value,action=action).apply {
         textSize=11f;maxLines=2;background=android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(colors.line),shape(colors.card,18),shape(Color.WHITE,18));setPadding(dp(5),dp(8),dp(5),dp(8))
         setCompoundDrawablesWithIntrinsicBounds(null,NavIcon(icon,colors.primary,dp(18)),null,null);compoundDrawablePadding=dp(5)
