@@ -1,0 +1,56 @@
+Posso-spenderlo-V3.4.1-RC2.apk
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Posso Spenderlo Private V2
+Signer #1 certificate SHA-256 digest: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Signer #1 certificate SHA-1 digest: c0443f1105472c15927e136ce5f6e9181bbe83a7
+Signer #1 certificate MD5 digest: 3fd7f309b10e4baf74aee15c6ac71593
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 81c33f942dcef141cf37218b3d8d299311937c39dbb9ecba56d3b94252c496e5
+Signer #1 public key SHA-1 digest: ad3abf66a40d6a895dc2804a7d700079ae40b372
+Signer #1 public key MD5 digest: 01bcf43331e106a43508c55c2d68ff6c
+
+Posso-spenderlo-V3.4.0-RC.apk
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Posso Spenderlo Private V2
+Signer #1 certificate SHA-256 digest: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Signer #1 certificate SHA-1 digest: c0443f1105472c15927e136ce5f6e9181bbe83a7
+Signer #1 certificate MD5 digest: 3fd7f309b10e4baf74aee15c6ac71593
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 81c33f942dcef141cf37218b3d8d299311937c39dbb9ecba56d3b94252c496e5
+Signer #1 public key SHA-1 digest: ad3abf66a40d6a895dc2804a7d700079ae40b372
+Signer #1 public key MD5 digest: 01bcf43331e106a43508c55c2d68ff6c
+
+Posso-spenderlo-V2.apk
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=Posso Spenderlo Private V2
+Signer #1 certificate SHA-256 digest: 3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568
+Signer #1 certificate SHA-1 digest: c0443f1105472c15927e136ce5f6e9181bbe83a7
+Signer #1 certificate MD5 digest: 3fd7f309b10e4baf74aee15c6ac71593
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 81c33f942dcef141cf37218b3d8d299311937c39dbb9ecba56d3b94252c496e5
+Signer #1 public key SHA-1 digest: ad3abf66a40d6a895dc2804a7d700079ae40b372
+Signer #1 public key MD5 digest: 01bcf43331e106a43508c55c2d68ff6c

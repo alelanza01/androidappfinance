@@ -1,0 +1,384 @@
+[
+  {
+    "name": "home",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "home",
+      "filter": null
+    }
+  },
+  {
+    "name": "settings",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "settings",
+      "filter": null
+    }
+  },
+  {
+    "name": "advances",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "advances",
+      "filter": "open"
+    }
+  },
+  {
+    "name": "analysis",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "analysis",
+      "filter": null
+    }
+  },
+  {
+    "name": "movements",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "movements",
+      "filter": "all/all"
+    }
+  },
+  {
+    "name": "commitments",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "commitments",
+      "filter": null
+    }
+  },
+  {
+    "name": "register",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "underlying": "home"
+    }
+  },
+  {
+    "name": "expense",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "amount": 60000,
+      "category": 27,
+      "count": 1
+    }
+  },
+  {
+    "name": "rates-total",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "amount": 60000,
+      "count": 3,
+      "mode": "total"
+    }
+  },
+  {
+    "name": "rates-each",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "amount": 60000,
+      "count": 3,
+      "mode": "each"
+    }
+  },
+  {
+    "name": "simulator",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "simulation": 60000,
+      "period": 30,
+      "scenario": false
+    }
+  },
+  {
+    "name": "onboarding-1",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 0,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "onboarding-2",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 1,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "onboarding-3",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 2,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "onboarding-4",
+    "theme": "light",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 3,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "home",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "home",
+      "filter": null
+    }
+  },
+  {
+    "name": "settings",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "settings",
+      "filter": null
+    }
+  },
+  {
+    "name": "advances",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "advances",
+      "filter": "open"
+    }
+  },
+  {
+    "name": "analysis",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "analysis",
+      "filter": null
+    }
+  },
+  {
+    "name": "movements",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "movements",
+      "filter": "all/all"
+    }
+  },
+  {
+    "name": "commitments",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "page": "commitments",
+      "filter": null
+    }
+  },
+  {
+    "name": "register",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "underlying": "home"
+    }
+  },
+  {
+    "name": "expense",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "amount": 60000,
+      "category": 27,
+      "count": 1
+    }
+  },
+  {
+    "name": "rates-total",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "amount": 60000,
+      "count": 3,
+      "mode": "total"
+    }
+  },
+  {
+    "name": "rates-each",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "amount": 60000,
+      "count": 3,
+      "mode": "each"
+    }
+  },
+  {
+    "name": "simulator",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "simulation": 60000,
+      "period": 30,
+      "scenario": false
+    }
+  },
+  {
+    "name": "onboarding-1",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 0,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "onboarding-2",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 1,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "onboarding-3",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 2,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  },
+  {
+    "name": "onboarding-4",
+    "theme": "dark",
+    "today": "2026-10-31",
+    "cash": 120000,
+    "reserve": 30000,
+    "commitments": 38000,
+    "view": {
+      "step": 3,
+      "amount": 120000,
+      "reserve": 30000,
+      "items": []
+    }
+  }
+]

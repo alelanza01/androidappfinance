@@ -1,0 +1,658 @@
+{
+  "approved_commit": "a49b5f4cb4d6af036486edb67e2a7715ea45d221",
+  "fixture_sha256": "8cd5acb1f8c999e761b503f9c3c0705856164eaca66429916cb579ce11b9a533",
+  "comparisons": [
+    {
+      "name": "home",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "home",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "535c1e6b9cd08dcdadaba10e655414ff5b373b6f6f1aff5a2d3c54739c39bf79",
+      "native_sha256": "b5155a2910bf324d573d33603793d98b3801ff8ba64746123f0e9b74b148c2ad",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "settings",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "settings",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "eee5352715c716301425baaff4a57c0a41049bca6cf609baedfacd71896cdee6",
+      "native_sha256": "c40a8c183d9c517e683a966876182792612724945cddbd09a97547fb3c0ec82a",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "advances",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "advances",
+        "filter": "open"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "266d038bdc8e7c71d79b13eb0402ca6cdaa5d4dcef5a682a3b95ef8d19a37d18",
+      "native_sha256": "a81816aa6a91907773e19ab21baa59fb4cec0c4b8398e0c150bb99a24b4f6d12",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "analysis",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "analysis",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "58fabc0780c2b8e53a93f67a5ebdbc55d8e20e22e36b1db331e415402df117f9",
+      "native_sha256": "f2026aa5e4a0bed5ab71542f2c089d8cb5b0241bea3cc085cf3a8837e99c7c81",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "movements",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "movements",
+        "filter": "all/all"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "f51176ab3a4cfced31228c1ffe860285ed208ba18bbcf61cab4ccfd5cf1974e6",
+      "native_sha256": "6c9518d7f699a9e430b0b7e8ab26ab1c37596598b70dc52ca1b55b61947fc89b",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "commitments",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "commitments",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "b3153870069b1af1f32ca0ca5cabb47dd9fd26dbdd1b6c61d4b39cc8f6b8dd6d",
+      "native_sha256": "1512a2c130aa11f9cd18d27894cc8df517cacd3fc18e973fbcb96b11b4b8ad71",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "register",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "underlying": "home"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "1c2bf54f0c503ca858a06775081e64ded88499259b5174736eafb03db2e61219",
+      "native_sha256": "498560fb2569bc8b3fcf61368f0b8def4bec4428f87a67e974433c1ea0f67984",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "expense",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "amount": 60000,
+        "category": 27,
+        "count": 1
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "28b19d1c4ac9aaa9d0d3716f7b28ac8dc264fa9c565df1e81277b925b5eb1393",
+      "native_sha256": "edb8956a729b8f9049d82f77ae8f3f94bd341e9ced1fccc169b2a588f8d160a2",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "rates-total",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "amount": 60000,
+        "count": 3,
+        "mode": "total"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "62e6e652f6470237233d4b05e526ee2523ba21735825406cfee26af5e82fee14",
+      "native_sha256": "5a60e55f7a57da00e6898f757407e19ea41b894239ddc1258fe86c68c793433f",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "rates-each",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "amount": 60000,
+        "count": 3,
+        "mode": "each"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "27e9fb617cebce4161495af345c2246b249440cc19fd7dc220fe9dc1ba12a2c9",
+      "native_sha256": "7e9baabcda189818c494ee3eb85d47208e24e64d63cf143588203722f9f1746e",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "simulator",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "simulation": 60000,
+        "period": 30,
+        "scenario": false
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "2ba3cb3d241451831bf29d23675997ecfc2906c33686141d1c67471184f1a1ca",
+      "native_sha256": "5a1d2a64fef59bdbea802e42adc053c572a8ae447e4eceb36c8627cbb74d57cd",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-1",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 0,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "338be17bec6a594ce3c72b443e8ed0329b688e7f4a8ccb0b761745f7070006e0",
+      "native_sha256": "9b4cce59d313c92ed09d2e363fb6165cf866641f320cac16580ea984936c65a6",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-2",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 1,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "8b1234bea818514ad5b67f409fff705003abf9c538330c275385f96994d41f1d",
+      "native_sha256": "58dcbad622a4dcde7167b0500748dd9685cf2bd10c753e4949aa419121676f4a",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-3",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 2,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "7721e2a3d049e2f8b230cdab26e5c009236502f1211ac5eccac1b284ccc29424",
+      "native_sha256": "35aa00303b8ed8bc3a999314d3107e3134d2150f7c94a6174bd7daf94b388d2c",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-4",
+      "theme": "light",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 3,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "633440f4dd45c632e4b071594b9dac29c1dfaad19e4bdf99c5e752c20b056d2d",
+      "native_sha256": "a089cba37c6824a69d47d965c1540f55a6e1a96a7f3a76264b6ddddfd9b557e6",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "home",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "home",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "d94e6b6e53cb31d5ffa5cbedd2b1861e4b109caaecbc0ec087dafbaa9bd002c1",
+      "native_sha256": "864b880c1c07927e69dc3f7292a10c447d700cc2dec14c8cfe6252704b7e6ed0",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "settings",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "settings",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "7a7b456d8d491cac3287c4ffe5fdd7fce5e7aece3aba8bdb722ba5ca961623e9",
+      "native_sha256": "8d449765b922352bebf5cc34d029b35374e24b4378d58ecd19c1ee22683a637c",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "advances",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "advances",
+        "filter": "open"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "bd90dbf08fe7ea21cab2dfb38a3d5413c5c4e94dfec3c16c4f00fdd9e51e8efc",
+      "native_sha256": "a71abc8394799732e1a0bb1b44957aca1ff8217927f47fe243de878f6f589c49",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "analysis",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "analysis",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "6d1db53b478e65fa839cf4942ae36ab665d1afbb8555b969f601423fb18ef55f",
+      "native_sha256": "854db150a8f0724dc3505030af0acf863d1a77c429c86ed2fa1acb1ab33377b6",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "movements",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "movements",
+        "filter": "all/all"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "b7965346520591796376a413369e97b73d3d4c7c6e997dd200a32c19aaa8c40d",
+      "native_sha256": "050c35a6782c4f962adc75ed138e2e2c2edaeedcaea5ad62c0807e5b0575358d",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "commitments",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "page": "commitments",
+        "filter": null
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "741625bc6bf04bfe8757a10fa55447a0d947d91c4ddd9a45273fccbbe97e356f",
+      "native_sha256": "c1f98b4cb5646fc4303aa25b455c4405806dcc0039464095df51195595e58567",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "register",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "underlying": "home"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "fd932854cc6811281b0e0da98ca7c01f51832df32f63f80e9ba173e664ac85f4",
+      "native_sha256": "90b8b815aa0ac85747c476d7e948e012d61c75681212a7e321294d73f23d46c8",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "expense",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "amount": 60000,
+        "category": 27,
+        "count": 1
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "85bf83d11673fb76c7bf4d87549b63c4ebaabd26ce3db5eea66fc0e109002c72",
+      "native_sha256": "c043e98eca00a0c95951f0f5770d7ce54b147f4feaab0b4dbbcac0306574dcb6",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "rates-total",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "amount": 60000,
+        "count": 3,
+        "mode": "total"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "acdeb73038e200cecf20d16e27204e8963c8ff010486ab89d1d62cebf8bbfd95",
+      "native_sha256": "0635ed88fa7d6679e7ac225c87c9b5b3333fc1ce0ac0e00d699b01aa7b3347ac",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "rates-each",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "amount": 60000,
+        "count": 3,
+        "mode": "each"
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "cb5d547dcc3e1edefddf1dbfcfd5b725ae19669c78c48c92dc597b6ba655f01d",
+      "native_sha256": "a47c831b89586c50c90291085a19d414247c6402f662304e096fa7c2371a1919",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "simulator",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "simulation": 60000,
+        "period": 30,
+        "scenario": false
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "1cf8be049df422038a6675ea180263c5842618b9dfb2fbf0e97bbeb8309330c7",
+      "native_sha256": "586917606dfdf07abc59714cc8ee54905b486ae523beb7023a4ea5037cb21700",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-1",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 0,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "1db92e77b392732dcec9d5421fdd61b41cdb2a17229493815518c658bbf0c210",
+      "native_sha256": "d081ee955d685c6070b7a482e200f58b38ccd59eada56aafb94e8e1f5fb30609",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-2",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 1,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "f7ec4f67af0cc6da9cdfb3b08e9bf03c2fb7fe01e3f75c8aafe8c0e863e863b4",
+      "native_sha256": "d2d1007e184a902c45bcdd9e55f0917b38329d9f4ffd90fcb4edb1a57999c6bc",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-3",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 2,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "3ed485f504b64337b39c20a11d144f0a1466ead4efddcc5f70132f9c755f5e68",
+      "native_sha256": "b4fe788181e6ef0d13b192167ea9132ba8c7a01d042b07686edb96bb4d21f8d6",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    },
+    {
+      "name": "onboarding-4",
+      "theme": "dark",
+      "today": "2026-10-31",
+      "cash": 120000,
+      "reserve": 30000,
+      "commitments": 38000,
+      "view": {
+        "step": 3,
+        "amount": 120000,
+        "reserve": 30000,
+        "items": []
+      },
+      "financial_and_view_state_equal": true,
+      "prototype_sha256": "169102b8748dc2607943c8fd81bac24267b0f8ba11b1dfe70154edb4ab664ee5",
+      "native_sha256": "f64a317398dcf1ac6e8154338f80c6d7cbb7670fcc46c818fa2ff193ca6666f9",
+      "viewport": [
+        360,
+        800
+      ],
+      "resized": false,
+      "cropped": false
+    }
+  ]
+}

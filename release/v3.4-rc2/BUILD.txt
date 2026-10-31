@@ -1,0 +1,8 @@
+source tools/cloud-env.sh
+./gradlew --no-daemon -Pkotlin.compiler.execution.strategy=in-process -Pkotlin.incremental=false :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+BUILD SUCCESSFUL
+163 test superati, nessun test ignorato; 156 precedenti conservati.
+Lint: 32 avvisi, 0 errori.
+package: name='it.privato.disponibile.v2' versionCode='341' versionName='3.4.1-rc2' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+Sorgenti b5917123b2e7b9edb75214615dddb05a5355bcbf
+Firma originale verificata: vedi FIRMA.txt. Nessuna installazione fisica.
