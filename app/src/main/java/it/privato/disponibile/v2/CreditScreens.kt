@@ -19,7 +19,7 @@ internal fun MainActivity.credits(body:LinearLayout) {
         body.addView(ui.label("ANCORA DA RECUPERARE · TOTALE GLOBALE",11f,ui.colors.muted,true));body.addView(ui.amount(Money.format(l.outstanding)))
         val received=l.refunds.filter {YearMonth.from(it.date)==YearMonth.now()}.sumOf {it.cents}
         ui.pair(body,"Recuperati questo mese",Money.format(received),"Anticipi aperti",l.advances.count {l.remaining(it)>0}.toString())
-        body.addView(ui.segments(listOf("Aperti","Recuperati","Scaduti"),when(creditStatus){3->1;4->2;else->0}){creditStatus=listOf(1,3,4)[it];render()});body.addView(ui.space(12))
+        body.addView(ui.segments(listOf("Aperti","Recuperati","Scaduti"),when(creditStatus){1,2->0;3->1;4->2;else->-1}){creditStatus=listOf(1,3,4)[it];render()});body.addView(ui.space(12))
         body.addView(ui.label("Aperti ${l.advances.count {l.remaining(it)>0}} · Recuperati ${l.advances.count {l.remaining(it)==0L}} · Scaduti ${l.advances.count {l.remaining(it)>0 && it.due!=null && it.due<LocalDate.now()}}",12f,ui.colors.muted))
         val search=ui.input("Cerca crediti",creditQuery);body.addView(search)
         body.addView(ui.button("Filtri crediti"){creditFilters()}.apply {gravity=Gravity.START;setPadding(0,ui.dp(8),0,ui.dp(8))})

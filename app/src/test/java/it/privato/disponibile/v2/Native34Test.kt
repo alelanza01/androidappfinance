@@ -58,7 +58,7 @@ class Native34Test {
    click(a.window.decorView,"Calendario");Capture.save(a,"v34-C-impegni-calendario-$theme.png",360,800)
    assertTrue(a.calendarGrid);assertEquals(before,ledger());val date=before.pending.first().date
    a.month=java.time.YearMonth.from(date);a.render();a.dayDetails(date);Capture.save(a,"v34-C-giorno-$theme.png",360,800,true);choose("Annulla");assertEquals(before,ledger())
-   click(a.window.decorView,"Home");click(a.window.decorView,"Anticipi da recuperare");Capture.save(a,"v34-C-anticipi-$theme.png",360,800);click(a.window.decorView,"Pulizie Casa A");Capture.save(a,"v34-C-anticipo-dettaglio-$theme.png",360,800)
+   click(a.window.decorView,"Home");click(a.window.decorView,"Anticipi da recuperare");Capture.save(a,"v34-C-anticipi-$theme.png",360,800);a.creditStatus=0;a.render();assertFalse(all(a.window.decorView).filterIsInstance<Button>().first {it.text.toString()=="Aperti"}.isSelected);a.creditStatus=1;a.render();click(a.window.decorView,"Pulizie Casa A");Capture.save(a,"v34-C-anticipo-dettaglio-$theme.png",360,800)
    click(a.window.decorView,"Registra rimborso");Capture.save(a,"v34-C-rimborso-$theme.png",360,800);a.onBackPressed();a.onBackPressed();a.onBackPressed()
    click(a.window.decorView,"Home");click(a.window.decorView,"Simula spesa");UiSupport.set(a.window.decorView,"Importo in euro","600");Capture.save(a,"v34-C-simulatore-$theme.png",360,800);assertEquals(before,ledger());c.recreate();assertEquals("600",UiSupport.field(c.get().window.decorView,"Importo in euro").text.toString());c.pause().stop().destroy()
    val c2=Robolectric.buildActivity(MainActivity::class.java).setup();val a2=c2.get();click(a2.window.decorView,"Analisi");Capture.save(a2,"v34-D-analisi-$theme.png",360,800);click(a2.window.decorView,"Home");click(a2.window.decorView,"Impostazioni");Capture.save(a2,"v34-D-impostazioni-$theme.png",360,800);click(a2.window.decorView,"Backup");Capture.save(a2,"v34-D-backup-$theme.png",360,800);assertEquals(before,ledger());c2.pause().stop().destroy()
@@ -69,6 +69,8 @@ class Native34Test {
    RuntimeEnvironment.setQualifiers("w${w}dp-h${h}dp-mdpi");RuntimeEnvironment.setFontScale(font);VisualFixture34.install(theme);val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Aggiungi")
    val suffix="$w-${(font*100).toInt()}-$theme";Capture.save(a,"v34-E-registra-$suffix.png",w,h,true)
    val close=all(dialog().window!!.decorView).first {it.contentDescription=="Chiudi Registra"};assertTrue(close.height>=44);assertTrue(all(dialog().window!!.decorView).any {it is ScrollView});choose("Spesa");UiSupport.set(a.window.decorView,"Importo in euro","12,30");click(a.window.decorView,"Data");Capture.save(a,"v34-E-date-$suffix.png",w,h,true)
+   val year=all(dialog().window!!.decorView).filterIsInstance<Spinner>().first {it.contentDescription=="Anno"}.selectedView as TextView
+   assertTrue("Anno leggibile a testo ingrandito",year.paint.measureText(year.text.toString())<=year.width-year.paddingLeft-year.paddingRight)
    val confirm=all(dialog().window!!.decorView).filterIsInstance<Button>().first {it.text.toString()=="Conferma data"};assertTrue(confirm.height>=44);choose("Annulla");assertEquals("12,30",UiSupport.field(a.window.decorView,"Importo in euro").text.toString());c.pause().stop().destroy()
   }};RuntimeEnvironment.setFontScale(1f)
  }

@@ -29,8 +29,10 @@ class NativeDateSheet(private val host:Activity,private val ui:Design,val state:
             header.addView(ui.button("‹"){shift(-1)}.apply {contentDescription="Mese precedente"},LinearLayout.LayoutParams(ui.dp(44),ui.dp(48)))
             val months=Spinner(host).apply {contentDescription="Mese";adapter=ArrayAdapter(host,android.R.layout.simple_spinner_dropdown_item,(1..12).map {YearMonth.of(2024,it).format(DateTimeFormatter.ofPattern("MMMM",Locale.ITALY))});setSelection(state.month.monthValue-1)}
             val years=Spinner(host).apply {contentDescription="Anno";adapter=ArrayAdapter(host,android.R.layout.simple_spinner_dropdown_item,(state.min.year..state.max.year).map {it.toString()});setSelection(state.month.year-state.min.year)}
-            header.addView(months,LinearLayout.LayoutParams(0,ui.dp(48),1.4f));header.addView(years,LinearLayout.LayoutParams(0,ui.dp(48),1f))
+            val large=host.resources.configuration.fontScale>=1.5f
+            header.addView(months,LinearLayout.LayoutParams(0,ui.dp(52),if(large)1f else 1.4f));if(!large)header.addView(years,LinearLayout.LayoutParams(0,ui.dp(52),1f))
             header.addView(ui.button("›"){shift(1)}.apply {contentDescription="Mese successivo"},LinearLayout.LayoutParams(ui.dp(44),ui.dp(48)));content.addView(header)
+            if(large)content.addView(ui.row().apply {addView(ui.label("Anno",14f,ui.colors.muted),LinearLayout.LayoutParams(0,-2,.6f));addView(years,LinearLayout.LayoutParams(0,ui.dp(56),1.4f))})
             fun listener(change:(Int)->Unit)=object:AdapterView.OnItemSelectedListener {override fun onNothingSelected(p:AdapterView<*>?)=Unit;override fun onItemSelected(p:AdapterView<*>?,v:View?,position:Int,id:Long){change(position)}}
             months.onItemSelectedListener=listener {position->if(position+1!=state.month.monthValue){state.month=YearMonth.of(state.month.year,position+1);draw()}}
             years.onItemSelectedListener=listener {position->if(state.min.year+position!=state.month.year){state.month=YearMonth.of(state.min.year+position,state.month.monthValue);draw()}}
