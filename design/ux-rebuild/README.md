@@ -1,48 +1,50 @@
-# Posso spenderlo? — Prototipo UX/UI · FASE 1.1 da approvare
+# Posso spenderlo? — FASE 1.2 da approvare
 
-**Solo FASE 1. Non è un APK né una riscrittura web dell'app.** Revisione mirata sulla base di progetto `8c77ffb`; base Android V3.3 `cfb9019`, branch di lavoro `design/ux-rebuild-prototype`. Nessuna modifica alla V3.3 o a main.
+Prototipo HTML offline, non una nuova APK. Base di progetto `57b5d76`, branch `design/ux-rebuild-phase-1.2`. Codice Android, main, database, backup reali e firma non modificati.
 
 ## Aprirlo su Windows
 
-1. Scarica `Posso-spenderlo-UX-prototipo.zip` da questa directory su GitHub: apri il file e premi **Download raw file** (freccia di download in alto a destra).
-2. Nel PC: tasto destro sullo ZIP → **Estrai tutto…** → **Estrai**.
-3. Apri la cartella estratta e fai doppio clic su **PROTOTIPO.html**. Si apre nel browser, senza installazioni, login o server.
+1. Apri `PROTOTIPO.html` su GitHub nel branch **design/ux-rebuild-phase-1.2**.
+2. Premi **Download raw file**, poi fai doppio clic sul file scaricato.
+3. Nel browser scegli **Percorsi da provare**. Nessuna installazione, login, server o configurazione di rete.
 
-In alternativa scarica soltanto `PROTOTIPO.html` con **Download raw file** e aprilo dal PC. Aprire il codice HTML nell'anteprima GitHub non esegue il prototipo. Non serve pubblicare il repository o attivare GitHub Pages.
+In alternativa scarica `Posso-spenderlo-UX-prototipo.zip`, tasto destro → **Estrai tutto…** → apri `PROTOTIPO.html`. Il pacchetto comprende sorgenti, documentazione, screenshot e confronti. L'anteprima codice di GitHub non esegue HTML: scaricalo prima.
 
-Nel browser scegli **Percorsi da provare** oppure **Tutte le schermate**. Il prototipo si usa realmente: puoi salvare spese, entrate, anticipi e rimborsi, cambiare riserva, filtrare e simulare. **Ripristina demo** ripristina tutto. **Ricaricare la pagina elimina le modifiche demo**: restano solo nella memoria della scheda. Usa Esporta demo se vuoi conservare la tua prova; non importare dati reali.
+## Cosa provare nella 1.2
 
-Sul PC la cornice ha viewport 360×800. Restringendo la finestra il layout diventa mobile; il menu Guida resta sopra il telefono. Tema e testo grande si trovano anche in Impostazioni → Aspetto. La tastiera disegnata è esplicitamente dimostrativa e si attiva dal form/Guida, non è Android.
+- **Rate:** dalla Guida prova 600€ totali /3 =200×3, oppure 600€ ogni rata ×3 =1.800€. Anche 100€ /3 =33,34+33,33+33,33. Riepilogo sempre aggiornato, scadenze espandibili. Continua permette solo ogni rata. Conferma prepara; Salva registra.
+- **Periodo protetto:** sotto l'anello, scegli prossimi 30/60/90 giorni o una data fissa. Il giorno locale avanza automaticamente; le scadenze escluse si possono consultare.
+- **Primo avvio:** Guida → Prima installazione su dati demo vuoti (con conferma), oppure Impostazioni → Configurazione guidata per conservare i dati esistenti. Puoi interrompere e riprendere.
+- **Rapide:** Categorie → Ordina rapide; Fissa/Sblocca e frecce su/giù. Fissate prima di preferite/frequenti; l'ordine della bozza non si muove durante la compilazione.
+- **Calendario:** Impegni → Calendario → giorno. Mostra pagamenti, incassi e restituzioni con azioni esplicite. Toccare una data non registra denaro.
+- **Simulatore:** Guida → Simula 600€; scorri al grafico, scegli una scadenza, cambia periodo o mostra gli incassi come scenario non garantito. Il margine ufficiale non viene alterato.
+- **Date:** tocca il campo data; mese/anno diretti, scorciatoie, tastiera, Annulla/Conferma. Le date non ammesse sono disabilitate; la bozza rimane intatta.
 
-## Cosa provare prima di approvare
+Tutte le funzioni precedenti restano disponibili: movimenti/filtri/correzioni, anticipi e rimborsi, riserva, categorie personali, notifiche simulate, esportazione/importazione demo, temi e testo grande.
 
-- Leggere €520 su €1.200 di liquidità; aprire l'anello per capire riserva e impegni.
-- + → Registra spesa: basta un importo. Scegliere categoria e rate, tornare senza perdere la bozza, provare l'uscita senza salvare.
-- Registrare un'entrata e programmare un pagamento; distinguere ciò che è effettivo da ciò che è previsto.
-- Anticipi da recuperare → Pulizie appartamento → Registra rimborso. Il residuo diminuisce, il rimborso non diventa un guadagno.
-- Simulare una spesa da €600: mostra il superamento del margine senza registrarla.
-- Impostazioni → Riserva e disponibilità → Riserva: cambiarla e ritornare alla Home.
-- Esplorare anche stati vuoti, negativi, importo lungo, calendario, filtri, backup e notifiche simulate dalla Guida.
+## Dati e giorno della demo
 
-## Consegne e limiti
+Usa soltanto dati dimostrativi. La demo e il primo avvio incompleto sono conservati localmente nel browser; **ricaricare non è più un reset**. Usa Ripristina demo per ricominciare. Se lo storage non è disponibile rimane la sola memoria della scheda: comportamento del file locale da confermare sul PC dell'utente. Nessun dato viene inviato a servizi esterni.
 
-[Rapporto della revisione 1.1](docs/REVISIONE-1.1.md): Elenco/Calendario verificati distintamente, sei stati finanziari espliciti, conteggi anticipi coerenti e menu verificato su schermi piccoli/font grandi. La proposta non è ancora approvata.
+Nell'uso normale il giorno è quello locale del browser; i dati iniziali sono traslati rispetto alla data di apertura. Screenshot e test fissano il 31 ottobre 2026 per riprodurre l'esempio 1.200→600→300→220€. La Guida consente di provare il giorno successivo. Il formato JSON DEMO non è un backup Android e non va usato con dati personali.
 
-- [Mappa completa e audit UX](docs/NAVIGAZIONE-E-AUDIT.md)
-- [Design system misurabile](docs/DESIGN-SYSTEM.md)
-- [Piano Android, non eseguito](docs/ANDROID-DOPO-APPROVAZIONE.md)
-- [Valutazione visiva e differenze residue](docs/VERIFICA-VISIVA.md)
-- [Rapporto delle verifiche](docs/VERIFICA-FASE-1.md)
-- [Screenshot di pagine, menu e dimensioni](screenshots/)
-- [Sei confronti e PDF](comparisons/)
-- [Esiti riproducibili del browser](qa/results.json)
+## Materiali
 
-Il denaro è interamente dimostrativo, con data fissa **31 ottobre 2026**. Il modello JS serve solo alla coerenza delle interazioni; non sostituisce Finance.kt. Non gestisce la materializzazione illimitata Android: una ricorrenza continua è rappresentata dai primi 12 eventi demo, chiaramente indicati nell'interfaccia. JSON prototipo distinto e incompatibile con i backup Android reali. Notifiche, selettore date e tastiera non verificano i corrispondenti componenti Android. Nessun test con utenti reali o dispositivo fisico eseguito.
+- [Funzioni, audit UX e autocritica](docs/FASE-1.2.md)
+- [Rapporto QA aggiornato](docs/QA-FASE-1.2.md)
+- [Piano Android e migrazione proposta](docs/ANDROID-FASE-1.2.md)
+- [Design system](docs/DESIGN-SYSTEM.md)
+- [Navigazione completa e audit iniziale](docs/NAVIGAZIONE-E-AUDIT.md)
+- [Sei confronti — PDF](comparisons/Confronti-UX-Rebuild.pdf)
+- [Galleria nuove schermate — PDF](comparisons/Galleria-FASE-1.2.pdf)
+- [Galleria locale HTML](GALLERIA.html)
+- [Catture principali e responsive](screenshots/)
+- [Esiti automatici](qa/results.json) e [verifica HTML autonomo](qa/standalone.json)
 
-La rete non è necessaria al prototipo: CSS, JS e SVG sono locali, nessuna API, font CDN o analytics. La QA cloud usa un server temporaneo sul solo loopback perché il browser gestito blocca `file://`; non è necessario per l'utente. Il file autonomo contiene tutti gli asset e viene verificato anche come pagina unica; il doppio clic Windows resta da confermare sul PC dell'utente.
+I rapporti 1.1 sono conservati come documenti storici, non descrivono tutte le funzioni attuali.
 
-## Riproduzione per sviluppatori
+## Riprodurre le verifiche
 
-`node qa/verify.cjs` richiede Playwright e Chromium locali; `CHROMIUM` può indicare l'eseguibile. Lo script avvia/chiude soltanto un server loopback temporaneo, esegue scenari e catture. Non tocca dati Android. `python qa/compare.py` genera affiancamenti e sovrapposizioni a partire dalle catture; richiede Pillow/matplotlib. `python qa/package.py` crea HTML autonomo e ZIP senza chiavi, APK, cache o dati reali.
+`node qa/verify.cjs` con Playwright/Chromium locali (variabile `CHROMIUM` opzionale). Il server loopback temporaneo è solo uno strumento QA: il file autonomo non ne ha bisogno. `python qa/compare.py` genera confronti e galleria; `python qa/package.py` incorpora CSS/JS/SVG nell'HTML e crea ZIP/checksum. Nessun tool Android è eseguito.
 
-**Serve approvazione esplicita prima della FASE 2 Android.** Non è stata attribuita alcuna approvazione automatica.
+**La Fase 2 Android resta sospesa fino all'approvazione esplicita.**

@@ -75,3 +75,15 @@ Non è stato eseguito un audit completo con screen reader, utenti o telefono. La
 ## Precisazioni 1.1
 
 Le righe finanziarie usano etichette Già ricevuto / Ancora da ricevere / Già pagato / Ancora da pagare / Anticipo versato / Rimborso ricevuto. Previsti: superficie azzurra tenue e bordo tratteggiato, badge indaco #EDF2FF/#465A9E; ricevuti: #E0F2E9/#21694F; anticipi: #F1E9FA/#744A92. Non si usa solo il segno dell’importo. Il menu mantiene header e chiusura sticky mentre il contenuto scorre; testo e descrizioni seguono l’ingrandimento.
+
+## Estensioni 1.2
+
+- Selettore Totale/Ogni rata: tabs del sistema, altezza46, testo11sp; riepilogo compatto con totale14 e dettaglio espandibile. Cinque radio originali conservati, CTA separata dal contenuto scorrevole.
+- Indicatore periodo sotto ring:30px,11sp blu, apre sheet con quattro scelte. Nessuna nuova metrica pesante in Home.
+- Date: stesso sheet con header/chiusura e azioni fuori dall'area scorrevole. Celle40–46 su griglia7colonne, alternativa elenco48px; selezione blu, oggi contorno, disabilitato attenuato. Mese/anno minimo44px. Data selezionata sempre nell'header. Frecce/Home/End/PageUp/Down, Esc annulla, focus contenuto.
+- Calendario operativo: celle49px, lettere P/I/R/! con etichette accessibili, riepilogo giorno in sheet con gruppi e conferme. Alternativa elenco per target più grandi.
+- Previsione: SVG320×160 adattivo, linea2.1px, fill blu .3→0, riserva tratteggiata1.4, scenario alternativo viola tratteggiato; punti accompagnati da pulsanti44px, tooltip e righe esatte. Nessuna informazione disponibile solo tramite hover o colore.
+- Categorie rapide: righe32px icona + nome + controllo Fissa e riordino. Frecce con area44px e nomi accessibili; testo grande distribuisce i controlli su più righe. Nessun drag obbligatorio.
+- Onboarding: quattro passi, titolo21sp, icona58px, un importo per volta, CTA50px; risultato riprende superfici/gerarchie esistenti. Stato interrompibile, nessuna animazione indispensabile.
+
+Queste misure non costituiscono una certificazione di accessibilità. Le celle a320 restano compatte e dispongono dell'alternativa a righe; IME/TalkBack/insets andranno collaudati nel nativo.

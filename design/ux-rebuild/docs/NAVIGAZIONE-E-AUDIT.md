@@ -101,3 +101,7 @@ Conteggi indicativi di attivazioni, esclusa digitazione; le verifiche sono proge
 4. Rate: numero per rata, totale esplicito, pianificazione distinta dall'avvenuto pagamento.
 5. Estensioni secondarie e flussi di correzione; saldi previsti mai chiamati spendibili.
 6. Aspetto delle sei schermate e delle estensioni: l'accettazione resta all'utente.
+
+## Aggiornamento 1.2
+
+Home → indicazione sotto ring → 30/60/90/fissa; simulatore → grafico → punto/dettaglio/scenario/periodo. Form → data → calendario condiviso, oppure Rate → significato importo → numero → Conferma → Salva. Categorie → Ordina rapide → Fissa e sposta. Impegni → giorno → gruppi e azioni → conferma reale. Impostazioni → Configurazione guidata →4 passi, ripresa; Guida → prima installazione demo vuota (con conferma). Vedere FASE-1.2.md per audit e limiti attuali.

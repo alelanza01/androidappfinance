@@ -2,7 +2,7 @@ from pathlib import Path
 import zipfile,hashlib,re
 root=Path(__file__).resolve().parents[1]
 s=(root/'index.html').read_text().replace('<link rel="stylesheet" href="styles.css">','<style>\n'+(root/'styles.css').read_text()+'\n</style>')
-for name in ['catalog.js','icons.js','model.js','app.js']:
+for name in ['catalog.js','icons.js','dates.js','model.js','finance12.js','app.js','features12.js']:
  s=s.replace('<script src="'+name+'"></script>','<script>\n'+(root/name).read_text().replace('</script','<\\/script')+'\n</script>')
 assert not re.search(r'<(?:script|link)[^>]+(?:src|href)=',s)
 (root/'PROTOTIPO.html').write_text(s)

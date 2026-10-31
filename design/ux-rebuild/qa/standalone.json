@@ -1,15 +1,15 @@
 {
-  "phase": "1.1",
+  "phase": "1.2",
   "result": "PASS",
-  "sha256": "5985783fa2b19f866158ac1ff3ea9b68978a6ebe14c6b5e9f729399c57d1bdaf",
+  "sha256": "d6ecd2210185c311e27538649d7649d158fbe1e98128786fb33a89681f5d9595",
   "requests": 1,
   "externalAssets": 0,
   "consoleErrors": 0,
   "checks": [
-    "Calendar reset selects list",
-    "Calendar reachable",
-    "All six financial state labels present",
-    "Expense 10 euro updates cash 1200→1190"
+    "600 euro totali: tre quote effettive da 200",
+    "Orizzonte mobile 30 giorni",
+    "Calendario condiviso: 29 febbraio e conferma",
+    "Proiezione 600→300→220; spendibile ufficiale 520"
   ],
-  "scope": "Actual standalone HTML served locally; owner Windows file double-click not verified in managed cloud."
+  "scope": "True standalone HTML served locally; Windows file double-click not verified in managed cloud."
 }

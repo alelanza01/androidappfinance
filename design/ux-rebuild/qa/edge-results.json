@@ -1,0 +1,9 @@
+{
+  "phase": "1.2",
+  "result": "PASS",
+  "checks": [
+    "120 rate salvate con somma/ID esatti; frequenza settimanale reale",
+    "Margine zero, riserva oltre cash, simulazione oltre liquidità e nessuna scrittura"
+  ],
+  "consoleErrors": []
+}

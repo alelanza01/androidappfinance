@@ -1,16 +1,16 @@
 {
-  "phase": "1.1",
+  "phase": "1.2",
   "commitmentHashes": {
     "light": {
-      "10-impegni": "3014e8e1c518bf47f1e897d4d48071e6f881ff4abc07800c734b1c8ece716e41",
-      "11-calendario": "16712de94bf5b60c5cc1e62734505cfea242825fcd57ea5ce05fc71c78fedef2"
+      "10-impegni": "5ed3bb05b4c9b548bb3eec9cd5cd355288e57ce14517bf09545219abf24ef150",
+      "11-calendario": "9925e164f566b8fcfe9a47f2dffc2d5226f2af616aa663121af12db00dfefed7"
     },
     "dark": {
-      "10-impegni": "73ce6f9c403bfc7b798c5805e2705ddc5db933954fe9c4bf633c8a8a41f330c4",
-      "11-calendario": "fc540840eacc169e33d3934b9e593cd89a19f3edc1606052f427f9f8cce12026"
+      "10-impegni": "3496ab41ecf2368499a59d6b29777a56330ba7c995de7a1fa44150165decac29",
+      "11-calendario": "88a27e2fc4a9fc597a64d92f7d7c7dade19d566803e7f3faabdc88e8dd601ec2"
     }
   },
-  "checks": 26,
+  "checks": 46,
   "passed": [
     "Home: margine immediato e calcolo leggibile",
     "Spesa ordinaria con solo importo, nessun doppio salvataggio",
@@ -37,11 +37,31 @@
     "1.1 Impegni: reset Elenco, equivalenza record, calendario navigabile e dati invariati",
     "1.1 Sei stati finanziari espliciti, superfici distinte e nessun record duplicato",
     "1.1 Anticipi: scaduti inclusi negli aperti, residui/conteggi e rimborso coerenti",
-    "1.1 Registra: 320/360/411, testo grande, scroll e chiusura preservano bozza"
+    "1.1 Registra: 320/360/411, testo grande, scroll e chiusura preservano bozza",
+    "1.2 Rate totale/per rata, centesimi esatti e 1–120",
+    "1.2 Piano finito predefinito totale: importi reali in impegni e previsione",
+    "1.2 Cambio modalità e ritorno Nessuna rata preservano stato/data/bozza",
+    "1.2 Continua solo per rata e vecchi piani rimangono per rata",
+    "1.2 Modifica totale conserva pagati e ID, backup contiene quote esatte",
+    "1.2 Orizzonte 30/60/90, data fissa e giorno mobile, arretrati e limiti",
+    "1.2 Previsione obbligatoria 1200−600→600→300→220, incasso escluso",
+    "1.2 Proiezioni stesso giorno, arretrati, centesimi, negativi, vuoti e periodi lunghi",
+    "1.2 Scenario favorevole distinto e periodo grafico non cambiano spendibile",
+    "1.2 Onboarding completamento, pausa/ripresa e saldo non duplicato",
+    "1.2 Prima installazione zero/senza impegni e riserva elevata",
+    "1.2 Categorie fissate prima di preferite/frequenti, riordino e bozza stabile",
+    "1.2 Persistenza locale categorie e configurazione dopo reload",
+    "1.2 Calendario operativo: pagamento, incasso, rimborso, aggiunta contestuale",
+    "1.2 Selettore date: annulla/conferma preservano form, vincoli espliciti",
+    "1.2 Date: bisestili, dicembre/gennaio, anno diretto, tastiera e rimborso minimo",
+    "1.2 Data del periodo fisso e Analisi usano calendario condiviso",
+    "1.2 Date-only stabili fra fusi orari e periodi a fine mese",
+    "1.2 Backup esteso round-trip e importi incoerenti rifiutati",
+    "1.2 Tutti i campi data custom sono realmente visibili e apribili"
   ],
   "consoleErrors": [],
   "externalRequests": [],
-  "screenshots": 97,
+  "screenshots": 235,
   "environment": "Chromium headless, HTML/CSS/JS; no Android or real-user test; localhost QA only",
   "fileProtocol": "Managed cloud browser blocks file://. Standalone file has no fetch/modules/external resources; opening by double-click requires owner verification."
 }
