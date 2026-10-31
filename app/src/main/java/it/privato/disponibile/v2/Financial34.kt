@@ -30,7 +30,7 @@ data class SimulationPoint(val date:LocalDate,val cash:Long,val titles:List<Stri
 data class Simulation(val margin:Long,val start:Long,val reserve:Long,val points:List<SimulationPoint>,val scenario:List<SimulationPoint>)
 object Simulator {
     /** Pure read model. It receives a ledger and cannot access SQLite or materialize recurrences. */
-    fun calculate(l:Ledger,expense:Long,end:LocalDate,today:LocalDate=LocalDate.now(),includeIncome:Boolean=false):Simulation {
+    fun calculate(l:Ledger,expense:Long,end:LocalDate,today:LocalDate=AppClock.today(),includeIncome:Boolean=false):Simulation {
         require(expense in 0..Money.MAX && end>=today && end<=today.plusYears(10))
         val planned=l.pending.filter {it.date<=end}
         fun line(income:Boolean):List<SimulationPoint> {

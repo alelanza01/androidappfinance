@@ -15,7 +15,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
     private val p=Paint(Paint.ANTI_ALIAS_FLAG)
     private val font=resources.displayMetrics.scaledDensity
     private var selected:Int?=null
-    private val segments=ledger.categories.map {c->c to ledger.actual.filter {it.kind==Kind.EXPENSE && it.date>=month.minusMonths(rangeMonths.toLong()-1).atDay(1) && it.date<=month.atEndOfMonth() && it.category==c.id}.sumOf {it.cents}}.filter {it.second>0}
+    private val segments=ledger.categories.map {c->c to ledger.actual.filter {it.kind==Kind.EXPENSE && it.date>=month.minusMonths(rangeMonths.toLong()-1).atDay(1) && it.date<=month.atEndOfMonth() && it.category==c.id}.sumOf {it.cents}}.filter {it.second>0}.sortedWith(compareBy({AnalysisPalette.rank(it.first)},{it.first.id}))
     private val barMonths=(months-1 downTo 0).map {month.minusMonths(it.toLong())}
     private fun text(canvas:Canvas,value:String,x:Float,y:Float,color:Int=palette.muted,size:Float=11f) {p.color=color;p.style=Paint.Style.FILL;p.textSize=size*font;canvas.drawText(value,x,y,p)}
     private fun line(canvas:Canvas,x1:Float,y1:Float,x2:Float,y2:Float,color:Int=palette.line) {p.style=Paint.Style.STROKE;p.strokeWidth=1f;p.color=color;canvas.drawLine(x1,y1,x2,y2,p)}
@@ -24,8 +24,8 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
         if(mode==0)donut(c) else if(mode==1)area(c) else bars(c)
     }
     private fun donut(c:Canvas) {
-        val total=segments.sumOf {it.second};val radius=min(width,height)*.42f;val cx=width/2f;val cy=height/2f
-        p.style=Paint.Style.STROKE;p.strokeWidth=radius*.3f;p.color=palette.line
+        val total=segments.sumOf {it.second};val radius=min(width,height)*91f/240f;val cx=width/2f;val cy=height/2f
+        p.style=Paint.Style.STROKE;p.strokeWidth=radius*38f/91f;p.color=palette.line
         if(total==0L) {
             c.drawCircle(cx,cy,radius,p)
             p.style=Paint.Style.FILL;p.color=palette.muted;p.textSize=13*font
@@ -36,7 +36,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
         }
         val rect=RectF(cx-radius,cy-radius,cx+radius,cy+radius);var angle=-90f
         segments.forEachIndexed {i,(cat,n)->
-            val sweep=n.toFloat()/total*360f;p.color=CategoryVisual.chartColor(cat);p.strokeWidth=radius*(if(selected==i).36f else .32f)
+            val sweep=n.toFloat()/total*360f;p.color=AnalysisPalette.color(i);p.strokeWidth=radius*(if(selected==i).45f else 38f/91f)
             c.drawArc(rect,angle+.5f,max(0.5f,sweep-1f),false,p);angle+=sweep
         }
         val title="Totale uscite";p.textSize=11*font
@@ -63,7 +63,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
             p.color=color;p.style=Paint.Style.STROKE;p.strokeWidth=2.5f*font;p.pathEffect=if(dashed)DashPathEffect(floatArrayOf(6*font,5*font),0f) else null;c.drawPath(path,p);p.pathEffect=null
         }
         plot(history,palette.chartSage,false,true);plot(guaranteed,palette.chartCoral,true,true);plot(expected,palette.chartCool,true)
-        line(c,x(LocalDate.now()),top,x(LocalDate.now()),bottom,palette.muted)
+        line(c,x(AppClock.today()),top,x(AppClock.today()),bottom,palette.muted)
         text(c,start.format(DateTimeFormatter.ofPattern("dd/MM")),left,height-8*font)
         text(c,end.format(DateTimeFormatter.ofPattern("dd/MM")),right-36*font,height-8*font)
         selected?.let {i->val point=all.sortedBy {it.first}.getOrNull(i);if(point!=null){p.color=palette.text;p.style=Paint.Style.FILL;c.drawCircle(x(point.first),y(point.second),4*font,p)}}
@@ -90,7 +90,7 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
             performClick()
             when(mode) {
                 0->{if(segments.isEmpty())return true
-                    val dx=event.x-width/2f;val dy=event.y-height/2f;val radius=min(width,height)*.42f
+                    val dx=event.x-width/2f;val dy=event.y-height/2f;val radius=min(width,height)*91f/240f
                     if(sqrt(dx*dx+dy*dy) !in radius*.7f..radius*1.3f)return true
                     val angle=(Math.toDegrees(atan2(dy,dx).toDouble()).toFloat()+450f)%360f
                     val total=segments.sumOf {it.second};var sum=0f
@@ -99,9 +99,9 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
                 1->{val points=(ledger.history()+ledger.projection(false)+ledger.projection(true)).sortedBy {it.first};val start=points.first().first;val end=maxOf(points.last().first,start.plusDays(1));val ratio=((event.x-54*font)/(width-54*font-12f)).coerceIn(0f,1f)
                     val day=start.plusDays((ChronoUnit.DAYS.between(start,end)*ratio).toLong())
                     val actual=ledger.settings.opening+ledger.cashEvents.filter {it.date<=day}.sumOf {it.signed}
-                    val base=ledger.balance+ledger.pending.filter {it.kind==Kind.EXPENSE && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.effectiveHorizon()}.sumOf {it.signed}
-                    val inc=ledger.pending.filter {it.kind==Kind.INCOME && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.effectiveHorizon()}.sumOf {it.cents}
-                    selection(if(day<LocalDate.now()) "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · storico ${Money.format(actual)}" else "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · uscite note ${Money.format(base)} · con entrate previste ${Money.format(base+inc)}")}
+                    val base=ledger.balance+ledger.pending.filter {it.kind==Kind.EXPENSE && maxOf(it.date,AppClock.today())<=day && it.date<=ledger.settings.effectiveHorizon()}.sumOf {it.signed}
+                    val inc=ledger.pending.filter {it.kind==Kind.INCOME && maxOf(it.date,AppClock.today())<=day && it.date<=ledger.settings.effectiveHorizon()}.sumOf {it.cents}
+                    selection(if(day<AppClock.today()) "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · storico ${Money.format(actual)}" else "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · uscite note ${Money.format(base)} · con entrate previste ${Money.format(base+inc)}")}
                 2->{val i=((event.x-36*font)/((width-36*font-8)/months)).toInt().coerceIn(0,months-1);selected=i;val m=barMonths[i];selection("${m.format(DateTimeFormatter.ofPattern("MMM yyyy",Locale.ITALY))} · entrate ${Money.format(ledger.month(m,Kind.INCOME))} · uscite ${Money.format(ledger.month(m,Kind.EXPENSE))}")}
             }
             invalidate();return true

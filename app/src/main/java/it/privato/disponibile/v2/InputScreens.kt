@@ -15,7 +15,7 @@ import it.privato.disponibile.v2.MainActivity.Draft
 import it.privato.disponibile.v2.MainActivity.HistoryItem
 
 /** Native screen composition and its UI events; financial writes remain in Store. */
-internal fun MainActivity.formTitle()=when(draft?.type){"operation"->if(draft?.id==0L)if(draft?.values?.get("kind")!="INCOME")"Nuova spesa" else "Nuova entrata" else "Modifica movimento";"series"->if(draft?.id==0L)"Ricorrenza o rate" else "Modifica serie";"advance"->if(draft?.id==0L)"Nuovo anticipo" else "Modifica anticipo";"refund"->"Registra rimborso";"refundEdit"->"Modifica rimborso";"category"->"Categoria";"opening"->"Liquidità iniziale";"reserve"->"Riserva protetta";"reconcile"->"Liquidità attuale";"creditFilter"->"Filtri crediti";else->"Inserimento"}
+internal fun MainActivity.formTitle()=when(draft?.type){"operation"->if(draft?.id==0L)if(draft?.values?.get("kind")!="INCOME")"Nuova spesa" else "Nuova entrata" else "Modifica movimento";"series"->if(draft?.id==0L)"Ricorrenza o rate" else "Modifica serie";"advance"->if(draft?.id==0L)"Nuovo anticipo" else "Modifica anticipo";"refund"->"Registra rimborso";"refundEdit"->"Modifica rimborso";"category"->"Categoria";"opening"->"Liquidità iniziale";"reserve"->"Riserva protetta";"reconcile"->"Liquidità attuale";"creditFilter"->"Filtri anticipi";else->"Inserimento"}
 
 internal fun MainActivity.openForm(type:String,id:Long=0,defaults:Map<String,String> = emptyMap()) {
         draftBaseline=null;previous=page;val v=mutableMapOf<String,String>();v.putAll(defaults)
@@ -32,12 +32,12 @@ internal fun MainActivity.moneyForm(type:String,value:Long)=openForm(type,defaul
 
 internal fun MainActivity.watch(field:EditText,action:(String)->Unit){field.addTextChangedListener(object:TextWatcher {override fun beforeTextChanged(s:CharSequence?,start:Int,count:Int,after:Int)=Unit;override fun afterTextChanged(s:Editable?)=Unit;override fun onTextChanged(s:CharSequence?,start:Int,before:Int,count:Int){action(s.toString())}})}
 
-internal fun MainActivity.pick(initial:LocalDate,action:(LocalDate)->Unit) {
-        pickerTarget="horizon";pickerState=DateSelection(initial,YearMonth.from(initial),LocalDate.now(),LocalDate.now().plusYears(10));showPicker()
+internal fun MainActivity.pickHorizon(initial:LocalDate) {
+        pickerTarget="horizon";pickerState=DateSelection(maxOf(initial,AppClock.today()),YearMonth.from(maxOf(initial,AppClock.today())),AppClock.today(),AppClock.today().plusYears(10));showPicker()
     }
 
 internal fun MainActivity.pickField(key:String,initial:LocalDate) {
-        val d=draft ?: return;val today=LocalDate.now()
+        val d=draft ?: return;val today=AppClock.today()
         val actual=d.type in listOf("advance","refund","refundEdit") || d.type=="operation" && d.values["status"]!="PLANNED"
         val min=if(key=="due")d.values["date"]?.let {LocalDate.parse(it)} ?: today else if(d.type in listOf("refund","refundEdit"))l.advances.first {it.id==d.values["advance"]!!.toLong()}.date else LocalDate.of(1900,1,1)
         val max=if(actual && key!="due")today else today.plusYears(10)
@@ -50,7 +50,7 @@ internal fun MainActivity.showPicker() {
             val target=pickerTarget;pickerState=null
             if(target.startsWith("draft:")){draft?.values?.set(target.substringAfter(":"),day.toString());render()}
             else if(target=="simulation"){simulationDraft.end=day;render()}
-            else if(target=="horizon")change {store.settings(l.settings.copy(horizon=day,horizonMode=HorizonMode.FIXED))}
+            else if(target=="horizon")change {store.fixedHorizon(day)}
         },{pickerState=null})
     }
 
@@ -68,8 +68,8 @@ internal fun MainActivity.form(body:LinearLayout) {
             body.addView(ui.listRow(title,label){sheet(title,choices.map {(code,name)->name to {d.values[key]=code;render()}})})
         }
         fun date(key:String,title:String,optional:Boolean=false) {
-            val text=value(key,if(optional)"" else LocalDate.now().toString())
-            body.addView(ui.listRow(title,if(text.isBlank())"Facoltativa" else LocalDate.parse(text).format(dates)){pickField(key,if(text.isBlank())LocalDate.now() else LocalDate.parse(text))})
+            val text=value(key,if(optional)"" else AppClock.today().toString())
+            body.addView(ui.listRow(title,if(text.isBlank())"Facoltativa" else LocalDate.parse(text).format(dates)){pickField(key,if(text.isBlank())AppClock.today() else LocalDate.parse(text))})
             if(optional && text.isNotBlank())body.addView(ui.button("Rimuovi data prevista"){d.values[key]="";render()})
         }
         fun category() {
@@ -92,7 +92,7 @@ internal fun MainActivity.form(body:LinearLayout) {
                 if(expense){body.addView(ui.section("Categorie"));inlineCategories(body,d)}else category()
                 field("description","Descrizione").apply {hint=if(expense)"Facoltativa" else "Compenso ricevuto";textSize=14f;minHeight=ui.dp(38);setPadding(0,ui.dp(3),0,ui.dp(3));background=null}
                 if(expense){
-                    val day=value("date",LocalDate.now().toString());val fields=ui.row().apply {orientation=if(resources.configuration.fontScale>=1.5f)LinearLayout.VERTICAL else LinearLayout.HORIZONTAL;background=ui.shape(ui.colors.hero,12)}
+                    val day=value("date",AppClock.today().toString());val fields=ui.row().apply {orientation=if(resources.configuration.fontScale>=1.5f)LinearLayout.VERTICAL else LinearLayout.HORIZONTAL;background=ui.shape(ui.colors.hero,12)}
                     val dateView=ui.miniField(if(series)"Prima scadenza" else "Data",LocalDate.parse(day).format(dates)){pickField("date",LocalDate.parse(day))}
                     fields.addView(dateView,if(fields.orientation==LinearLayout.VERTICAL)LinearLayout.LayoutParams(-1,-2)else LinearLayout.LayoutParams(0,-2,1.2f))
                     if(!adjustment && (d.id==0L || series))fields.addView(ui.miniField("Rate",if(series){if(value("rateMode",if(value("count").isBlank())"continuous" else "finite")=="continuous")"Continua" else "${value("count")} rate"}else "Nessuna"){openRates()},if(fields.orientation==LinearLayout.VERTICAL)LinearLayout.LayoutParams(-1,-2)else LinearLayout.LayoutParams(0,-2,1f))
@@ -234,7 +234,7 @@ internal fun MainActivity.rates(body:LinearLayout) {
         watch(count){rateCount=it;rateChoice="finite";update();radioUpdates.forEach {refresh->refresh()};val n=it.toIntOrNull();summary.text=if(n!=null && n in 1..120 && amount!=null)if(amountMode=="TOTAL")"$n rate · totale ${DisplayMoney.amount(amount)}"else "$n rate · totale ${DisplayMoney.amount(amount*n)}" else "Scegli da 1 a 120 rate"};update()
         }
         if(ratesAdvanced) {
-            body.addView(ui.listRow("Prima scadenza",d.values.getOrPut("date"){LocalDate.now().toString()}){pickField("date",LocalDate.parse(d.values.getValue("date")))})
+            body.addView(ui.listRow("Prima scadenza",d.values.getOrPut("date"){AppClock.today().toString()}){pickField("date",LocalDate.parse(d.values.getValue("date")))})
             val frequency=Frequency.valueOf(d.values.getOrPut("frequency"){"MONTHLY"})
             body.addView(ui.listRow("Ripetizione",frequencyName(frequency)){sheet("Ripetizione",Frequency.entries.map {f->frequencyName(f) to {d.values["frequency"]=f.name;render()}})})
             if(rateChoice=="finite" && amount!=null && countValue in 1..120) {

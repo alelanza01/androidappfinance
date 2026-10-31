@@ -22,7 +22,7 @@ class MainActivity:Activity() {
     internal var page=0
     internal var previous=0
     internal var demo=false
-    internal var month=YearMonth.now()
+    internal var month=AppClock.month()
     internal var chartMode=0
     internal var period=6
     internal var analysisSpan=1
@@ -32,7 +32,7 @@ class MainActivity:Activity() {
     internal var rateBaseline:String?=null
     internal var calendarGrid=false
     internal var commitmentForecast=false
-    internal var renderedDay=LocalDate.now()
+    internal var renderedDay=AppClock.today()
     internal var selectedDay:LocalDate?=null
     internal var moveQuery=""
     internal var creditQuery=""
@@ -72,7 +72,7 @@ class MainActivity:Activity() {
         rateBaseline=state?.getString("rateBaseline")
         page=state?.getInt("page") ?: 0;previous=state?.getInt("previous") ?: 0;demo=state?.getBoolean("demo") ?: false
         selectedDay=state?.getString("selectedDay")?.let {LocalDate.parse(it)}
-        month=state?.getString("month")?.let {YearMonth.parse(it)} ?: YearMonth.now()
+        month=state?.getString("month")?.let {YearMonth.parse(it)} ?: AppClock.month()
         chartMode=state?.getInt("chartMode") ?: 0;calendarGrid=state?.getBoolean("grid") ?: false
         detailId=state?.getLong("detailId") ?: 0;draft=state?.getString("draft")?.let {Draft.parse(it)}
         draftBaseline=state?.getString("baseline");parentDraft=state?.getString("parentDraft")?.let {Draft.parse(it)}
@@ -96,7 +96,7 @@ class MainActivity:Activity() {
     override fun onSaveInstanceState(s:Bundle) {
         super.onSaveInstanceState(s);s.putString("moveQuery",moveQuery);s.putString("creditQuery",creditQuery);s.putInt("moveFilter",moveFilter);s.putInt("creditStatus",creditStatus);s.putLong("categoryFilter",categoryFilter ?: 0);s.putString("creditSubject",creditSubject);s.putString("creditProject",creditProject);s.putBoolean("creditMonth",creditMonth);s.putBoolean("commitmentForecast",commitmentForecast);s.putString("rateBaseline",rateBaseline);s.putString("simulation",simulationDraft.encode());s.putString("selectedDay",selectedDay?.toString());pickerState?.let {s.putString("dateSelection",it.encode());s.putString("pickerTarget",pickerTarget)};s.putBoolean("ratesAdvanced",ratesAdvanced);s.putInt("categoryTab",categoryTab);s.putString("categoryQuery",categoryQuery);s.putInt("analysisSpan",analysisSpan);s.putString("rateChoice",rateChoice);s.putString("rateCount",rateCount);s.putInt("page",page);s.putInt("previous",previous);s.putBoolean("demo",demo);s.putString("month",month.toString());s.putInt("chartMode",chartMode);s.putBoolean("grid",calendarGrid);s.putLong("detailId",detailId);draft?.let {s.putString("draft",it.json())};s.putBoolean("exportPrevious",exportPrevious);s.putString("baseline",draftBaseline);s.putString("parentBaseline",parentBaseline);s.putInt("parentPrevious",parentPrevious);s.putBoolean("pickingFilter",pickingFilter);parentDraft?.let {s.putString("parentDraft",it.json())}
     }
-    override fun onResume(){super.onResume();if(renderedDay!=LocalDate.now()){renderedDay=LocalDate.now();render()}}
+    override fun onResume(){super.onResume();if(renderedDay!=AppClock.today()){renderedDay=AppClock.today();render()}}
     override fun onDestroy(){dialog?.dismiss();store.close();super.onDestroy()}
     @Deprecated("Android 8 compatible back navigation") override fun onBackPressed() {
         if(page==30){onboarding.paused=true;go(0)}
@@ -155,15 +155,15 @@ class MainActivity:Activity() {
         ui=Design(this,Palette.of(this,l.settings.theme));val c=ui.colors
         window.statusBarColor=c.background;window.navigationBarColor=c.background
         window.decorView.systemUiVisibility=if(c.dark)0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or (if(android.os.Build.VERSION.SDK_INT>=27)View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else 0)
-        val root=ui.column().apply {background=ui.pageBackground();isFocusableInTouchMode=true}
+        val root=ui.column().apply {background=if(page in listOf(1,3,4,6,30) && !c.dark)android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,intArrayOf(Color.WHITE,c.background,c.hero))else ui.pageBackground();isFocusableInTouchMode=true}
         root.setOnApplyWindowInsetsListener {v,insets->
             if(android.os.Build.VERSION.SDK_INT>=30){val i=insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.ime());v.setPadding(i.left,i.top,i.right,i.bottom)}
             else v.setPadding(insets.systemWindowInsetLeft,insets.systemWindowInsetTop,insets.systemWindowInsetRight,insets.systemWindowInsetBottom)
             insets
         }
-        val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Anticipi da recuperare",4 to "Analisi",5 to "Simula una spesa",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
+        val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Anticipi da recuperare",4 to "Analisi",5 to "Simula una spesa",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",30 to "Configurazione guidata",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
         if(demo)root.addView(ui.label("DEMO · DATI DIMOSTRATIVI",10f,c.muted,true).apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(12).toFloat(),10f*resources.displayMetrics.scaledDensity));setPadding(ui.dp(24),ui.dp(6),ui.dp(24),0)})
-        val header=ui.row().apply {setPadding(ui.dp(18),ui.dp(if(page==0)24 else 4),ui.dp(18),ui.dp(4))}
+        val header=ui.row().apply {setPadding(ui.dp(18),ui.dp(if(page==0)24 else if(page in listOf(1,3,4,6,30))12 else 4),ui.dp(18),ui.dp(if(page in listOf(1,3,4,6,30))8 else 4))}
         if(page!=0)header.addView(ui.button("‹"){onBackPressed()}.apply {contentDescription="Indietro";textSize=25f;background=android.graphics.drawable.InsetDrawable(ui.shape(c.hero,20),ui.dp(9));setPadding(0,0,0,0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))
         val name=ui.column();name.addView(ui.label(if(page==0)"Ciao!" else titles[page] ?: "Posso spenderlo?",if(page==0)27f else 18f,c.text,true).apply {gravity=if(page==0)Gravity.START else Gravity.CENTER;maxLines=2})
         if(page==0)name.addView(ui.label("Ecco la tua situazione attuale",12f,c.muted))
@@ -175,6 +175,10 @@ class MainActivity:Activity() {
         val body=ui.column().apply {setPadding(ui.dp(20),0,ui.dp(20),ui.dp(18))}
         when(page){30->onboardingScreen(body);0->home(body);1->movements(body);2->commitments(body);3->credits(body);4->analysis(body);5->simulator(body);6->settings(body);7->rules(body);8->appearance(body);9->categories(body);10->backups(body);11->reminders(body);12->calculation(body);13->creditDetail(body);20->form(body);21->categoryGrid(body,true);22->rates(body)}
         scroll.addView(body);root.addView(scroll,LinearLayout.LayoutParams(-1,0,1f))
+        if(page==30 || page==3) {
+            val fixed=body.findViewWithTag<View>(if(page==30)"onboarding-next"else "advance-cta")
+            if(fixed!=null){(fixed.parent as ViewGroup).removeView(fixed);root.addView(fixed.apply {layoutParams=LinearLayout.LayoutParams(-1,-2).apply {setMargins(ui.dp(20),ui.dp(10),ui.dp(20),ui.dp(12))}})}
+        }
         if(page==20)root.addView(ui.button(saveLabel(),true){
             if(page!=20 || draft==null || saving)return@button
             if(demo && draft?.type!="creditFilter"){Toast.makeText(this,"Esci dalla demo per salvare.",Toast.LENGTH_SHORT).show();return@button}
@@ -191,11 +195,11 @@ class MainActivity:Activity() {
         NativeHome(this,ui,l).content(body,{go(it)},{manage(it)})
         if(demo)body.addView(ui.button("Esci dalla demo"){demo=false;go(0)})
     }
-    internal data class HistoryItem(val date:LocalDate,val title:String,val subtitle:String,val signed:Long,val state:String,val action:()->Unit)
+    internal data class HistoryItem(val date:LocalDate,val title:String,val subtitle:String,val signed:Long,val state:String,val icon:String="other",val action:()->Unit)
     internal fun export(previous:Boolean) {
         if(demo){Toast.makeText(this,"Esci dalla demo per esportare i tuoi dati.",Toast.LENGTH_LONG).show();return}
         exportPrevious=previous
-        startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).setType("application/json").addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE,"posso-spenderlo-${LocalDate.now()}${if(previous)"-precedente" else ""}.json"),1)
+        startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).setType("application/json").addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE,"posso-spenderlo-${AppClock.today()}${if(previous)"-precedente" else ""}.json"),1)
     }
     @Deprecated("Uses system document picker for Android 8+ compatibility")
     override fun onActivityResult(request:Int,result:Int,data:Intent?) {

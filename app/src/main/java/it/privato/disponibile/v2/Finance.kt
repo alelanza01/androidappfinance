@@ -6,6 +6,15 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Locale
 
+/** The device local clock in production; fixed clocks make rollover and visual QA reproducible. */
+internal object AppClock {
+    private var overrideClock:java.time.Clock?=null
+    var clock:java.time.Clock
+        get()=overrideClock ?: java.time.Clock.systemDefaultZone()
+        set(value){overrideClock=value}
+    fun today():LocalDate=LocalDate.now(clock)
+    fun month():YearMonth=YearMonth.from(today())
+}
 object Money {
     const val MAX = 999_999_999L
     fun parse(value: String, signed: Boolean=false): Long {
@@ -31,8 +40,8 @@ data class Series(val id:Long=0,val title:String,val cents:Long,val kind:Kind,va
     fun amount(index:Int):Long=if(amountMode==AmountMode.TOTAL)installments.getOrElse(index){error("Quota del piano mancante.")} else installments.getOrElse(index){cents}
     fun date(index:Int):LocalDate=when(frequency) {Frequency.MONTHLY->start.plusMonths(index.toLong());Frequency.WEEKLY->start.plusWeeks(index.toLong());Frequency.YEARLY->start.plusYears(index.toLong())}
 }
-data class Settings(val opening:Long=0,val reserve:Long=0,val horizon:LocalDate=LocalDate.now().plusDays(30),val theme:String="system",val reminders:Boolean=false,val horizonMode:HorizonMode=HorizonMode.FIXED,val horizonDays:Int=30,val onboardingCompleted:Boolean=true) {
-    fun effectiveHorizon(today:LocalDate=LocalDate.now()):LocalDate=if(horizonMode==HorizonMode.ROLLING)today.plusDays(horizonDays.toLong()) else horizon
+data class Settings(val opening:Long=0,val reserve:Long=0,val horizon:LocalDate=AppClock.today().plusDays(30),val theme:String="system",val reminders:Boolean=false,val horizonMode:HorizonMode=HorizonMode.FIXED,val horizonDays:Int=30,val onboardingCompleted:Boolean=true) {
+    fun effectiveHorizon(today:LocalDate=AppClock.today()):LocalDate=if(horizonMode==HorizonMode.ROLLING)today.plusDays(horizonDays.toLong()) else horizon
 }
 data class Advance(val id:Long=0,val cents:Long,val date:LocalDate,val description:String,val debtor:String,val project:String="",val cause:String="",val due:LocalDate?=null,val notes:String="")
 data class Refund(val id:Long=0,val advance:Long,val cents:Long,val date:LocalDate,val note:String="")
@@ -54,9 +63,9 @@ data class Ledger(val settings:Settings,val categories:List<Category>,val operat
     fun recovered(id:Long)=refundTotals[id] ?: 0L
     fun remaining(a:Advance)=a.cents-recovered(a.id)
     val outstanding get()=advances.sumOf {remaining(it)}
-    fun advanceStatus(a:Advance)=when {remaining(a)==0L->"Recuperato";a.due!=null && a.due<LocalDate.now()->"Scaduto";recovered(a.id)>0->"Parziale";else->"Aperto"}
-    val commitments get()=pending.filter {it.kind==Kind.EXPENSE && !it.date.isAfter(maxOf(settings.effectiveHorizon(),LocalDate.now()))}.sumOf {it.cents}
-    val expectedIncome get()=pending.filter {it.kind==Kind.INCOME && !it.date.isAfter(maxOf(settings.effectiveHorizon(),LocalDate.now()))}.sumOf {it.cents}
+    fun advanceStatus(a:Advance)=when {remaining(a)==0L->"Recuperato";a.due!=null && a.due<AppClock.today()->"Scaduto";recovered(a.id)>0->"Parziale";else->"Aperto"}
+    val commitments get()=pending.filter {it.kind==Kind.EXPENSE && !it.date.isAfter(maxOf(settings.effectiveHorizon(),AppClock.today()))}.sumOf {it.cents}
+    val expectedIncome get()=pending.filter {it.kind==Kind.INCOME && !it.date.isAfter(maxOf(settings.effectiveHorizon(),AppClock.today()))}.sumOf {it.cents}
     val spendable get()=balance-settings.reserve-commitments
     fun simulated(cents:Long)=spendable-cents
     fun month(month:YearMonth,kind:Kind)=actual.filter {YearMonth.from(it.date)==month && it.kind==kind}.sumOf {it.cents}
@@ -65,16 +74,16 @@ data class Ledger(val settings:Settings,val categories:List<Category>,val operat
     fun history():List<Pair<LocalDate,Long>> {
         var b=settings.opening
         val events=cashEvents.groupBy {it.date}.toSortedMap()
-        val start=events.keys.firstOrNull() ?: LocalDate.now()
+        val start=events.keys.firstOrNull() ?: AppClock.today()
         val points=mutableListOf(start.minusDays(1) to b)
         events.forEach {(date,items)->b+=items.sumOf {it.signed};points.add(date to b)}
-        if(points.last().first<LocalDate.now())points.add(LocalDate.now() to b)
+        if(points.last().first<AppClock.today())points.add(AppClock.today() to b)
         return points
     }
     fun projection(includeIncome:Boolean):List<Pair<LocalDate,Long>> {
         var b=balance
-        val today=LocalDate.now();val points=mutableListOf(today to b)
-        pending.filter { !it.date.isAfter(maxOf(settings.effectiveHorizon(),LocalDate.now())) && (it.kind==Kind.EXPENSE || includeIncome) }.groupBy {maxOf(it.date,today)}.toSortedMap().forEach {(d,items)->
+        val today=AppClock.today();val points=mutableListOf(today to b)
+        pending.filter { !it.date.isAfter(maxOf(settings.effectiveHorizon(),AppClock.today())) && (it.kind==Kind.EXPENSE || includeIncome) }.groupBy {maxOf(it.date,today)}.toSortedMap().forEach {(d,items)->
             b+=items.sumOf {it.signed};points.add(d to b)
         }
         if(points.last().first<settings.effectiveHorizon())points.add(settings.effectiveHorizon() to b)

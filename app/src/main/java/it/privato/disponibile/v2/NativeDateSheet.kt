@@ -36,7 +36,7 @@ class NativeDateSheet(private val host:Activity,private val ui:Design,val state:
             fun listener(change:(Int)->Unit)=object:AdapterView.OnItemSelectedListener {override fun onNothingSelected(p:AdapterView<*>?)=Unit;override fun onItemSelected(p:AdapterView<*>?,v:View?,position:Int,id:Long){change(position)}}
             months.onItemSelectedListener=listener {position->if(position+1!=state.month.monthValue){state.month=YearMonth.of(state.month.year,position+1);draw()}}
             years.onItemSelectedListener=listener {position->if(state.min.year+position!=state.month.year){state.month=YearMonth.of(state.min.year+position,state.month.monthValue);draw()}}
-            val today=LocalDate.now();val shortcuts=ui.row()
+            val today=AppClock.today();val shortcuts=ui.row()
             listOf("Oggi" to today,if(state.max<=today)"Ieri" to today.minusDays(1)else "Domani" to today.plusDays(1),"+30 giorni" to today.plusDays(30)).filter {it.second in state.min..state.max}.forEach {(label,day)->shortcuts.addView(ui.button(label){state.selected=day;state.month=YearMonth.from(day);draw()}.apply {textSize=11f;setPadding(0,0,0,0)},LinearLayout.LayoutParams(0,-2,1f))};content.addView(shortcuts)
             if(state.accessible || host.resources.configuration.fontScale>=1.5f) {
                 (1..state.month.lengthOfMonth()).forEach {n->val day=state.month.atDay(n);if(day in state.min..state.max)content.addView(ui.button(day.format(DateTimeFormatter.ofPattern("EEEE d MMMM",Locale.ITALY)),day==state.selected){state.selected=day;draw()}.apply {contentDescription=day.toString();isSelected=day==state.selected})}

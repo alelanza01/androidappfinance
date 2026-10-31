@@ -11,6 +11,10 @@ object UiSupport {
  fun all(v:View):List<View> = listOf(v)+if(v is ViewGroup)(0 until v.childCount).flatMap {all(v.getChildAt(it))}else emptyList()
  fun idle(){Shadows.shadowOf(android.os.Looper.getMainLooper()).idleFor(Duration.ofMillis(250))}
  fun click(v:View,name:String) {
+  val revised=mapOf("Regole del saldo" to "Riserva e disponibilità","Avvisi" to "Notifiche","Filtri crediti" to "Filtri anticipi","Nuovo anticipo" to "Registra anticipo","Inizia a usare l'app" to "Vai alla Home")
+  if(name in revised && all(v).none {it is TextView && it.text.toString()==name}){click(v,revised.getValue(name));return}
+  val register=mapOf("Spesa" to "Registra spesa","Entrata" to "Registra entrata","Spesa prevista" to "Programma pagamento","Ricorrenza o rate" to "Rate e ricorrenze","Anticipo" to "Registra anticipo")
+  if(name in register && all(v).any {it is TextView && it.text.toString()=="Cosa vuoi registrare?"}){click(v,register.getValue(name));return}
   if(name=="Lista"){click(v,"Elenco");return}
   if(name=="Spesa veloce"){click(v,"Aggiungi");choose("Spesa");return}
   if(name=="Dettaglio del calcolo"){all(v).filterIsInstance<SpendableRing>().first().performClick();idle();return}
@@ -53,8 +57,8 @@ object UiSupport {
   }
   db.execSQL("DROP TABLE IF EXISTS installments");db.execSQL("DROP TABLE IF EXISTS commands")
  }
- fun field(v:View,label:String)=all(v).filterIsInstance<EditText>().first {it.contentDescription?.toString()==label}
- fun set(v:View,label:String,value:String){if(label=="Numero rate" && all(v).filterIsInstance<EditText>().none {it.contentDescription?.toString()==label})click(v,"Altre opzioni");field(v,label).setText(value);idle()}
+ fun field(v:View,label:String)=all(v).filterIsInstance<EditText>().first {it.contentDescription?.toString()==if(label=="Cerca crediti")"Cerca anticipi"else label}
+ fun set(v:View,label:String,value:String){if(label=="Descrizione" && all(v).filterIsInstance<EditText>().none {it.contentDescription?.toString()==label} && all(v).any {it is Button && it.text.toString()=="Aggiungi pagamento"})click(v,"Aggiungi pagamento");if(label=="Numero rate" && all(v).filterIsInstance<EditText>().none {it.contentDescription?.toString()==label})click(v,"Altre opzioni");field(v,label).setText(value);idle()}
  fun ledger():Ledger {val s=Store(RuntimeEnvironment.getApplication());return try{s.snapshot()}finally{s.close()}}
  fun reset(){val context=RuntimeEnvironment.getApplication();context.deleteDatabase("finance-v2.db");context.getSharedPreferences("onboarding-v34",0).edit().clear().commit();val s=Store(context);s.settings(s.snapshot(false).settings.copy(onboardingCompleted=true));s.close()}
  fun withStore(block:(Store)->Unit){val s=Store(RuntimeEnvironment.getApplication());try{block(s)}finally{s.close()}}

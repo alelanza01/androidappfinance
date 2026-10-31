@@ -20,7 +20,7 @@ class ReminderService:JobService() {
                 val store=Store(this)
                 val ledger=try {store.snapshot()} finally {store.close()}
                 val manager=getSystemService(NotificationManager::class.java)
-                val due=ledger.pending.filter {it.kind==Kind.EXPENSE && it.date<=LocalDate.now().plusDays(1)}
+                val due=ledger.pending.filter {it.kind==Kind.EXPENSE && it.date<=AppClock.today().plusDays(1)}
                 if(ledger.settings.reminders && due.isNotEmpty() && (android.os.Build.VERSION.SDK_INT<33 || checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)==android.content.pm.PackageManager.PERMISSION_GRANTED) && manager.areNotificationsEnabled()) {
                     manager.createNotificationChannel(NotificationChannel("deadlines","Scadenze economiche",NotificationManager.IMPORTANCE_DEFAULT))
                     val intent=PendingIntent.getActivity(this,0,Intent(this,MainActivity::class.java),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)

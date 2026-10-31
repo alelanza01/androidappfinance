@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 object Demo {
     fun ledger(theme:String):Ledger {
-        val today=LocalDate.now()
+        val today=AppClock.today()
         val cats=CategoryCatalog.completeLegacy(listOf(Category(1,"Casa",Color.parseColor("#779B91"),"home"),Category(2,"Spesa",Color.parseColor("#DBBF8B"),"basket"),Category(3,"Trasporti",Color.parseColor("#7392B7"),"bus"),Category(4,"Entrate",Color.parseColor("#AC91BB"),"income")))
         val operations=listOf(
             Operation(1,"Compenso freelance",145000,Kind.INCOME,Status.ACTUAL,today.minusDays(12),4),

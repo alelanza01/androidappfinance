@@ -20,7 +20,7 @@ class NativeHome(private val host:Activity,private val ui:Design,private val led
             val cat=Category(0,label,Color.parseColor(if(i==0)"#74CFA3" else "#F49BA8"),if(i==0)"income" else "bag")
             val card=ui.row().apply {background=ui.surface();setPadding(ui.dp(10),ui.dp(10),ui.dp(10),ui.dp(10));minimumHeight=ui.dp(68)}
             card.addView(View(host).apply {background=CategoryIcon(cat.icon,ui.categoryTint(cat),ui.dp(32),ui.categoryWash(cat))},LinearLayout.LayoutParams(ui.dp(32),ui.dp(32)).apply {marginEnd=ui.dp(8)})
-            val values=ui.column();values.addView(ui.label(label,11f,ui.colors.muted));values.addView(ui.amount(DisplayMoney.amount(ledger.month(YearMonth.now(),kind)),19f))
+            val values=ui.column();values.addView(ui.label(label,11f,ui.colors.muted));values.addView(ui.amount(DisplayMoney.amount(ledger.month(AppClock.month(),kind)),19f))
             card.addView(values,LinearLayout.LayoutParams(0,-2,1f));card.isFocusable=true;card.setOnClickListener {go(1)}
             metrics.addView(card,LinearLayout.LayoutParams(0,-2,1f).apply {if(i==0)marginEnd=ui.dp(10)})
         };body.addView(metrics)
@@ -54,18 +54,17 @@ class NativeHome(private val host:Activity,private val ui:Design,private val led
 
 class RegisterSheet(private val host:Activity,private val ui:Design) {
     fun show(planned:Boolean,open:(String,Map<String,String>)->Unit):Dialog {
-        val d=Dialog(host);val body=ui.column().apply {setPadding(ui.dp(20),ui.dp(12),ui.dp(20),ui.dp(12));background=ui.shape(ui.colors.card,27)}
-        val header=ui.row();header.addView(ui.label("Registra",22f,ui.colors.text,true),LinearLayout.LayoutParams(0,-2,1f));header.addView(ui.button("×"){d.dismiss()}.apply {contentDescription="Chiudi Registra";textSize=26f},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)));body.addView(header)
-        val content=ui.column();val scroll=ScrollView(host).apply {isFillViewport=false;addView(content)};body.addView(scroll,LinearLayout.LayoutParams(-1,0,1f))
-        fun entry(title:String,description:String,icon:String,type:String,kind:String="EXPENSE",status:String="ACTUAL") {
-            val cat=Category(0,title,ui.colors.primary,icon)
-            val row=ui.row().apply {minimumHeight=ui.dp(68);setPadding(0,ui.dp(7),0,ui.dp(7))}
-            row.addView(View(host).apply {background=if(icon=="calendar")android.graphics.drawable.LayerDrawable(arrayOf(ui.shape(ui.colors.hero,12),android.graphics.drawable.InsetDrawable(NavIcon(2,ui.colors.cool,ui.dp(22)),ui.dp(9))))else CategoryIcon(icon,ui.categoryTint(cat),ui.dp(40),ui.categoryWash(cat))},LinearLayout.LayoutParams(ui.dp(40),ui.dp(40)).apply {marginEnd=ui.dp(12)})
-            val text=ui.column();text.addView(ui.label(title,14f,ui.colors.text,true));text.addView(ui.label(description,12f,ui.colors.muted));row.addView(text,LinearLayout.LayoutParams(0,-2,1f));row.contentDescription=title;row.isFocusable=true;row.setOnClickListener {d.dismiss();open(type,mapOf("kind" to kind,"status" to status))};content.addView(row)
+        val d=Dialog(host);val body=ui.column().apply {setPadding(ui.dp(20),ui.dp(10),ui.dp(20),ui.dp(12));background=ui.shape(ui.colors.card,27)}
+        body.addView(View(host).apply {background=ui.shape(ui.colors.line,2)},LinearLayout.LayoutParams(ui.dp(34),ui.dp(4)).apply {gravity=Gravity.CENTER_HORIZONTAL;bottomMargin=ui.dp(12)})
+        val header=ui.row();header.addView(ui.label("Cosa vuoi registrare?",19f,ui.colors.text,true),LinearLayout.LayoutParams(0,-2,1f));header.addView(ui.button("×"){d.dismiss()}.apply {contentDescription="Chiudi Registra";textSize=26f},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)));body.addView(header)
+        val content=ui.column();body.addView(ScrollView(host).apply {addView(content)},LinearLayout.LayoutParams(-1,0,1f))
+        fun entry(title:String,description:String,icon:String,type:String,kind:String="EXPENSE",status:String="ACTUAL",featured:Boolean=false) {
+            content.addView(ui.actionRow(title,description,icon,featured){d.dismiss();open(type,mapOf("kind" to kind,"status" to status))});content.addView(ui.space(4))
         }
-        content.addView(ui.section("GIÀ SUCCESSO"));entry("Spesa","Denaro già pagato","bag","operation");entry("Entrata","Denaro già ricevuto","income","operation","INCOME")
-        content.addView(ui.section("DA PROGRAMMARE"));entry("Spesa prevista","Un pagamento ancora da effettuare","calendar","operation",status="PLANNED");entry("Entrata prevista","Un incasso ancora da ricevere","income","operation","INCOME","PLANNED");entry("Ricorrenza o rate","Suddividi un importo o ripeti un pagamento","home","series")
-        content.addView(ui.section("PER CONTO DI ALTRI"));entry("Anticipo","Denaro versato da recuperare, escluso dallo spendibile","work","advance")
+        content.addView(ui.section("GIÀ PAGATO O RICEVUTO"));entry("Registra spesa","Denaro che hai pagato","bag","operation",featured=true);entry("Registra entrata","Denaro che hai ricevuto","income","operation","INCOME")
+        content.addView(ui.section("DA PAGARE O INCASSARE"));entry("Programma pagamento","Scegli importo e scadenza","calendar","operation",status="PLANNED",featured=true);entry("Rate e ricorrenze","Pagamenti o incassi ripetuti","repeat","series")
+        content.addView(ui.button("Entrata prevista"){d.dismiss();open("operation",mapOf("kind" to "INCOME","status" to "PLANNED"))}.apply {textSize=12f;setTextColor(ui.colors.cool);gravity=Gravity.START})
+        content.addView(ui.section("DENARO DA RECUPERARE"));entry("Registra anticipo","Hai pagato per conto di altri","advance","advance")
         d.setContentView(body);d.show();d.window?.apply {setBackgroundDrawableResource(android.R.color.transparent);setLayout(-1,minOf((host.resources.displayMetrics.heightPixels*.82).toInt(),ui.dp(720)));setGravity(Gravity.BOTTOM);setDimAmount(.32f);ui.flatten(decorView)}
         return d
     }

@@ -1,0 +1,327 @@
+{
+  "today": "2026-10-31",
+  "state": {
+    "prototype": 1,
+    "opening": 10000,
+    "reserve": 30000,
+    "horizon": "2026-11-30",
+    "theme": "light",
+    "reminders": false,
+    "categories": [
+      {
+        "id": 1,
+        "name": "Spesa",
+        "icon": "basket",
+        "group": "Quotidiano",
+        "favorite": true
+      },
+      {
+        "id": 2,
+        "name": "Bar e ristoranti",
+        "icon": "cup",
+        "group": "Quotidiano",
+        "favorite": false
+      },
+      {
+        "id": 3,
+        "name": "Sport e palestra",
+        "icon": "sport",
+        "group": "Quotidiano",
+        "favorite": false
+      },
+      {
+        "id": 4,
+        "name": "Alcolici",
+        "icon": "wine",
+        "group": "Quotidiano",
+        "favorite": false
+      },
+      {
+        "id": 5,
+        "name": "Sigarette",
+        "icon": "smoke",
+        "group": "Quotidiano",
+        "favorite": false
+      },
+      {
+        "id": 6,
+        "name": "Svapo",
+        "icon": "vape",
+        "group": "Quotidiano",
+        "favorite": false
+      },
+      {
+        "id": 7,
+        "name": "Casa",
+        "icon": "home",
+        "group": "Casa e mobilità",
+        "favorite": true
+      },
+      {
+        "id": 8,
+        "name": "Casa vacanza",
+        "icon": "holiday",
+        "group": "Casa e mobilità",
+        "favorite": false
+      },
+      {
+        "id": 9,
+        "name": "Automobile",
+        "icon": "car",
+        "group": "Casa e mobilità",
+        "favorite": true
+      },
+      {
+        "id": 10,
+        "name": "Carburante",
+        "icon": "fuel",
+        "group": "Casa e mobilità",
+        "favorite": false
+      },
+      {
+        "id": 11,
+        "name": "Trasporti",
+        "icon": "bus",
+        "group": "Casa e mobilità",
+        "favorite": false
+      },
+      {
+        "id": 12,
+        "name": "Viaggi",
+        "icon": "travel",
+        "group": "Casa e mobilità",
+        "favorite": true
+      },
+      {
+        "id": 13,
+        "name": "Salute",
+        "icon": "health",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 14,
+        "name": "Farmacia",
+        "icon": "pharmacy",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 15,
+        "name": "Abbigliamento",
+        "icon": "shirt",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 16,
+        "name": "Shopping",
+        "icon": "bag",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 17,
+        "name": "Tecnologia",
+        "icon": "screen",
+        "group": "Servizi e tempo libero",
+        "favorite": false
+      },
+      {
+        "id": 18,
+        "name": "Abbonamenti",
+        "icon": "repeat",
+        "group": "Servizi e tempo libero",
+        "favorite": false
+      },
+      {
+        "id": 19,
+        "name": "Intrattenimento",
+        "icon": "play",
+        "group": "Servizi e tempo libero",
+        "favorite": false
+      },
+      {
+        "id": 20,
+        "name": "Utenze",
+        "icon": "bolt",
+        "group": "Servizi e tempo libero",
+        "favorite": false
+      },
+      {
+        "id": 21,
+        "name": "Regali",
+        "icon": "gift",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 22,
+        "name": "Animali",
+        "icon": "paw",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 23,
+        "name": "Formazione",
+        "icon": "book",
+        "group": "Lavoro e altro",
+        "favorite": false
+      },
+      {
+        "id": 24,
+        "name": "Lavoro",
+        "icon": "work",
+        "group": "Lavoro e altro",
+        "favorite": false
+      },
+      {
+        "id": 25,
+        "name": "Personale",
+        "icon": "person",
+        "group": "Persona",
+        "favorite": false
+      },
+      {
+        "id": 26,
+        "name": "Entrate",
+        "icon": "income",
+        "group": "Lavoro e altro",
+        "favorite": false
+      },
+      {
+        "id": 27,
+        "name": "Altro",
+        "icon": "other",
+        "group": "Lavoro e altro",
+        "favorite": false
+      }
+    ],
+    "series": [],
+    "operations": [
+      {
+        "id": 1,
+        "title": "Stipendio",
+        "cents": 245000,
+        "kind": "income",
+        "status": "actual",
+        "date": "2026-10-02",
+        "category": 26
+      },
+      {
+        "id": 2,
+        "title": "Casa",
+        "cents": 42240,
+        "kind": "expense",
+        "status": "actual",
+        "date": "2026-10-04",
+        "category": 7
+      },
+      {
+        "id": 3,
+        "title": "Spesa del mese",
+        "cents": 23760,
+        "kind": "expense",
+        "status": "actual",
+        "date": "2026-10-08",
+        "category": 1
+      },
+      {
+        "id": 4,
+        "title": "Auto",
+        "cents": 19800,
+        "kind": "expense",
+        "status": "actual",
+        "date": "2026-10-12",
+        "category": 9
+      },
+      {
+        "id": 5,
+        "title": "Cene e caffè",
+        "cents": 15840,
+        "kind": "expense",
+        "status": "actual",
+        "date": "2026-10-17",
+        "category": 2
+      },
+      {
+        "id": 6,
+        "title": "Viaggi",
+        "cents": 10560,
+        "kind": "expense",
+        "status": "actual",
+        "date": "2026-10-23",
+        "category": 12
+      },
+      {
+        "id": 7,
+        "title": "Altre spese",
+        "cents": 19800,
+        "kind": "expense",
+        "status": "actual",
+        "date": "2026-10-28",
+        "category": 27
+      },
+      {
+        "id": 8,
+        "title": "Affitto",
+        "cents": 30000,
+        "kind": "expense",
+        "status": "planned",
+        "date": "2026-11-05",
+        "category": 7
+      },
+      {
+        "id": 9,
+        "title": "Bolletta luce",
+        "cents": 8000,
+        "kind": "expense",
+        "status": "planned",
+        "date": "2026-11-10",
+        "category": 20
+      },
+      {
+        "id": 10,
+        "title": "Collaborazione",
+        "cents": 20000,
+        "kind": "income",
+        "status": "planned",
+        "uncertain": true,
+        "date": "2026-11-15",
+        "category": 26
+      }
+    ],
+    "advances": [
+      {
+        "id": 11,
+        "cents": 5000,
+        "date": "2026-10-20",
+        "description": "Pulizie appartamento",
+        "debtor": "Marco",
+        "due": "2026-10-29",
+        "project": "Casa al mare",
+        "cause": "Pulizie",
+        "notes": ""
+      }
+    ],
+    "refunds": [
+      {
+        "id": 12,
+        "advance": 11,
+        "cents": 2000,
+        "date": "2026-10-25",
+        "note": "Primo rimborso"
+      }
+    ],
+    "horizonMode": "fixed",
+    "prototypeRevision": 12,
+    "quickPins": [],
+    "quickInitial": [
+      1,
+      7,
+      9,
+      12
+    ]
+  }
+}

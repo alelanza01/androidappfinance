@@ -3,7 +3,7 @@ plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 val keyConfig = System.getenv("V2_SIGNING_PROPERTIES")?.let { file(it) }?.takeIf { it.isFile }
 android {
  namespace="it.privato.disponibile.v2"; compileSdk=35
- defaultConfig { applicationId="it.privato.disponibile.v2";minSdk=26;targetSdk=35;versionCode=340;versionName="3.4.0" }
+ defaultConfig { applicationId="it.privato.disponibile.v2";minSdk=26;targetSdk=35;versionCode=341;versionName="3.4.1-rc2" }
  if(keyConfig!=null) {
   val key=Properties().apply { keyConfig.inputStream().use { load(it) } }
   signingConfigs.create("privateV2") { storeFile=file(key.getProperty("storeFile"));storePassword=key.getProperty("storePassword");keyAlias=key.getProperty("keyAlias");keyPassword=key.getProperty("keyPassword") }

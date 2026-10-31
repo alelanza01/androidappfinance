@@ -40,7 +40,7 @@ class HeartIcon(private val tint:Int,private val filled:Boolean,private val size
     @Deprecated("Deprecated in Android") override fun getOpacity()=PixelFormat.TRANSLUCENT
 }
 
-class PeriodInsights(val ledger:Ledger,val anchor:YearMonth,val months:Int,val today:LocalDate=LocalDate.now()) {
+class PeriodInsights(val ledger:Ledger,val anchor:YearMonth,val months:Int,val today:LocalDate=AppClock.today()) {
     val start=anchor.minusMonths(months.toLong()-1).atDay(1)
     val end=anchor.atEndOfMonth()
     val cutoff=minOf(today,end)
@@ -59,7 +59,7 @@ class PeriodInsights(val ledger:Ledger,val anchor:YearMonth,val months:Int,val t
 /** Recorded balances only, including advances/refunds. Steps avoid invented intra-day balances. */
 class RecordedCashLine(context:Context,private val palette:Palette,ledger:Ledger,from:LocalDate,through:LocalDate):View(context) {
     private val p=Paint(Paint.ANTI_ALIAS_FLAG)
-    private val end=minOf(through,LocalDate.now())
+    private val end=minOf(through,AppClock.today())
     private val events=ledger.cashEvents.filter {it.date>=from && it.date<=end}.groupBy {it.date}.toSortedMap()
     val visibleStart:LocalDate=maxOf(from,events.keys.firstOrNull()?.minusDays(1) ?: from)
     val balances=buildList {var balance=ledger.settings.opening+ledger.cashEvents.filter {it.date<visibleStart}.sumOf {it.signed};add(visibleStart to balance);events.forEach {(date,items)->balance+=items.sumOf {it.signed};add(date to balance)};add(end to balance)}

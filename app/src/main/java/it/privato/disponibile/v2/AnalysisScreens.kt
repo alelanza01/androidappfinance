@@ -18,17 +18,17 @@ import it.privato.disponibile.v2.MainActivity.HistoryItem
 internal fun MainActivity.analysis(body:LinearLayout) {
         body.addView(ui.compactSegments(listOf("Mese","Trimestre","Anno"),listOf(1,3,12).indexOf(analysisSpan)){analysisSpan=listOf(1,3,12)[it];render()});monthControls(body,analysisSpan)
         val data=PeriodInsights(l,month,analysisSpan)
-        if(analysisSpan>1)body.addView(ui.label("${data.start.format(dates)} – ${(if(data.start>LocalDate.now())data.end else minOf(data.end,LocalDate.now())).format(dates)} · periodo mobile",12f,ui.colors.muted))
+        if(analysisSpan>1)body.addView(ui.label("${data.start.format(dates)} – ${(if(data.start>AppClock.today())data.end else minOf(data.end,AppClock.today())).format(dates)} · periodo mobile",12f,ui.colors.muted))
         val detail=ui.label("Tocca una categoria per esplorarla",12f,ui.colors.muted)
         if(chartMode==0){
-            body.addView(Charts(this,ui.colors,l,0,month,period,analysisSpan){detail.text=it;detail.visibility=View.VISIBLE}.apply {contentDescription="Distribuzione delle spese personali"},LinearLayout.LayoutParams(-1,ui.dp(198)))
+            body.addView(Charts(this,ui.colors,l,0,month,period,analysisSpan){detail.text=it;detail.visibility=View.VISIBLE}.apply {contentDescription="Distribuzione delle spese personali"},LinearLayout.LayoutParams(-1,ui.dp(202)))
             detail.textSize=10f;detail.visibility=View.GONE;body.addView(detail)
             if(data.ranking.isEmpty())body.addView(ui.label("Le categorie compariranno dopo la prima spesa.",13f,ui.colors.muted))
-            data.ranking.forEach {(cat,n)->
-                val row=ui.row();row.addView(View(this).apply {background=ui.shape(CategoryVisual.chartColor(cat),20)},LinearLayout.LayoutParams(ui.dp(7),ui.dp(7)).apply {marginEnd=ui.dp(9)})
-                row.addView(ui.label(cat.name,11f),LinearLayout.LayoutParams(0,-2,1.4f));row.addView(ui.label("${String.format(Locale.ITALY,"%.0f",n*100.0/data.total)}%",11f,ui.colors.muted).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,.5f));row.addView(ui.amount(DisplayMoney.amount(n),12f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.setPadding(0,ui.dp(1),0,ui.dp(1));for(i in 1 until row.childCount)row.getChildAt(i).setPadding(0,0,0,0);row.setOnClickListener {detail.visibility=View.VISIBLE;detail.text="${cat.name} · ${Money.format(n)}"};row.isFocusable=true;body.addView(row)
+            data.ranking.sortedWith(compareBy({AnalysisPalette.rank(it.first)},{it.first.id})).forEachIndexed {index,(cat,n)->
+                val row=ui.row();row.addView(View(this).apply {background=ui.shape(AnalysisPalette.color(index),20)},LinearLayout.LayoutParams(ui.dp(7),ui.dp(7)).apply {marginEnd=ui.dp(9)})
+                row.addView(ui.label(cat.name,12f),LinearLayout.LayoutParams(0,-2,1.4f));row.addView(ui.label("${String.format(Locale.ITALY,"%.0f",n*100.0/data.total)}%",12f,ui.colors.muted).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,.5f));row.addView(ui.amount(DisplayMoney.amount(n),13f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.setPadding(0,ui.dp(3),0,ui.dp(3));for(i in 1 until row.childCount)row.getChildAt(i).setPadding(0,0,0,0);row.setOnClickListener {detail.visibility=View.VISIBLE;detail.text="${cat.name} · ${Money.format(n)}"};row.isFocusable=true;body.addView(row)
             }
-            body.addView(ui.label("Andamento liquidità",13f,ui.colors.text,true).apply {setPadding(0,ui.dp(8),0,ui.dp(4))});body.addView(RecordedCashLine(this,ui.colors,l,data.start,data.end),LinearLayout.LayoutParams(-1,ui.dp(92)))
+            body.addView(ui.label("Andamento liquidità",13f,ui.colors.text,true).apply {setPadding(0,ui.dp(8),0,ui.dp(4))});body.addView(RecordedCashLine(this,ui.colors,l,data.start,data.end),LinearLayout.LayoutParams(-1,ui.dp(112)))
             body.addView(ui.label("Saldo registrato · anticipi e rimborsi inclusi",11f,ui.colors.muted))
         }else {
             body.addView(Charts(this,ui.colors,l,chartMode,month,period){detail.text=it},LinearLayout.LayoutParams(-1,ui.dp(250)));body.addView(detail)
@@ -49,5 +49,5 @@ internal fun MainActivity.monthControls(body:LinearLayout,step:Int=1) {
     }
 
 internal fun MainActivity.simulator(body:LinearLayout) {
-        NativeSimulation(ui,l,simulationDraft).content(body){pickerTarget="simulation";pickerState=DateSelection(simulationDraft.end,YearMonth.from(simulationDraft.end),LocalDate.now(),LocalDate.now().plusYears(10));showPicker()}
+        NativeSimulation(ui,l,simulationDraft).content(body){pickerTarget="simulation";pickerState=DateSelection(simulationDraft.end,YearMonth.from(simulationDraft.end),AppClock.today(),AppClock.today().plusYears(10));showPicker()}
     }

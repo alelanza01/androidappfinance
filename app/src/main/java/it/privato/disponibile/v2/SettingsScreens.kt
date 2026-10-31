@@ -16,21 +16,26 @@ import it.privato.disponibile.v2.MainActivity.HistoryItem
 
 /** Native screen composition and its UI events; financial writes remain in Store. */
 internal fun MainActivity.settings(body:LinearLayout) {
-        body.addView(ui.section("Preferenze"))
-        body.addView(ui.listRow("Regole del saldo","Liquidità iniziale, riserva e previsione"){go(7)});body.addView(ui.divider())
-        body.addView(ui.listRow("Aspetto","Tema chiaro, scuro o di sistema"){go(8)});body.addView(ui.divider())
-        body.addView(ui.listRow("Avvisi","Promemoria locali facoltativi"){go(11)})
-        body.addView(ui.section("Archivio"));body.addView(ui.listRow("Categorie","Organizza le spese e le entrate"){go(9)});body.addView(ui.divider());body.addView(ui.listRow("Backup","Esporta e recupera i tuoi dati"){go(10)})
-        body.addView(ui.section("App privata"));body.addView(ui.label("3.4 · offline · nessun account o costo ricorrente",13f,ui.colors.muted));body.addView(ui.button(if(demo)"Esci dalla demo" else "Esplora la demo separata"){demo=!demo;go(0)})
+        body.addView(ui.section("Il tuo margine"))
+        val margin=ui.panel()
+        margin.addView(ui.actionRow("Riserva e disponibilità","Proteggi ciò che non vuoi spendere","shield"){go(7)});margin.addView(ui.divider())
+        margin.addView(ui.actionRow("Aspetto","Tema chiaro, scuro e testo","moon"){go(8)});margin.addView(ui.divider())
+        margin.addView(ui.actionRow("Notifiche","Promemoria sul dispositivo","bell"){go(11)});body.addView(margin)
+        body.addView(ui.section("I tuoi dati"));val archive=ui.panel()
+        archive.addView(ui.actionRow("Categorie","Preferite, icone e categorie personali","basket"){go(9)});archive.addView(ui.divider())
+        archive.addView(ui.actionRow("Backup","Esporta e ripristina il tuo archivio","backup"){go(10)});body.addView(archive)
+        body.addView(ui.space(18));body.addView(ui.label("App privata, offline e senza account.\n3.4.1 RC2 · nessun costo ricorrente",13f,ui.colors.muted))
+        if(!l.settings.onboardingCompleted)body.addView(ui.actionRow("Riprendi configurazione","Liquidità, riserva e pagamenti iniziali","shield"){onboarding.paused=false;go(30)})
+        body.addView(ui.button(if(demo)"Esci dalla demo"else "Esplora la demo separata"){demo=!demo;go(0)})
     }
 
 internal fun MainActivity.rules(body:LinearLayout) {
         body.addView(ui.listRow("Liquidità iniziale","Prima dei movimenti registrati",Money.format(l.settings.opening)){moneyForm("opening",l.settings.opening)});body.addView(ui.divider())
         body.addView(ui.listRow("Riserva protetta","Somma da non spendere",Money.format(l.settings.reserve)){moneyForm("reserve",l.settings.reserve)});body.addView(ui.divider())
         body.addView(ui.section("Orizzonte finanziario"))
-        body.addView(ui.segments(listOf("30 giorni","60 giorni","90 giorni"),if(l.settings.horizonMode==HorizonMode.ROLLING)listOf(30,60,90).indexOf(l.settings.horizonDays)else -1){i->change {store.settings(l.settings.copy(horizonMode=HorizonMode.ROLLING,horizonDays=listOf(30,60,90)[i]))}})
-        body.addView(ui.label(if(l.settings.horizonMode==HorizonMode.ROLLING)"Mobile: si aggiorna ogni giorno. Oggi termina il ${l.settings.effectiveHorizon().format(dates)}."else "Data fissa: conservata dal tuo archivio.",12f,ui.colors.muted))
-        body.addView(ui.listRow("Previsione fino al",l.settings.horizon.format(dates)){pick(l.settings.horizon){date->change {store.settings(l.settings.copy(horizon=date))}}})
+        body.addView(ui.segments(listOf("30 giorni","60 giorni","90 giorni"),if(l.settings.horizonMode==HorizonMode.ROLLING)listOf(30,60,90).indexOf(l.settings.horizonDays)else -1){i->change {store.rollingHorizon(listOf(30,60,90)[i])}})
+        body.addView(ui.label(if(l.settings.horizonMode==HorizonMode.ROLLING)"Mobile: si aggiorna ogni giorno. Oggi termina il ${l.settings.effectiveHorizon().format(dates)}."else "Data fissa attiva: ${l.settings.effectiveHorizon().format(dates)}. Non avanza con il giorno.",12f,ui.colors.muted))
+        body.addView(ui.listRow("Data personalizzata", "${if(l.settings.horizonMode==HorizonMode.FIXED)"Attiva"else "Imposta una data fissa"} · ${l.settings.effectiveHorizon().format(dates)}"){pickHorizon(l.settings.effectiveHorizon())})
         body.addView(ui.section("Correggi il saldo di oggi"));body.addView(ui.label("La base iniziale modifica anche lo storico. Per allineare solo la liquidità attuale, registra una rettifica.",14f,ui.colors.muted));body.addView(ui.button("Aggiorna liquidità"){moneyForm("reconcile",l.balance)})
     }
 

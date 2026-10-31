@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import org.json.JSONObject
 
-class SimulationDraft(var amount:String="",var end:LocalDate=LocalDate.now().plusDays(30),var income:Boolean=false) {
+class SimulationDraft(var amount:String="",var end:LocalDate=AppClock.today().plusDays(30),var income:Boolean=false) {
  fun encode()=JSONObject().put("amount",amount).put("end",end).put("income",income).toString()
  companion object {fun decode(text:String):SimulationDraft {val j=JSONObject(text);return SimulationDraft(j.getString("amount"),LocalDate.parse(j.getString("end")),j.getBoolean("income"))}}
 }
@@ -21,14 +21,14 @@ class NativeSimulation(private val ui:Design,private val l:Ledger,private val dr
  private fun draw(body:LinearLayout,pickEnd:()->Unit) {
   body.removeAllViews()
   val amount=runCatching {if(draft.amount.isBlank())0L else Money.parse(draft.amount)}.getOrElse {body.addView(ui.label("Importo non valido: usa massimo due decimali.",14f,ui.colors.coral));return}
-  val sim=Simulator.calculate(l,amount,maxOf(draft.end,LocalDate.now()),includeIncome=draft.income)
+  val sim=Simulator.calculate(l,amount,maxOf(draft.end,AppClock.today()),includeIncome=draft.income)
   val hero=ui.column().apply {gravity=Gravity.CENTER;setPadding(ui.dp(16),ui.dp(20),ui.dp(16),ui.dp(20));background=android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TL_BR,intArrayOf(ui.colors.hero,if(ui.colors.dark)ui.colors.card else Color.parseColor("#DCF5ED"))).apply {cornerRadius=ui.dp(26).toFloat()}}
   hero.addView(ui.label("MARGINE DOPO LA SPESA",12f,ui.colors.muted));hero.addView(ui.amount(DisplayMoney.amount(sim.margin),34f,if(sim.margin<0)ui.colors.coral else ui.colors.text).apply {gravity=Gravity.CENTER})
   hero.addView(ui.label(if(sim.margin<0)"Superi lo spendibile di ${DisplayMoney.amount(-sim.margin)}."else "Riserva e pagamenti protetti nell'orizzonte ufficiale.",13f,if(sim.margin<0)ui.colors.coral else ui.colors.sage).apply {gravity=Gravity.CENTER});body.addView(ui.space(16));body.addView(hero)
   body.addView(ui.space(12));ui.metric(body,"Margine attuale",DisplayMoney.amount(l.spendable));body.addView(ui.divider());ui.metric(body,"Impegni protetti",DisplayMoney.amount(l.commitments));body.addView(ui.divider());ui.metric(body,"Riserva protetta",DisplayMoney.amount(sim.reserve));body.addView(ui.divider())
   body.addView(ui.section("Come cambierebbe la tua liquidità"));body.addView(ui.label("Liquidità proiettata, non spendibile. Dopo la spesa: ${DisplayMoney.amount(sim.start)}.",12f,ui.colors.muted))
-  val scope=ChronoUnit.DAYS.between(LocalDate.now(),draft.end).toInt();val periods=listOf(7,30,60,90)
-  body.addView(ui.segments(periods.map {"$it g"},periods.indexOf(scope)){draft.end=LocalDate.now().plusDays(periods[it].toLong());draw(body,pickEnd)})
+  val scope=ChronoUnit.DAYS.between(AppClock.today(),draft.end).toInt();val periods=listOf(7,30,60,90)
+  body.addView(ui.segments(periods.map {"$it g"},periods.indexOf(scope)){draft.end=AppClock.today().plusDays(periods[it].toLong());draw(body,pickEnd)})
   body.addView(ui.button("Data finale · ${draft.end}"){pickEnd()}.apply {textSize=12f;setTextColor(ui.colors.cool)})
   val toggle=CheckBox(ui.context).apply {text="Scenario con entrate attese";textSize=13f;setTextColor(ui.colors.text);isChecked=draft.income;minimumHeight=ui.dp(48);setOnCheckedChangeListener {_,checked->draft.income=checked;draw(body,pickEnd)}};body.addView(toggle)
   body.addView(ui.label("Liquidità prevista",13f,ui.colors.text,true));body.addView(SimulationChart(ui.context,ui.colors,sim),LinearLayout.LayoutParams(-1,ui.dp(210)))

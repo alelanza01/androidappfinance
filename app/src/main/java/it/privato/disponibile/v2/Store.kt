@@ -10,7 +10,7 @@ import android.graphics.Color
 class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
     override fun onCreate(db:SQLiteDatabase) {
         db.execSQL("CREATE TABLE settings(id INTEGER PRIMARY KEY CHECK(id=1),opening INTEGER NOT NULL,reserve INTEGER NOT NULL,horizon TEXT NOT NULL,theme TEXT NOT NULL,reminders INTEGER NOT NULL)")
-        db.execSQL("INSERT INTO settings VALUES(1,0,0,?,'system',0)",arrayOf<Any?>(LocalDate.now().plusDays(30).toString()))
+        db.execSQL("INSERT INTO settings VALUES(1,0,0,?,'system',0)",arrayOf<Any?>(AppClock.today().plusDays(30).toString()))
         db.execSQL("CREATE TABLE categories(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT NOT NULL UNIQUE,color INTEGER NOT NULL,icon TEXT NOT NULL DEFAULT 'other',favorite INTEGER NOT NULL DEFAULT 0)")
         db.execSQL("CREATE TABLE series(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,category INTEGER NOT NULL,start TEXT NOT NULL,frequency TEXT NOT NULL,count INTEGER NOT NULL,uncertain INTEGER NOT NULL,active INTEGER NOT NULL,endIndex INTEGER)")
         db.execSQL("CREATE TABLE operations(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,status TEXT NOT NULL,date TEXT NOT NULL,category INTEGER NOT NULL,uncertain INTEGER NOT NULL,series INTEGER,occurrence INTEGER,UNIQUE(series,occurrence))")
@@ -71,7 +71,7 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
             // regenerate a definition read before a concurrent cancellation committed.
             ledger=read()
             if(expand) {
-                val until=maxOf(ledger.settings.effectiveHorizon(),LocalDate.now().plusYears(1))
+                val until=maxOf(ledger.settings.effectiveHorizon(),AppClock.today().plusYears(1))
                 ledger.series.filter {it.active}.forEach {s->
                     var i=0
                     while((s.endIndex==null || i<s.endIndex) && (s.count==0 || i<s.count) && (s.count>0 || s.date(i)<=until)) {
@@ -107,7 +107,7 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
     }}
     fun settle(id:Long) {transaction {db->
         val op=read().operations.firstOrNull {it.id==id && it.status==Status.PLANNED} ?: error("Operazione già registrata.")
-        val v=values(op.copy(status=Status.ACTUAL,date=LocalDate.now(),uncertain=false))
+        val v=values(op.copy(status=Status.ACTUAL,date=AppClock.today(),uncertain=false))
         check(db.update("operations",v,"id=? AND status='PLANNED'",arrayOf(id.toString()))==1)
     }}
     fun delete(id:Long) {transaction {db->
@@ -131,14 +131,14 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
     private fun validateSeries(s:Series) {
         Installments.validate(s)
         require(s.title.isNotBlank() && s.title.length<=64 && s.cents in 1..Money.MAX && s.count in 0..120 && s.kind!=Kind.ADJUSTMENT) {"Ricorrenza: descrizione fino a 64 caratteri, importo positivo e massimo 120 rate."}
-        require(s.start.year in 1900..2200 && s.start<=LocalDate.now().plusYears(10)) {"Data della ricorrenza fuori intervallo."}
+        require(s.start.year in 1900..2200 && s.start<=AppClock.today().plusYears(10)) {"Data della ricorrenza fuori intervallo."}
         require(s.count==0 || s.date(s.count-1).year<=2200)
         require(!s.uncertain || s.kind==Kind.INCOME)
         require(read().categories.any {it.id==s.category})
     }
     fun saveSeries(s:Series) {
         validateSeries(s)
-        require(s.start>=LocalDate.now().minusYears(2)) {"Per una nuova serie scegli una data entro due anni fa."}
+        require(s.start>=AppClock.today().minusYears(2)) {"Per una nuova serie scegli una data entro due anni fa."}
         transaction {db->val id=db.insertOrThrow("series",null,seriesValues(s));check(id>0);writeQuotas(db,s.copy(id=id));snapshot()}
         snapshot()
     }
@@ -187,9 +187,17 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
         }
     }}
 
+    fun rollingHorizon(days:Int) {transaction {_->
+        require(days in listOf(30,60,90))
+        settings(read().settings.copy(horizonMode=HorizonMode.ROLLING,horizonDays=days))
+    }}
+    fun fixedHorizon(day:LocalDate) {transaction {_->
+        require(day>=AppClock.today()) {"Scegli una data da oggi in avanti."}
+        settings(read().settings.copy(horizonMode=HorizonMode.FIXED,horizon=day))
+    }}
     fun settings(s:Settings) {
         require(s.opening in -Money.MAX..Money.MAX && s.reserve in 0..Money.MAX)
-        require(s.horizon.year in 1900..2200 && s.horizon<=LocalDate.now().plusYears(10) && s.horizonDays in listOf(30,60,90)) {"La previsione deve essere da oggi a 10 anni."}
+        require(s.horizon.year in 1900..2200 && s.horizon<=AppClock.today().plusYears(10) && s.horizonDays in listOf(30,60,90)) {"La previsione deve essere da oggi a 10 anni."}
         require(s.theme in listOf("system","light","dark"))
         writableDatabase.execSQL("UPDATE settings SET opening=?,reserve=?,horizon=?,theme=?,reminders=?,horizonMode=?,horizonDays=?,onboardingCompleted=? WHERE id=1",arrayOf<Any?>(s.opening,s.reserve,s.horizon.toString(),s.theme,if(s.reminders)1 else 0,s.horizonMode.name,s.horizonDays,if(s.onboardingCompleted)1 else 0))
     }
@@ -198,7 +206,7 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
         val l=snapshot();val diff=target-l.balance
         if(diff==0L)return
         require(diff in -Money.MAX..Money.MAX) {"Rettifica troppo grande."}
-        save(Operation(title="Rettifica liquidità",cents=diff,kind=Kind.ADJUSTMENT,status=Status.ACTUAL,date=LocalDate.now(),category=l.categories.last().id))
+        save(Operation(title="Rettifica liquidità",cents=diff,kind=Kind.ADJUSTMENT,status=Status.ACTUAL,date=AppClock.today(),category=l.categories.last().id))
     }
     fun category(id:Long?,name:String,color:Int,icon:String?=null,favorite:Boolean?=null) {
         require(name.trim().length in 1..40) {"Nome categoria: da 1 a 40 caratteri."}
@@ -254,19 +262,19 @@ class Store(context:Context):SQLiteOpenHelper(context,"finance-v2.db",null,5) {
             require(a.cents in 1..Money.MAX) {"Inserisci un importo positivo."}
             require(a.description.trim().length in 1..80 && a.debtor.trim().length in 1..80) {"Descrizione e soggetto sono richiesti (massimo 80 caratteri)."}
             require(a.project.length<=80 && a.cause.length<=80 && a.notes.length<=500) {"Dettagli troppo lunghi."}
-            require(a.date.year in 1900..2200 && a.date<=LocalDate.now()) {"L'anticipo deve essere già effettuato, con una data non futura."}
+            require(a.date.year in 1900..2200 && a.date<=AppClock.today()) {"L'anticipo deve essere già effettuato, con una data non futura."}
             require(a.due==null || (a.due>=a.date && a.due.year in 1900..2200)) {"La restituzione prevista deve seguire la data dell'anticipo."}
         }
         fun validateRefund(r:Refund,a:Advance) {
             require(r.cents in 1..Money.MAX) {"Inserisci un rimborso positivo."}
-            require(r.date>=a.date && r.date<=LocalDate.now()) {"Il rimborso deve essere già ricevuto e successivo all'anticipo."}
+            require(r.date>=a.date && r.date<=AppClock.today()) {"Il rimborso deve essere già ricevuto e successivo all'anticipo."}
             require(r.note.length<=500) {"Nota troppo lunga (massimo 500 caratteri)."}
         }
         fun validate(op:Operation) {
             require(op.title.trim().length<=80 && (op.kind==Kind.EXPENSE || op.title.isNotBlank())) {"Descrizione facoltativa per le spese, richiesta per le entrate (massimo 80 caratteri)."}
             require(if(op.kind==Kind.ADJUSTMENT) op.cents!=0L && op.cents in -Money.MAX..Money.MAX else op.cents in 1..Money.MAX) {"Importo non valido."}
             require(op.date.year in 1900..2200) {"Data fuori intervallo."}
-            require(op.status!=Status.ACTUAL || op.date<=LocalDate.now()) {"Una data futura deve restare prevista."}
+            require(op.status!=Status.ACTUAL || op.date<=AppClock.today()) {"Una data futura deve restare prevista."}
             require(op.kind!=Kind.ADJUSTMENT || op.status!=Status.PLANNED) {"Le rettifiche sono effettive."}
             require(!op.uncertain || (op.kind==Kind.INCOME && op.status!=Status.ACTUAL)) {"Solo un'entrata prevista può essere non garantita."}
             require((op.series==null)==(op.index==null) && (op.index==null || op.index>=0))

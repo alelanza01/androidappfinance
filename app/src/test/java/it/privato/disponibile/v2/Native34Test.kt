@@ -24,7 +24,7 @@ class Native34Test {
    Capture.save(a,"v34-A-home-$theme.png",360,800)
    assertEquals(4,all(a.window.decorView).filterIsInstance<Button>().count {it.text.toString() in listOf("Home","Movimenti","Analisi","Impegni")})
    click(a.window.decorView,"Aggiungi");Capture.save(a,"v34-A-registra-$theme.png",360,800,true)
-   assertTrue(all(dialog().window!!.decorView).any {it is TextView && it.text.toString()=="Denaro già pagato"})
+   assertTrue(all(dialog().window!!.decorView).any {it is TextView && it.text.toString()=="Denaro che hai pagato"})
    choose("Chiudi Registra");assertEquals(before,ledger());c.pause().stop().destroy()
   }
  }
