@@ -31,8 +31,8 @@ class ProductExperienceTest {
   }
   val before=ledger();assertEquals(27000L,before.balance);assertEquals(18000L,before.spendable);assertEquals(3000L,before.outstanding)
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Simula spesa");set(a.window.decorView,"Importo in euro","80")
-  assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="Resterebbero ${Money.format(10000)}"});assertEquals(before,ledger())
-  set(a.window.decorView,"Importo in euro","181");assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString().contains("supera il margine")});assertEquals(before,ledger());c.pause().stop().destroy()
+  assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()==Money.format(10000)});assertEquals(before,ledger())
+  set(a.window.decorView,"Importo in euro","181");assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString().contains("Superi lo spendibile")});assertEquals(before,ledger());c.pause().stop().destroy()
  }
  @Test fun commitmentTimelineUsesConservativeProjectionAndLeavesLedgerUntouched() {
   withStore {s->val cat=s.snapshot().categories.first().id;s.settings(s.snapshot().settings.copy(opening=30000,reserve=10000))
@@ -40,6 +40,6 @@ class ProductExperienceTest {
    s.save(Operation(title="DEMO · Entrata",cents=50000,kind=Kind.INCOME,status=Status.PLANNED,date=LocalDate.now().plusDays(3),category=cat))
   }
   val before=ledger();val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Impegni")
-  val timeline=all(a.window.decorView).filterIsInstance<CashTimeline>().single();assertTrue(timeline.contentDescription.toString().contains(Money.format(25000)));assertEquals(25000L,before.projection(false).last().second);assertEquals(75000L,before.projection(true).last().second);assertEquals(before,ledger());c.pause().stop().destroy()
+  click(a.window.decorView,"Andamento previsto");val timeline=all(a.window.decorView).filterIsInstance<CashTimeline>().single();assertTrue(timeline.contentDescription.toString().contains(Money.format(25000)));assertEquals(25000L,before.projection(false).last().second);assertEquals(75000L,before.projection(true).last().second);assertEquals(before,ledger());c.pause().stop().destroy()
  }
 }

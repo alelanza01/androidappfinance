@@ -35,8 +35,8 @@ class ConceptFidelityTest {
   val l=ledger();assertEquals(-2345L,l.balance);assertEquals("Spesa",l.categoryName(l.actual.single().category));assertEquals(l,Backup.decode(Backup.encode(l)));c.pause().stop().destroy()
  }
  @Test fun installmentSelectionAndBackNeverBookUntilExplicitSave() {
-  val c=Robolectric.buildActivity(MainActivity::class.java).setup();var a=c.get();click(a.window.decorView,"Spesa veloce");set(a.window.decorView,"Importo in euro","19,99");click(a.window.decorView,"Rate");click(a.window.decorView,"3 rate");a.onBackPressed();assertTrue(ledger().operations.isEmpty())
-  click(a.window.decorView,"Rate");click(a.window.decorView,"3 rate");c.recreate();a=c.get();click(a.window.decorView,"Applica rate");assertTrue(ledger().operations.isEmpty());click(a.window.decorView,"Salva piano")
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();var a=c.get();click(a.window.decorView,"Spesa veloce");set(a.window.decorView,"Importo in euro","19,99");click(a.window.decorView,"Rate");click(a.window.decorView,"Ogni rata");click(a.window.decorView,"3 rate");a.onBackPressed();assertTrue(ledger().operations.isEmpty())
+  click(a.window.decorView,"Rate");click(a.window.decorView,"Ogni rata");click(a.window.decorView,"3 rate");c.recreate();a=c.get();click(a.window.decorView,"Applica rate");assertTrue(ledger().operations.isEmpty());click(a.window.decorView,"Salva piano")
   val l=ledger();assertEquals(3,l.pending.size);assertTrue(l.pending.all {it.cents==1999L});assertEquals(5997L,l.pending.sumOf {it.cents});assertEquals(0L,l.balance);c.pause().stop().destroy()
  }
  @Test fun monthQuarterYearOnlyAggregateActualPersonalExpensesAndKeepPeriodComparisonsHonest() {

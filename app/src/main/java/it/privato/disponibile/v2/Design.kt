@@ -82,9 +82,9 @@ class Design(val context:Context,val colors:Palette) {
         };body.addView(r)
     }
     fun categoryTile(c:Category,selected:Boolean,compact:Boolean=false,action:()->Unit)=button(if(compact)CategoryVisual.shortName(c) else c.name,action=action).apply {
-        textSize=if(compact)10f else 12f;maxLines=if(compact)2 else 3;setPadding(dp(3),dp(5),dp(3),dp(4));minHeight=dp(if(compact)70 else 88)
+        textSize=if(compact)11f else 12f;maxLines=if(compact)2 else 3;setPadding(dp(3),dp(5),dp(3),dp(4));minHeight=dp(if(compact)70 else 88)
         val tint=categoryTint(c)
-        setCompoundDrawablesWithIntrinsicBounds(null,CategoryIcon(c.icon,tint,dp(if(compact)36 else 40),categoryWash(c),true,if(selected)colors.primary else null),null,null);compoundDrawablePadding=dp(4)
+        setCompoundDrawablesWithIntrinsicBounds(null,CategoryIcon(c.icon,tint,dp(if(compact)48 else 48),categoryWash(c),true,if(selected)colors.primary else null),null,null);compoundDrawablePadding=dp(4)
         isSelected=selected;contentDescription="${c.name}${if(c.favorite) ", preferita" else ""}${if(selected) ", selezionata" else ""}"
         val surface=shape(Color.TRANSPARENT,14)
         setTextColor(if(selected)colors.primary else colors.text)
@@ -99,8 +99,8 @@ class Design(val context:Context,val colors:Palette) {
     fun categoryWash(c:Category)=if(colors.dark)colors.hero else Color.rgb((Color.red(CategoryVisual.iconColor(c))+255*3)/4,(Color.green(CategoryVisual.iconColor(c))+255*3)/4,(Color.blue(CategoryVisual.iconColor(c))+255*3)/4)
     fun moneyEntry(body:LinearLayout,title:String,value:String):EditText {
         val holder=MoneyInput(context,colors.text)
-        val e=holder.editor.apply {flatten(this);contentDescription=title;setText(value);hint="0,00";setTextColor(colors.text);setHintTextColor(colors.muted);includeFontPadding=false;textSize=32f;typeface=Typeface.create("sans-serif-medium",Typeface.NORMAL);gravity=android.view.Gravity.CENTER;setSingleLine();inputType=android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL;filters=arrayOf(android.text.InputFilter.LengthFilter(12));setSelectAllOnFocus(true);background=null;setPadding(dp(36),dp(12),dp(12),dp(12));minHeight=dp(72)}
-        holder.background=GradientDrawable(GradientDrawable.Orientation.TL_BR,intArrayOf(colors.hero,if(colors.dark)colors.card else Color.parseColor("#F5FBFF"))).apply {cornerRadius=dp(18).toFloat()};holder.minimumHeight=dp(72)
+        val e=holder.editor.apply {flatten(this);contentDescription=title;setText(value);hint="0,00";setTextColor(colors.text);setHintTextColor(colors.muted);includeFontPadding=false;textSize=32f;typeface=Typeface.create("sans-serif-medium",Typeface.NORMAL);gravity=android.view.Gravity.CENTER;setSingleLine();inputType=android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL;filters=arrayOf(android.text.InputFilter.LengthFilter(12));setSelectAllOnFocus(true);background=null;setPadding(dp(36),dp(12),dp(12),dp(12));minHeight=dp(82)}
+        holder.background=GradientDrawable(GradientDrawable.Orientation.TL_BR,intArrayOf(colors.hero,if(colors.dark)colors.card else Color.parseColor("#F5FBFF"))).apply {cornerRadius=dp(18).toFloat()};holder.minimumHeight=dp(82)
         body.addView(holder,LinearLayout.LayoutParams(-1,-2));return e
     }
 
@@ -166,6 +166,7 @@ class NavIcon(private val index:Int,private val tint:Int,private val px:Int):and
             1->{c.drawLine(4f,20f,4f,12f,p);c.drawLine(10f,20f,10f,5f,p);c.drawLine(16f,20f,16f,9f,p);c.drawLine(22f,20f,22f,3f,p)}
             2->{c.drawRoundRect(3f,5f,21f,21f,2f,2f,p);c.drawLine(3f,10f,21f,10f,p);c.drawLine(8f,3f,8f,7f,p);c.drawLine(16f,3f,16f,7f,p);c.drawLine(8f,15f,10f,15f,p);c.drawLine(14f,15f,16f,15f,p)}
             3->{c.drawCircle(12f,12f,9f,p);c.drawLine(12f,6f,12f,12f,p);c.drawLine(12f,12f,17f,15f,p)}
+            7->{val path=android.graphics.Path();path.moveTo(3f,19f);path.lineTo(9f,12f);path.lineTo(14f,15f);path.lineTo(21f,5f);c.drawPath(path,p);c.drawLine(16f,5f,21f,5f,p);c.drawLine(21f,5f,21f,10f,p);c.drawLine(3f,22f,21f,22f,p)}
             5->{c.drawRoundRect(3f,6f,21f,20f,3f,3f,p);c.drawLine(4f,6f,18f,3f,p);c.drawRect(15f,11f,22f,16f,p)}
             6->{val gear=android.graphics.Path();for(i in 0..31){val angle=Math.toRadians(i*11.25);val radius=if(i%4 in 0..1)10f else 8f;val x=12+radius*kotlin.math.cos(angle).toFloat();val y=12+radius*kotlin.math.sin(angle).toFloat();if(i==0)gear.moveTo(x,y)else gear.lineTo(x,y)};gear.close();c.drawPath(gear,p);c.drawCircle(12f,12f,3f,p)}
             else->{listOf(5f,12f,19f).forEach {x->c.drawCircle(x,12f,1.3f,p)}}

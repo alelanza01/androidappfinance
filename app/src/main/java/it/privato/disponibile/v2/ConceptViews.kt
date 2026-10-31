@@ -26,7 +26,7 @@ class SpendableRing(context:Context,private val palette:Palette,private val ledg
             while(p.measureText(value)>radius*1.65f && p.textSize>10*resources.displayMetrics.scaledDensity)p.textSize-=density
             if(p.measureText(value)>radius*1.65f)p.textSize*=radius*1.65f/p.measureText(value)
             val bounds=Rect();p.getTextBounds(value,0,value.length,bounds);c.drawText(value,x-(bounds.left+bounds.right)/2f,position-(bounds.top+bounds.bottom)/2f,p)}
-        text("Puoi spendere",y-radius*.39f,13f,palette.text,true);text(DisplayMoney.amount(ledger.spendable),y,32f,if(ledger.spendable<0)palette.coral else palette.text,true)
+        text("Puoi spendere",y-radius*.39f,14f,palette.text,true);text(DisplayMoney.amount(ledger.spendable),y,34f,if(ledger.spendable<0)palette.coral else palette.text,true)
         text(if(fraction==null)"Liquidità ≤ 0" else "di ${DisplayMoney.amount(ledger.balance)}",y+radius*.4f,12f,palette.muted)
     }
 }

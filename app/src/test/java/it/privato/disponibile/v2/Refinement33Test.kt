@@ -22,7 +22,7 @@ import it.privato.disponibile.v2.UiSupport.ledger
 class Refinement33Test {
  @Before fun reset()=UiSupport.reset()
  @Test fun advancedRateControlsAreSecondaryButManualTotalsAndRadioSelectionRemainCorrect() {
-  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Spesa veloce");set(a.window.decorView,"Importo in euro","10,50");click(a.window.decorView,"Rate")
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Spesa veloce");set(a.window.decorView,"Importo in euro","10,50");click(a.window.decorView,"Rate");click(a.window.decorView,"Ogni rata")
   assertFalse(all(a.window.decorView).filterIsInstance<EditText>().any {it.contentDescription=="Numero rate"});click(a.window.decorView,"Altre opzioni");set(a.window.decorView,"Numero rate","2")
   assertTrue(all(a.window.decorView).any {it.contentDescription=="2 rate" && it.isSelected});assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()=="2 rate · totale € 21"});assertTrue(ledger().operations.isEmpty())
   click(a.window.decorView,"Ricorrenza continua");click(a.window.decorView,"Applica rate");assertTrue(ledger().series.isEmpty());click(a.window.decorView,"Salva piano");assertEquals(0,ledger().series.single().count);assertEquals(1050L,ledger().series.single().cents);c.pause().stop().destroy()

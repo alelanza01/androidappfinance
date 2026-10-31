@@ -99,8 +99,8 @@ class Charts(context:Context,private val palette:Palette,private val ledger:Ledg
                 1->{val points=(ledger.history()+ledger.projection(false)+ledger.projection(true)).sortedBy {it.first};val start=points.first().first;val end=maxOf(points.last().first,start.plusDays(1));val ratio=((event.x-54*font)/(width-54*font-12f)).coerceIn(0f,1f)
                     val day=start.plusDays((ChronoUnit.DAYS.between(start,end)*ratio).toLong())
                     val actual=ledger.settings.opening+ledger.cashEvents.filter {it.date<=day}.sumOf {it.signed}
-                    val base=ledger.balance+ledger.pending.filter {it.kind==Kind.EXPENSE && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.horizon}.sumOf {it.signed}
-                    val inc=ledger.pending.filter {it.kind==Kind.INCOME && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.horizon}.sumOf {it.cents}
+                    val base=ledger.balance+ledger.pending.filter {it.kind==Kind.EXPENSE && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.effectiveHorizon()}.sumOf {it.signed}
+                    val inc=ledger.pending.filter {it.kind==Kind.INCOME && maxOf(it.date,LocalDate.now())<=day && it.date<=ledger.settings.effectiveHorizon()}.sumOf {it.cents}
                     selection(if(day<LocalDate.now()) "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · storico ${Money.format(actual)}" else "${day.format(DateTimeFormatter.ofPattern("dd/MM"))} · uscite note ${Money.format(base)} · con entrate previste ${Money.format(base+inc)}")}
                 2->{val i=((event.x-36*font)/((width-36*font-8)/months)).toInt().coerceIn(0,months-1);selected=i;val m=barMonths[i];selection("${m.format(DateTimeFormatter.ofPattern("MMM yyyy",Locale.ITALY))} · entrate ${Money.format(ledger.month(m,Kind.INCOME))} · uscite ${Money.format(ledger.month(m,Kind.EXPENSE))}")}
             }

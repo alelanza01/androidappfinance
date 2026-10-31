@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 class CashTimeline(context:Context,private val colors:Palette,ledger:Ledger):View(context) {
     private val points=ledger.projection(false)
     private val reserve=ledger.settings.reserve
-    private val until=ledger.settings.horizon
+    private val until=maxOf(ledger.settings.effectiveHorizon(),LocalDate.now())
     private val paint=Paint(Paint.ANTI_ALIAS_FLAG)
     init {contentDescription="Liquidità dopo le uscite note, da ${Money.format(points.first().second)} a ${Money.format(points.last().second)}. Riserva ${Money.format(reserve)}.";importantForAccessibility=IMPORTANT_FOR_ACCESSIBILITY_YES}
     override fun onDraw(canvas:Canvas) {

@@ -64,7 +64,7 @@ class RecurrenceTest {
  @Test fun migrationFromV21PreservesPaidPendingCreditsRefundsSettingsAndIdempotency() {
   val l=series();store.settle(l.operations[0].id);store.saveAdvance(Advance(cents=5000,date=today,description="Pulizie",debtor="Marco"));store.saveRefund(Refund(advance=store.snapshot().advances.single().id,cents=2000,date=today));val before=store.snapshot();val db=store.writableDatabase
   db.execSQL("ALTER TABLE series RENAME TO series_new");db.execSQL("CREATE TABLE series(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,cents INTEGER NOT NULL,kind TEXT NOT NULL,category INTEGER NOT NULL,start TEXT NOT NULL,frequency TEXT NOT NULL,count INTEGER NOT NULL,uncertain INTEGER NOT NULL,active INTEGER NOT NULL)");db.execSQL("INSERT INTO series SELECT id,title,cents,kind,category,start,frequency,count,uncertain,active FROM series_new");db.execSQL("DROP TABLE series_new");UiSupport.legacyCategories(db);db.version=2;reopen()
-  assertEquals(4,store.readableDatabase.version);assertEquals(before,store.snapshot());reopen();assertEquals(before,store.snapshot())
+  assertEquals(5,store.readableDatabase.version);assertEquals(before,store.snapshot());reopen();assertEquals(before,store.snapshot())
  }
  @Test fun V2AndV21BackupsRemainCompatibleAndOldDeletedOrdinaryRowsArePurged() {
   val l=series();val root=org.json.JSONObject(Backup.encode(l));root.put("version",3);for(i in 0 until root.getJSONArray("series").length())root.getJSONArray("series").getJSONObject(i).remove("endIndex")

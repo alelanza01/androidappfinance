@@ -57,7 +57,7 @@ class RefinementTest {
   choose("Continua a modificare");assertEquals("20",field(a.window.decorView,"Importo in euro").text.toString());a.onBackPressed();choose("Esci senza salvare");assertTrue(ledger().operations.isEmpty());c.pause().stop().destroy()
  }
  @Test fun numberOfInstallmentsHasBoundariesManualInputAndExactPerInstallmentAmounts() {
-  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Ricorrenza o rate");set(a.window.decorView,"Importo in euro","9999999,99");click(a.window.decorView,"Rate")
+  val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Ricorrenza o rate");set(a.window.decorView,"Importo in euro","9999999,99");click(a.window.decorView,"Rate");click(a.window.decorView,"Ogni rata")
   set(a.window.decorView,"Numero rate","1");assertFalse(all(a.window.decorView).first {it.contentDescription=="Riduci rate"}.isEnabled)
   click(a.window.decorView,"Aumenta rate");assertEquals("2",field(a.window.decorView,"Numero rate").text.toString());set(a.window.decorView,"Numero rate","120");assertFalse(all(a.window.decorView).first {it.contentDescription=="Aumenta rate"}.isEnabled)
   set(a.window.decorView,"Numero rate","121");click(a.window.decorView,"Applica rate");assertTrue(ledger().series.isEmpty());choose("Ho capito");set(a.window.decorView,"Numero rate","3");click(a.window.decorView,"Applica rate");click(a.window.decorView,"Salva")
@@ -69,7 +69,7 @@ class RefinementTest {
    s.saveSeries(Series(title="Vecchia serie",cents=500,kind=Kind.EXPENSE,category=cat,start=LocalDate.now(),frequency=Frequency.MONTHLY,count=5,uncertain=false));s.removeSeries(s.snapshot().series.single().id,2)
    s.saveAdvance(Advance(cents=5000,date=LocalDate.now(),description="Anticipo",debtor="DEMO"));s.saveRefund(Refund(advance=s.snapshot().advances.single().id,cents=2000,date=LocalDate.now()))
    val before=s.snapshot();val db=s.writableDatabase;db.delete("categories","id>6 AND id!=?",arrayOf(cat.toString()));legacyCategories(db);db.version=3
-   s.close();val migrated=Store(RuntimeEnvironment.getApplication());val after=migrated.snapshot();assertEquals(before.balance,after.balance);assertEquals(before.spendable,after.spendable);assertEquals(before.operations,after.operations);assertEquals(before.series,after.series);assertEquals(before.advances,after.advances);assertEquals(before.refunds,after.refunds);assertEquals("Casa originale",after.categoryName(cat));assertEquals(4,migrated.readableDatabase.version);assertTrue(after.categories.size>=28);migrated.close()
+   s.close();val migrated=Store(RuntimeEnvironment.getApplication());val after=migrated.snapshot();assertEquals(before.balance,after.balance);assertEquals(before.spendable,after.spendable);assertEquals(before.operations,after.operations);assertEquals(before.series,after.series);assertEquals(before.advances,after.advances);assertEquals(before.refunds,after.refunds);assertEquals("Casa originale",after.categoryName(cat));assertEquals(5,migrated.readableDatabase.version);assertTrue(after.categories.size>=28);migrated.close()
   }
  }
  @Test fun monthlyInsightsCompareEqualElapsedPeriodsAndExcludeCredits() {

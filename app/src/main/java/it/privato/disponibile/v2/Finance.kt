@@ -20,15 +20,20 @@ object Money {
 }
 enum class Kind { INCOME, EXPENSE, ADJUSTMENT }
 enum class Status { PLANNED, ACTUAL, DELETED }
+enum class AmountMode { EACH, TOTAL }
+enum class HorizonMode { FIXED, ROLLING }
 enum class Frequency { MONTHLY, WEEKLY, YEARLY }
-data class Category(val id:Long,val name:String,val color:Int,val icon:String="other",val favorite:Boolean=false)
+data class Category(val id:Long,val name:String,val color:Int,val icon:String="other",val favorite:Boolean=false,val quickRank:Int?=null)
 data class Operation(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val status:Status,val date:LocalDate,val category:Long,val uncertain:Boolean=false,val series:Long?=null,val index:Int?=null) {
     val signed:Long get()=if(kind==Kind.EXPENSE) -cents else cents
 }
-data class Series(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val category:Long,val start:LocalDate,val frequency:Frequency,val count:Int,val uncertain:Boolean,val active:Boolean=true,val endIndex:Int?=null) {
+data class Series(val id:Long=0,val title:String,val cents:Long,val kind:Kind,val category:Long,val start:LocalDate,val frequency:Frequency,val count:Int,val uncertain:Boolean,val active:Boolean=true,val endIndex:Int?=null,val amountMode:AmountMode=AmountMode.EACH,val totalCents:Long?=null,val installments:List<Long> = emptyList()) {
+    fun amount(index:Int):Long=if(amountMode==AmountMode.TOTAL)installments.getOrElse(index){error("Quota del piano mancante.")} else installments.getOrElse(index){cents}
     fun date(index:Int):LocalDate=when(frequency) {Frequency.MONTHLY->start.plusMonths(index.toLong());Frequency.WEEKLY->start.plusWeeks(index.toLong());Frequency.YEARLY->start.plusYears(index.toLong())}
 }
-data class Settings(val opening:Long=0,val reserve:Long=0,val horizon:LocalDate=LocalDate.now().plusDays(30),val theme:String="system",val reminders:Boolean=false)
+data class Settings(val opening:Long=0,val reserve:Long=0,val horizon:LocalDate=LocalDate.now().plusDays(30),val theme:String="system",val reminders:Boolean=false,val horizonMode:HorizonMode=HorizonMode.FIXED,val horizonDays:Int=30,val onboardingCompleted:Boolean=true) {
+    fun effectiveHorizon(today:LocalDate=LocalDate.now()):LocalDate=if(horizonMode==HorizonMode.ROLLING)today.plusDays(horizonDays.toLong()) else horizon
+}
 data class Advance(val id:Long=0,val cents:Long,val date:LocalDate,val description:String,val debtor:String,val project:String="",val cause:String="",val due:LocalDate?=null,val notes:String="")
 data class Refund(val id:Long=0,val advance:Long,val cents:Long,val date:LocalDate,val note:String="")
 data class CashEvent(val date:LocalDate,val signed:Long)
@@ -50,8 +55,8 @@ data class Ledger(val settings:Settings,val categories:List<Category>,val operat
     fun remaining(a:Advance)=a.cents-recovered(a.id)
     val outstanding get()=advances.sumOf {remaining(it)}
     fun advanceStatus(a:Advance)=when {remaining(a)==0L->"Recuperato";a.due!=null && a.due<LocalDate.now()->"Scaduto";recovered(a.id)>0->"Parziale";else->"Aperto"}
-    val commitments get()=pending.filter {it.kind==Kind.EXPENSE && !it.date.isAfter(settings.horizon)}.sumOf {it.cents}
-    val expectedIncome get()=pending.filter {it.kind==Kind.INCOME && !it.date.isAfter(settings.horizon)}.sumOf {it.cents}
+    val commitments get()=pending.filter {it.kind==Kind.EXPENSE && !it.date.isAfter(maxOf(settings.effectiveHorizon(),LocalDate.now()))}.sumOf {it.cents}
+    val expectedIncome get()=pending.filter {it.kind==Kind.INCOME && !it.date.isAfter(maxOf(settings.effectiveHorizon(),LocalDate.now()))}.sumOf {it.cents}
     val spendable get()=balance-settings.reserve-commitments
     fun simulated(cents:Long)=spendable-cents
     fun month(month:YearMonth,kind:Kind)=actual.filter {YearMonth.from(it.date)==month && it.kind==kind}.sumOf {it.cents}
@@ -69,10 +74,10 @@ data class Ledger(val settings:Settings,val categories:List<Category>,val operat
     fun projection(includeIncome:Boolean):List<Pair<LocalDate,Long>> {
         var b=balance
         val today=LocalDate.now();val points=mutableListOf(today to b)
-        pending.filter { !it.date.isAfter(settings.horizon) && (it.kind==Kind.EXPENSE || includeIncome) }.groupBy {maxOf(it.date,today)}.toSortedMap().forEach {(d,items)->
+        pending.filter { !it.date.isAfter(maxOf(settings.effectiveHorizon(),LocalDate.now())) && (it.kind==Kind.EXPENSE || includeIncome) }.groupBy {maxOf(it.date,today)}.toSortedMap().forEach {(d,items)->
             b+=items.sumOf {it.signed};points.add(d to b)
         }
-        if(points.last().first<settings.horizon)points.add(settings.horizon to b)
+        if(points.last().first<settings.effectiveHorizon())points.add(settings.effectiveHorizon() to b)
         return points
     }
 }
