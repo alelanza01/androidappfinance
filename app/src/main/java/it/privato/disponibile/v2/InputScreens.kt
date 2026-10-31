@@ -219,7 +219,7 @@ internal fun MainActivity.rates(body:LinearLayout) {
             if(enabled)row.setOnClickListener {rateChoice=choice;if(n!=null)rateCount=n.toString();render()};body.addView(row);body.addView(ui.space(7))
         }
         option("Nessuna rata","Spesa singola","none",enabled=d.id==0L)
-        listOf(2,3,6,12).forEach {n->option("$n rate",if(amount==null)"Importo per rata da inserire" else if(amountMode=="TOTAL")runCatching {"${DisplayMoney.amount(Installments.split(amount,n).first())} per rata · totale ${DisplayMoney.amount(amount)}"}.getOrDefault("Totale insufficiente")else "${DisplayMoney.amount(amount)} per rata","finite",n)}
+        listOf(2,3,6,12).forEach {n->option("$n rate",if(amount==null)"Importo per rata da inserire" else if(amountMode=="TOTAL")runCatching {Installments.split(amount,n).let {quotes->(if(quotes.first()==quotes.last())DisplayMoney.amount(quotes.first())else "${DisplayMoney.amount(quotes.last())}–${DisplayMoney.amount(quotes.first())}")+" per rata · totale ${DisplayMoney.amount(amount)}"}}.getOrDefault("Totale insufficiente")else "${DisplayMoney.amount(amount)} per rata","finite",n)}
         val countValue=rateCount.toIntOrNull()
         val summary=ui.label(if(rateChoice=="finite" && amount!=null && countValue in 1..120)if(amountMode=="TOTAL")"$rateCount rate · totale ${DisplayMoney.amount(amount)}"else "$rateCount rate · totale ${DisplayMoney.amount(amount*countValue!!)}" else if(rateChoice=="continuous")"Piano: ricorrenza continua" else "Nessuna suddivisione",12f,ui.colors.muted);body.addView(summary)
         body.addView(ui.button(if(ratesAdvanced)"Meno opzioni" else "Altre opzioni"){ratesAdvanced=!ratesAdvanced;render()}.apply {textSize=12f;setTextColor(ui.colors.cool)})

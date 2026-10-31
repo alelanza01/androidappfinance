@@ -161,7 +161,7 @@ class MainActivity:Activity() {
             else v.setPadding(insets.systemWindowInsetLeft,insets.systemWindowInsetTop,insets.systemWindowInsetRight,insets.systemWindowInsetBottom)
             insets
         }
-        val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Anticipi da recuperare",4 to "Analisi",5 to "Simulatore",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
+        val titles=mapOf(0 to "Posso spenderlo?",1 to "Movimenti",2 to "Impegni",3 to "Anticipi da recuperare",4 to "Analisi",5 to "Simula una spesa",6 to "Impostazioni",7 to "Regole del saldo",8 to "Aspetto",9 to "Categorie",10 to "Backup",11 to "Avvisi",12 to "Come si calcola",13 to "Anticipo",20 to formTitle(),21 to "Scegli categoria",22 to "Numero di rate")
         if(demo)root.addView(ui.label("DEMO · DATI DIMOSTRATIVI",10f,c.muted,true).apply {setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,minOf(ui.dp(12).toFloat(),10f*resources.displayMetrics.scaledDensity));setPadding(ui.dp(24),ui.dp(6),ui.dp(24),0)})
         val header=ui.row().apply {setPadding(ui.dp(18),ui.dp(if(page==0)24 else 4),ui.dp(18),ui.dp(4))}
         if(page!=0)header.addView(ui.button("‹"){onBackPressed()}.apply {contentDescription="Indietro";textSize=25f;background=android.graphics.drawable.InsetDrawable(ui.shape(c.hero,20),ui.dp(9));setPadding(0,0,0,0)},LinearLayout.LayoutParams(ui.dp(48),ui.dp(48)))

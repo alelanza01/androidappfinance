@@ -31,7 +31,7 @@ class ProductExperienceTest {
   }
   val before=ledger();assertEquals(27000L,before.balance);assertEquals(18000L,before.spendable);assertEquals(3000L,before.outstanding)
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Simula spesa");set(a.window.decorView,"Importo in euro","80")
-  assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()==Money.format(10000)});assertEquals(before,ledger())
+  assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString()==DisplayMoney.amount(10000)});assertEquals(before,ledger())
   set(a.window.decorView,"Importo in euro","181");assertTrue(all(a.window.decorView).filterIsInstance<TextView>().any {it.text.toString().contains("Superi lo spendibile")});assertEquals(before,ledger());c.pause().stop().destroy()
  }
  @Test fun commitmentTimelineUsesConservativeProjectionAndLeavesLedgerUntouched() {

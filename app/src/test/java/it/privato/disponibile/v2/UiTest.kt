@@ -30,7 +30,7 @@ class UiTest {
  @Test fun simulatorLivesOutsideHomeAndNeverCreatesAnOperation() {
   withStore{it.settings(it.snapshot().settings.copy(opening=10000,reserve=2000))};val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get()
   assertTrue(all(a.window.decorView).filterIsInstance<android.widget.EditText>().isEmpty());click(a.window.decorView,"Simula spesa");set(a.window.decorView,"Importo in euro","25")
-  assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString().contains("55,00")});assertTrue(ledger().operations.isEmpty());c.pause().stop().destroy()
+  assertTrue(all(a.window.decorView).filterIsInstance<android.widget.TextView>().any{it.text.toString()==DisplayMoney.amount(5500)});assertTrue(ledger().operations.isEmpty());c.pause().stop().destroy()
  }
  @Test fun invalidAmountsStayEditableWithoutMutation() {
   val c=Robolectric.buildActivity(MainActivity::class.java).setup();val a=c.get();click(a.window.decorView,"Registra");choose("Spesa");set(a.window.decorView,"Importo in euro","1,234");set(a.window.decorView,"Descrizione","Test");click(a.window.decorView,"Salva")
