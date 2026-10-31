@@ -1,9 +1,15 @@
 {
+  "phase": "1.1",
   "result": "PASS",
-  "sha256": "ae6749953f9b2392665766655e706c59dd214664ba966af7fc9c6658610b7d21",
+  "sha256": "5985783fa2b19f866158ac1ff3ea9b68978a6ebe14c6b5e9f729399c57d1bdaf",
   "requests": 1,
   "externalAssets": 0,
   "consoleErrors": 0,
-  "expenseFlow": "1200→1190 euro; only demo state",
+  "checks": [
+    "Calendar reset selects list",
+    "Calendar reachable",
+    "All six financial state labels present",
+    "Expense 10 euro updates cash 1200→1190"
+  ],
   "scope": "Actual standalone HTML served locally; owner Windows file double-click not verified in managed cloud."
 }

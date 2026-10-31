@@ -1,6 +1,6 @@
-# Posso spenderlo? — Prototipo UX/UI da approvare
+# Posso spenderlo? — Prototipo UX/UI · FASE 1.1 da approvare
 
-**Solo FASE 1. Non è un APK né una riscrittura web dell'app.** Base Android V3.3 `cfb9019`, branch di lavoro `design/ux-rebuild-prototype`. Nessuna modifica alla V3.3 o a main.
+**Solo FASE 1. Non è un APK né una riscrittura web dell'app.** Revisione mirata sulla base di progetto `8c77ffb`; base Android V3.3 `cfb9019`, branch di lavoro `design/ux-rebuild-prototype`. Nessuna modifica alla V3.3 o a main.
 
 ## Aprirlo su Windows
 
@@ -25,6 +25,8 @@ Sul PC la cornice ha viewport 360×800. Restringendo la finestra il layout diven
 - Esplorare anche stati vuoti, negativi, importo lungo, calendario, filtri, backup e notifiche simulate dalla Guida.
 
 ## Consegne e limiti
+
+[Rapporto della revisione 1.1](docs/REVISIONE-1.1.md): Elenco/Calendario verificati distintamente, sei stati finanziari espliciti, conteggi anticipi coerenti e menu verificato su schermi piccoli/font grandi. La proposta non è ancora approvata.
 
 - [Mappa completa e audit UX](docs/NAVIGAZIONE-E-AUDIT.md)
 - [Design system misurabile](docs/DESIGN-SYSTEM.md)

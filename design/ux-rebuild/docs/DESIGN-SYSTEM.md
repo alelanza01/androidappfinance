@@ -23,8 +23,8 @@ Toni icone: menta #D7F2E6/#24684F, acqua #DFF5F4/#25777A, azzurro #E3F0FD/#28629
 Le fonti sono piccole immagini raster, non un file di progetto: misure ottiche, non coordinate originali certificate. Il generatore dei confronti registra in `comparisons/crops.json` il ritaglio della sola area utile, rimuovendo cornice e riga di stato illustrata.
 
 - Margine utile ≈5–6% della larghezza: 20 px su 360, 16 su 320.
-- Ring Home ≈73–76% della larghezza utile; prototipo SVG 266/360, diametro esterno percepito 240 px, tratto 21/280 unità. Contenitore alto 284 px a 360; 248 su 320.
-- Card metriche ≈metà larghezza, interspazio 10, altezza minima 70.
+- Ring Home ≈73–76% della larghezza utile; prototipo SVG 266/360, diametro esterno percepito 240 px, tratto 22/280 unità. Contenitore alto 272 px a 360; 248 su 320.
+- Card metriche ≈metà larghezza, interspazio 10, altezza minima 68.
 - Griglia spesa: 4 colonne ×3 righe, medaglioni 48, icona 27, label 11; testo grande passa a 3 colonne senza comprimere i testi.
 - Donut: SVG 202×202 nel quadro Analisi da 360, raggio 91/240, tratto 38/240. Totale al centro, legenda allineata ai margini. Dati demo determinano gli archi.
 - Dialogo: larghezza viewport−36, raggio 26, padding 26/22/20; illustrazione 92, documento interno 68×76; pulsanti pieni e spaziatura 11.
@@ -71,3 +71,7 @@ Numeri: centesimi interi nel modello demo, separatore decimale italiano, migliai
 - Riduzione movimento: `prefers-reduced-motion`; nessuna animazione essenziale per capire il risultato.
 
 Non è stato eseguito un audit completo con screen reader, utenti o telefono. La misura del contrasto e la dimensione finale in sp Android vanno verificate nella fase 2; non si dichiara una certificazione WCAG da queste catture.
+
+## Precisazioni 1.1
+
+Le righe finanziarie usano etichette Già ricevuto / Ancora da ricevere / Già pagato / Ancora da pagare / Anticipo versato / Rimborso ricevuto. Previsti: superficie azzurra tenue e bordo tratteggiato, badge indaco #EDF2FF/#465A9E; ricevuti: #E0F2E9/#21694F; anticipi: #F1E9FA/#744A92. Non si usa solo il segno dell’importo. Il menu mantiene header e chiusura sticky mentre il contenuto scorre; testo e descrizioni seguono l’ingrandimento.

@@ -1,4 +1,4 @@
-# Verifica della FASE 1 — 31 ottobre 2026
+# Verifica della FASE 1.1 — 31 ottobre 2026
 
 Consegna di progettazione da approvare; nessuna implementazione Android successiva autorizzata o eseguita.
 
@@ -13,9 +13,9 @@ Consegna di progettazione da approvare; nessuna implementazione Android successi
 
 Comando: `node design/ux-rebuild/qa/verify.cjs`. Esito macchina completo in `qa/results.json`.
 
-**22 scenari automatici superati**, nessun errore JavaScript e nessuna richiesta a servizi esterni. Fra gli scenari: navigazione, spesa con solo importo, categorie/preferite/bozza, rate e frequenza, nessuna scrittura prima di Salva, rate >120 rifiutate, uscita con conferma, entrata e pagamento previsto distinti, calendario e conferma pagamento, filtri rimovibili, anticipo 300→250→270→300, rimborsi eccedenti o precedenti rifiutati, simulazione senza scritture, analisi personali, riserva modificabile, categorie personali/protezione usate, correzioni, stop/modifica piano con storico mantenuto, notifiche simulate, backup demo/importazione/errore, primo avvio, ritorno da gestione categorie senza perdita della bozza e focus del menu.
+**26 scenari automatici superati**, nessun errore JavaScript e nessuna richiesta a servizi esterni. Fra gli scenari: navigazione, spesa con solo importo, categorie/preferite/bozza, rate e frequenza, nessuna scrittura prima di Salva, rate >120 rifiutate, uscita con conferma, entrata e pagamento previsto distinti, calendario e conferma pagamento, filtri rimovibili, anticipo 300→250→270→300, rimborsi eccedenti o precedenti rifiutati, simulazione senza scritture, analisi personali, riserva modificabile, categorie personali/protezione usate, correzioni, stop/modifica piano con storico mantenuto, notifiche simulate, backup demo/importazione/errore, primo avvio, ritorno da gestione categorie senza perdita della bozza e focus del menu.
 
-**89 catture**: sei schermate originali in chiaro e scuro, menu +, filtri, secondarie, form, errori, vuoti, negativo, importo lungo e tastiera dimostrativa. Matrice responsive 320×640 / 360×800 / 411×891, testo normale e 145%, senza overflow orizzontale nei cinque percorsi verificati; CTA form dentro il viewport. Il comportamento previsto è scorrimento, non riduzione di tutti gli elementi.
+**97 catture**: sei schermate originali in chiaro e scuro, menu +, filtri, secondarie, form, errori, vuoti, negativo, importo lungo e tastiera dimostrativa. Matrice responsive 320×640 / 360×800 / 411×891, testo normale e 145%, senza overflow orizzontale nei cinque percorsi verificati; CTA form dentro il viewport. Il comportamento previsto è scorrimento, non riduzione di tutti gli elementi.
 
 **6 confronti + 6 overlay al 50% + PDF** generati con `python design/ux-rebuild/qa/compare.py`, usando la sola area utile del reference. La revisione effettiva e le correzioni sono descritte in VERIFICA-VISIVA.md. I riferimenti restano nel repository in `release/v3.2/references/`.
 
@@ -39,3 +39,7 @@ Il browser cloud gestito blocca `file://` con `ERR_BLOCKED_BY_ADMINISTRATOR`; pe
 ## Consegna di progettazione
 
 Prototipo completo, istruzioni Windows, screenshot, confronti, inventario/mappa dei percorsi, design system, audit UX, raccomandazione architetturale e rapporto differenze. Nessuna approvazione attribuita: attendere il riscontro esplicito sulle schermate e sui flussi prima della FASE 2.
+
+## Correzione del collaudo precedente
+
+La consegna iniziale aveva quattro catture Impegni errate: Elenco/Calendario identici. Il mancato reset di viewCalendar contaminava la sequenza di cattura. Il reset e le precondizioni delle catture sono stati corretti; lo stato attivo, l’assenza/presenza della griglia e i checksum diversi sono ora verificati. I quattro nuovi scenari coprono anche sei stati finanziari, coerenza anticipi e menu Registra su 320/360/411 con testo normale/grande. Dettagli e limiti in REVISIONE-1.1.md. Nessuna modifica ad Android o al modello finanziario JavaScript.

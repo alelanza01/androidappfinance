@@ -50,3 +50,9 @@ Il tema scuro conserva struttura e gerarchia; non proviene da un reference origi
 5. Quali differenze sono ancora bloccanti prima di implementare Android?
 
 La FASE 2 resta sospesa fino a una risposta esplicita dell'utente.
+
+## Revisione mirata 1.1
+
+Gradiente dell’anello a tre stop, tratto 22 unità, metriche più compatte e uscita in rosa; righe impegni con stato esplicito, badge compatti accanto alla data in Home; azioni secondarie conservate. Campi importo e Data/Rate più uniformi, cuori armonizzati, Analisi con donut 208 px e area 72 px (sempre a gradini reali), spiegazioni Rate abbreviate e avanzate secondarie. Popup con ombra e spazi leggermente rivisti. Non è un nuovo redesign.
+
+I confronti aggiornati mantengono le differenze già dichiarate: illustrazioni/icone e font non identici al concept, Home con due azioni aggiuntive e stati previsti, differenze di composizione della torta e della linea dovute ai dati, semantica per-rata obbligatoria, blur browser e non Android. La vista Calendario richiede scorrimento per leggere tutte le scadenze; i target delle celle più strette restano un limite aperto su 320.
