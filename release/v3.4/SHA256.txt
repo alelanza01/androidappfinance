@@ -1,0 +1,3 @@
+715cc4d8bd65127bc62165ccfd3acbe00dc123eac44eb179fdd1e136590c3626  Posso-spenderlo-V3.4.0-RC.apk
+a6d43860f9981dc71461744a8417593e5fccf1c2e1e0500439bb56e6228eab9e  Posso-spenderlo-V3.4.0-sorgenti.zip
+8fe65d9fd8cc730f3ca3f6f0ec79304b9d743e1e257e6daf94b0c1b2715d32f0  comparisons/Confronti-V3.4.pdf

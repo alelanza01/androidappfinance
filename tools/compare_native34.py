@@ -21,6 +21,10 @@ rows=[
  ('09','Impegni Calendario','11-calendario-light.png','v34-C-impegni-calendario-light.png'),
  ('10','Selettore date','12-data-light.png','v34-B-date-light.png'),
  ('11','Simulatore','16-simulatore-light.png','v34-C-simulatore-light.png'),
+ ('12','Movimenti','08-movimenti-light.png','v34-B-movimenti-light.png'),
+ ('13','Anticipi da recuperare','13-anticipi-light.png','v34-C-anticipi-light.png'),
+ ('14','Onboarding · riepilogo','12-onboarding-4-light.png','v34-D-onboarding-riepilogo.png'),
+ ('15','Impostazioni','17-impostazioni-light.png','v34-D-impostazioni-light.png'),
 ]
 manifest=[];pdf=[]
 for code,name,proto,native in rows:

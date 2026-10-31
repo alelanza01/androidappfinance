@@ -17,3 +17,6 @@ SQLite 5 e JSON 6: orizzonti fissi/mobili, completamento onboarding, quickRank, 
 Simulatore puro separato da SQLite, grafico a gradini con riserva e scenario entrate distinto. Impegni Elenco/Calendario leggono lo stesso archivio; dettaglio giorno e conferme esplicite. Anticipi scaduti inclusi negli aperti, totali globali distinti dalla selezione. Onboarding quattro passi applicato una sola volta.
 
 Il collaudo finale è in esecuzione. Gli eventuali problemi e il risultato definitivo sono nel rapporto finale, non deducibili dai soli commit intermedi.
+
+## E — Collaudo finale e consegna
+Sorgenti finali identificati in VERIFICA.json: 156 test superati, nessun test ignorato; build release riuscita, lint 0 errori / 32 avvisi. Firma valida e identica a V2/V3.3; package invariato e versione 3.4.0 (340). Generati 48 PNG nativi e 15 confronti, con Impegni Elenco/Calendario distinti. Rapporto, verifica macchina, guida e archivio sorgenti in questa cartella. Nessuna installazione fisica dichiarata; dettagli e differenze residue in RAPPORTO.md.

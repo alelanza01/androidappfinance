@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-31",
+  "source_commit": "4f1177c91b959a8a6919ff0e02a014163e333fce",
+  "tests": 156,
+  "failures": 0,
+  "suites": [
+    {
+      "suite": "it.privato.disponibile.v2.AdvanceTest",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.AdvanceUiTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.Backdrop33Test",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.ComponentAuditTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.ConceptFidelityTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.ConceptScreenshotsTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.FinanceTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.Financial34Test",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.Migration34Test",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.Native34Test",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.Onboarding34Test",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.ProductExperienceTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.RecurrenceTest",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.RecurrenceUiTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.Refinement33Test",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.RefinementRenderingTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.RefinementTest",
+      "tests": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.ReminderTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.RenderingTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.ResponsiveTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.StoreTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "it.privato.disponibile.v2.UiTest",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "lint": {
+    "Warning": 32
+  },
+  "lint_by_type": {
+    "ApplySharedPref": 2,
+    "DrawAllocation": 17,
+    "ViewConstructor": 6,
+    "SetTextI18n": 7
+  },
+  "build": "BUILD SUCCESSFUL",
+  "versionName": "3.4.0",
+  "versionCode": 340,
+  "applicationId": "it.privato.disponibile.v2",
+  "minSdk": 26,
+  "sqlite": 5,
+  "json": 6,
+  "certificate_sha256": "3aae07d6255d8b04a893ef058275c40e4e0d5f7cfd1a6b15328647c7a0f65568",
+  "device_instrumentation": false,
+  "native_graphics_screenshots": 48
+}

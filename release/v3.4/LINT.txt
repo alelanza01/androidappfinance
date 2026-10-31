@@ -1,0 +1,142 @@
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeOnboarding.kt:21: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+ fun clear(){prefs.edit().clear().commit();data=JSONObject()}
+                                  ~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeOnboarding.kt:22: Warning: Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background [ApplySharedPref]
+ private fun persist(){prefs.edit().putString("draft",data.toString()).commit()}
+                                                                       ~~~~~~~~
+
+   Explanation for issues of type "ApplySharedPref":
+   Consider using apply() instead of commit on shared preferences. Whereas
+   commit blocks and writes its data to persistent storage immediately, apply
+   will handle it in the background.
+
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/CashTimeline.kt:23: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        paint.color=colors.muted;paint.style=Paint.Style.STROKE;paint.strokeWidth=density;paint.pathEffect=DashPathEffect(floatArrayOf(4*density,5*density),0f)
+                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/CashTimeline.kt:23: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        paint.color=colors.muted;paint.style=Paint.Style.STROKE;paint.strokeWidth=density;paint.pathEffect=DashPathEffect(floatArrayOf(4*density,5*density),0f)
+                                                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/CashTimeline.kt:25: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val path=Path();path.moveTo(x(points.first().first),y(points.first().second));points.zipWithNext().forEach {(before,after)->path.lineTo(x(after.first),y(before.second));path.lineTo(x(after.first),y(after.second))}
+                 ~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:21: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        p.shader=RadialGradient(x,y+radius*.25f,radius*1.2f,intArrayOf(if(palette.dark)0x353CB8B7 else 0x124BC7C5,Color.TRANSPARENT),null,Shader.TileMode.CLAMP);c.drawCircle(x,y,radius*1.2f,p);p.shader=null
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:21: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        p.shader=RadialGradient(x,y+radius*.25f,radius*1.2f,intArrayOf(if(palette.dark)0x353CB8B7 else 0x124BC7C5,Color.TRANSPARENT),null,Shader.TileMode.CLAMP);c.drawCircle(x,y,radius*1.2f,p);p.shader=null
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:24: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        if(fraction!=null && fraction>0){p.shader=SweepGradient(x,y,intArrayOf(Color.parseColor("#A7E7E2"),Color.parseColor("#31BFAF"),Color.parseColor("#A7E7E2")),null);c.save();c.rotate(-90f,x,y);c.drawArc(x-radius,y-radius,x+radius,y+radius,0f,(fraction*360).toFloat(),false,p);c.restore();p.shader=null}
+                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:24: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        if(fraction!=null && fraction>0){p.shader=SweepGradient(x,y,intArrayOf(Color.parseColor("#A7E7E2"),Color.parseColor("#31BFAF"),Color.parseColor("#A7E7E2")),null);c.save();c.rotate(-90f,x,y);c.drawArc(x-radius,y-radius,x+radius,y+radius,0f,(fraction*360).toFloat(),false,p);c.restore();p.shader=null}
+                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:28: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+            val bounds=Rect();p.getTextBounds(value,0,value.length,bounds);c.drawText(value,x-(bounds.left+bounds.right)/2f,position-(bounds.top+bounds.bottom)/2f,p)}
+                       ~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:74: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val path=Path();path.moveTo(x(balances.first().first),y(balances.first().second));balances.zipWithNext().forEach {(a,b)->path.lineTo(x(b.first),y(a.second));path.lineTo(x(b.first),y(b.second))}
+                 ~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:75: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val fill=Path(path);fill.lineTo(x(end),bottom);fill.lineTo(x(visibleStart),bottom);fill.close();p.style=Paint.Style.FILL;p.shader=LinearGradient(0f,top,0f,bottom,0x553C98FA,0x033C98FA,Shader.TileMode.CLAMP);c.drawPath(fill,p);p.shader=null
+                 ~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:75: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val fill=Path(path);fill.lineTo(x(end),bottom);fill.lineTo(x(visibleStart),bottom);fill.close();p.style=Paint.Style.FILL;p.shader=LinearGradient(0f,top,0f,bottom,0x553C98FA,0x033C98FA,Shader.TileMode.CLAMP);c.drawPath(fill,p);p.shader=null
+                                                                                                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:75: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+        val fill=Path(path);fill.lineTo(x(end),bottom);fill.lineTo(x(visibleStart),bottom);fill.close();p.style=Paint.Style.FILL;p.shader=LinearGradient(0f,top,0f,bottom,0x553C98FA,0x033C98FA,Shader.TileMode.CLAMP);c.drawPath(fill,p);p.shader=null
+                                                                                                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:52: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+  paint.style=Paint.Style.STROKE;paint.strokeWidth=d;paint.color=colors.muted;paint.pathEffect=DashPathEffect(floatArrayOf(5*d,4*d),0f);c.drawLine(left,y(sim.reserve),right,y(sim.reserve),paint);paint.pathEffect=null
+                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:52: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+  paint.style=Paint.Style.STROKE;paint.strokeWidth=d;paint.color=colors.muted;paint.pathEffect=DashPathEffect(floatArrayOf(5*d,4*d),0f);c.drawLine(left,y(sim.reserve),right,y(sim.reserve),paint);paint.pathEffect=null
+                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:58: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+   if(fill){val area=Path(path);area.lineTo(x(points.last().date),bottom);area.lineTo(left,bottom);area.close();paint.style=Paint.Style.FILL;paint.shader=LinearGradient(0f,top,0f,bottom,intArrayOf(0x352688F5,0x032688F5),null,Shader.TileMode.CLAMP);c.drawPath(area,paint);paint.shader=null}
+                     ~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:58: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+   if(fill){val area=Path(path);area.lineTo(x(points.last().date),bottom);area.lineTo(left,bottom);area.close();paint.style=Paint.Style.FILL;paint.shader=LinearGradient(0f,top,0f,bottom,intArrayOf(0x352688F5,0x032688F5),null,Shader.TileMode.CLAMP);c.drawPath(area,paint);paint.shader=null}
+                                                                                                                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:58: Warning: Avoid object allocations during draw/layout operations (preallocate and reuse instead) [DrawAllocation]
+   if(fill){val area=Path(path);area.lineTo(x(points.last().date),bottom);area.lineTo(left,bottom);area.close();paint.style=Paint.Style.FILL;paint.shader=LinearGradient(0f,top,0f,bottom,intArrayOf(0x352688F5,0x032688F5),null,Shader.TileMode.CLAMP);c.drawPath(area,paint);paint.shader=null}
+                                                                                                                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "DrawAllocation":
+   You should avoid allocating objects during a drawing or layout operation.
+   These are called frequently, so a smooth UI can be interrupted by garbage
+   collection pauses caused by the object allocations.
+
+   The way this is generally handled is to allocate the needed objects up
+   front and to reuse them for each drawing operation.
+
+   Some methods allocate memory on your behalf (such as Bitmap.create), and
+   these should be handled in the same way.
+
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/CashTimeline.kt:10: Warning: Custom view CashTimeline is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class CashTimeline(context:Context,private val colors:Palette,ledger:Ledger):View(context) {
+      ~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/Charts.kt:14: Warning: Custom view Charts is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class Charts(context:Context,private val palette:Palette,private val ledger:Ledger,private val mode:Int,private val month:YearMonth,private val months:Int,private val rangeMonths:Int=1,private val selection:(String)->Unit):View(context) {
+      ~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:13: Warning: Custom view SpendableRing is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class SpendableRing(context:Context,private val palette:Palette,private val ledger:Ledger):View(context) {
+      ~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/ConceptViews.kt:60: Warning: Custom view RecordedCashLine is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class RecordedCashLine(context:Context,private val palette:Palette,ledger:Ledger,from:LocalDate,through:LocalDate):View(context) {
+      ~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:42: Warning: Custom view SimulationChart is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class SimulationChart(context:Context,private val colors:Palette,private val sim:Simulation):View(context) {
+      ~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/RefinedViews.kt:49: Warning: Custom view MoneyInput is missing constructor used by tools: (Context) or (Context,AttributeSet) or (Context,AttributeSet,int) [ViewConstructor]
+class MoneyInput(context:Context,private val tint:Int):android.widget.FrameLayout(context) {
+      ~~~~~~~~~~
+
+   Explanation for issues of type "ViewConstructor":
+   Some layout tools (such as the Android layout editor) need to find a
+   constructor with one of the following signatures:
+   * View(Context context)
+   * View(Context context, AttributeSet attrs)
+   * View(Context context, AttributeSet attrs, int defStyle)
+
+   If your custom view needs to perform initialization which does not apply
+   when used in a layout editor, you can surround the given code with a check
+   to see if View#isInEditMode() is false, since that method will return false
+   at runtime but true within a user interface editor.
+
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/AnalysisScreens.kt:29: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+                row.addView(ui.label(cat.name,11f),LinearLayout.LayoutParams(0,-2,1.4f));row.addView(ui.label("${String.format(Locale.ITALY,"%.0f",n*100.0/data.total)}%",11f,ui.colors.muted).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,.5f));row.addView(ui.amount(DisplayMoney.amount(n),12f).apply {gravity=Gravity.END},LinearLayout.LayoutParams(0,-2,1f));row.setPadding(0,ui.dp(1),0,ui.dp(1));for(i in 1 until row.childCount)row.getChildAt(i).setPadding(0,0,0,0);row.setOnClickListener {detail.visibility=View.VISIBLE;detail.text="${cat.name} · ${Money.format(n)}"};row.isFocusable=true;body.addView(row)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/InputScreens.kt:230: Warning: Number formatting does not take into account locale settings. Consider using String.format instead. [SetTextI18n]
+        val minus=ui.button("−"){val n=count.text.toString().toIntOrNull() ?: 1;count.setText(maxOf(1,n-1).toString())}.apply {contentDescription="Riduci rate"}
+                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/InputScreens.kt:231: Warning: Number formatting does not take into account locale settings. Consider using String.format instead. [SetTextI18n]
+        val plus=ui.button("+"){val n=count.text.toString().toIntOrNull() ?: 1;count.setText(minOf(120,n+1).toString())}.apply {contentDescription="Aumenta rate"}
+                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/LedgerScreens.kt:69: Warning: Number formatting does not take into account locale settings. Consider using String.format instead. [SetTextI18n]
+                ui.flatten(this);text=day.toString();textSize=13f;includeFontPadding=false;gravity=Gravity.CENTER;minWidth=0;minimumWidth=0;minHeight=0;minimumHeight=0;setPadding(0,0,0,ui.dp(4));maxLines=1
+                                      ~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:33: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+  val toggle=CheckBox(ui.context).apply {text="Scenario con entrate attese";textSize=13f;setTextColor(ui.colors.text);isChecked=draft.income;minimumHeight=ui.dp(48);setOnCheckedChangeListener {_,checked->draft.income=checked;draw(body,pickEnd)}};body.addView(toggle)
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:38: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+  sim.points.forEach {point->body.addView(ui.button("${point.date} · ${Money.format(point.cash)}"){detail.text="${point.date}: ${point.titles.joinToString(" · ")}\nLiquidità prevista ${Money.format(point.cash)}"}.apply {contentDescription="Punto ${point.date}, liquidità ${Money.format(point.cash)}";textSize=12f;gravity=Gravity.START})}
+                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/androidappfinance/app/src/main/java/it/privato/disponibile/v2/NativeSimulation.kt:38: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+  sim.points.forEach {point->body.addView(ui.button("${point.date} · ${Money.format(point.cash)}"){detail.text="${point.date}: ${point.titles.joinToString(" · ")}\nLiquidità prevista ${Money.format(point.cash)}"}.apply {contentDescription="Punto ${point.date}, liquidità ${Money.format(point.cash)}";textSize=12f;gravity=Gravity.START})}
+                                                                                                                                                                    ~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "SetTextI18n":
+   When calling TextView#setText
+   * Never call Number#toString() to format numbers; it will not handle
+   fraction separators and locale-specific digits properly. Consider using
+   String#format with proper format specifications (%d or %f) instead.
+   * Do not pass a string literal (e.g. "Hello") to display text. Hardcoded
+   text can not be properly translated to other languages. Consider using
+   Android resource strings instead.
+   * Do not build messages by concatenating text chunks. Such messages can not
+   be properly translated.
+
+   https://developer.android.com/guide/topics/resources/localization.html
+
+0 errors, 32 warnings

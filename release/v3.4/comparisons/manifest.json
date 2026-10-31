@@ -1,0 +1,107 @@
+[
+  {
+    "screen": "Home",
+    "prototype": "design/ux-rebuild/screenshots/01-home-light.png",
+    "native": "release/v3.4/screenshots/v34-A-home-light.png",
+    "native_sha256": "ac8c1c751553ee050d540b609d9f655dd309785bc2e9eb0df0b0ecc2370b2100",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Nuova spesa",
+    "prototype": "design/ux-rebuild/screenshots/02-spesa-light.png",
+    "native": "release/v3.4/screenshots/v34-B-spesa-light.png",
+    "native_sha256": "eea5e2a35136ff6797490fe63bed532845678582e8c66f5dc50deb9f1d19b0f1",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Categorie",
+    "prototype": "design/ux-rebuild/screenshots/03-categorie-light.png",
+    "native": "release/v3.4/screenshots/v34-B-categorie-light.png",
+    "native_sha256": "af689dc70e9928724eaff0fb043ee6b4c653f013e1b85b6b7db1374b2cd042a9",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Analisi",
+    "prototype": "design/ux-rebuild/screenshots/04-analisi-light.png",
+    "native": "release/v3.4/screenshots/v34-D-analisi-light.png",
+    "native_sha256": "15d23543ce7d05653fab8e12fa2ef23756aa3ed5279f2dc86770cfb3e429d4d1",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Rate",
+    "prototype": "design/ux-rebuild/screenshots/05-rate-light.png",
+    "native": "release/v3.4/screenshots/v34-B-rate-light.png",
+    "native_sha256": "cb0116be1c5d637149127eceb395449ed920ea1794f18f67b456817e88361b9c",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Conferma uscita",
+    "prototype": "design/ux-rebuild/screenshots/06-conferma-light.png",
+    "native": "release/v3.4/screenshots/concept-06-conferma-light.png",
+    "native_sha256": "b59760e9b13583c9735a4e353f26dfa4c2edaf5ae7808c734694d503615a4c67",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Menu Registra",
+    "prototype": "design/ux-rebuild/screenshots/07-registra-light.png",
+    "native": "release/v3.4/screenshots/v34-A-registra-light.png",
+    "native_sha256": "6138e16bac8ef01481e49e20152f45423504aabb0a767afdbfe26854b3e1738b",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Impegni Elenco",
+    "prototype": "design/ux-rebuild/screenshots/10-impegni-light.png",
+    "native": "release/v3.4/screenshots/v34-C-impegni-elenco-light.png",
+    "native_sha256": "dc9ea9f554077599bb60fd16cf0d7c3e4f3ffc454d5dbd5a7080518cd13ef7d9",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Impegni Calendario",
+    "prototype": "design/ux-rebuild/screenshots/11-calendario-light.png",
+    "native": "release/v3.4/screenshots/v34-C-impegni-calendario-light.png",
+    "native_sha256": "f4382bba6e35d66308a9c431966a340fa413fbf01199f6b62c71329b50c99639",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Selettore date",
+    "prototype": "design/ux-rebuild/screenshots/12-data-light.png",
+    "native": "release/v3.4/screenshots/v34-B-date-light.png",
+    "native_sha256": "01f4c0f24019981c1fa9218e3f383dc3c1c696b11207fc50af625fb30bd51599",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Simulatore",
+    "prototype": "design/ux-rebuild/screenshots/16-simulatore-light.png",
+    "native": "release/v3.4/screenshots/v34-C-simulatore-light.png",
+    "native_sha256": "5a1d2a64fef59bdbea802e42adc053c572a8ae447e4eceb36c8627cbb74d57cd",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Movimenti",
+    "prototype": "design/ux-rebuild/screenshots/08-movimenti-light.png",
+    "native": "release/v3.4/screenshots/v34-B-movimenti-light.png",
+    "native_sha256": "a5f5a6b74eb576e2395127616ec8d853f42f08be5a0c758a9fda64907c07369d",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Anticipi da recuperare",
+    "prototype": "design/ux-rebuild/screenshots/13-anticipi-light.png",
+    "native": "release/v3.4/screenshots/v34-C-anticipi-light.png",
+    "native_sha256": "66937b61d8bdf8d7c2a8201506c21efb9372281efb22a0665fe187260b1d4aa9",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Onboarding \u00b7 riepilogo",
+    "prototype": "design/ux-rebuild/screenshots/12-onboarding-4-light.png",
+    "native": "release/v3.4/screenshots/v34-D-onboarding-riepilogo.png",
+    "native_sha256": "79dddc73700dc023684a39ab5e29c6ce2fb3137d6e9506cb7b701476403c1e63",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  },
+  {
+    "screen": "Impostazioni",
+    "prototype": "design/ux-rebuild/screenshots/17-impostazioni-light.png",
+    "native": "release/v3.4/screenshots/v34-D-impostazioni-light.png",
+    "native_sha256": "314fbabfd1ae2789da404501efacee424ca609c0b5f19771033acfc827d95d21",
+    "resize": "width 480; aspect ratio unchanged; no native content cropped"
+  }
+]

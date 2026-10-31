@@ -1,0 +1,7 @@
+Comando: source tools/cloud-env.sh
+./gradlew --no-daemon -Pkotlin.compiler.execution.strategy=in-process -Pkotlin.incremental=false :app:testDebugUnitTest :app:lintDebug :app:assembleRelease
+156 test; 0 fallimenti/errori; 32 avvisi lint; 0 errori lint.
+BUILD SUCCESSFUL
+package: name='it.privato.disponibile.v2' versionCode='340' versionName='3.4.0' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+Sorgenti: 4f1177c91b959a8a6919ff0e02a014163e333fce
+Firma originale verificata: vedi FIRMA.txt. Nessun emulatore/telefono eseguito.
